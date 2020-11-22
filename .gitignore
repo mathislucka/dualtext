@@ -1,0 +1,4 @@
+.venv/
+dp.sqlite3
+*.pyo
+*.pyc

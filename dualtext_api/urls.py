@@ -1,0 +1,16 @@
+from django.urls import path, re_path
+from .views import LabelListView, ProjectListView, TaskListView, AnnotationListView, AnnotationDetailView
+from .views import CorpusDetailView, DocumentListView, CorpusListView, DocumentDetailView, SearchView
+
+urlpatterns = [
+    path('corpus/<int:corpus_id>', CorpusDetailView.as_view(), name='corpus_detail'),
+    path('corpus/<int:corpus_id>/document/<int:document_id>', DocumentDetailView.as_view(), name='document_detail'),
+    path('corpus/<int:corpus_id>/document', DocumentListView.as_view(), name='document_list'),
+    path('corpus/', CorpusListView.as_view(), name='corpus_list'),
+    path('project/', ProjectListView.as_view(), name='project_list'),
+    path('project/<int:project_id>/label', LabelListView.as_view(), name='label_list'),
+    path('project/<int:project_id>/task', TaskListView.as_view(), name='task_list'),
+    path('task/<int:task_id>/annotation/<int:annotation_id>', AnnotationDetailView.as_view(), name='annotation_detail'),
+    path('task/<int:task_id>/annotation', AnnotationListView.as_view(), name='annotation_list'),
+    re_path(r'search/$', SearchView.as_view(), name='search'),
+]
