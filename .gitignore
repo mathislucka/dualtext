@@ -1,4 +1,4 @@
 .venv/
-dp.sqlite3
+db.sqlite3
 *.pyo
 *.pyc
