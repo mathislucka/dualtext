@@ -9,9 +9,9 @@ class SentenceEmbedding():
     
     def process_documents(self, documents):
             
-        #Our sentences we like to encode
         sentences = [document.content for document in documents.all()]
         ids = [document.id for document in documents.all()]
+        # TODO building document embeddings in one go possibly crashes -> make this batching dynamic
         sentences = self.split_list(sentences, 4)
 
         to_store = []
