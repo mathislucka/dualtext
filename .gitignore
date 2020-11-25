@@ -2,3 +2,4 @@
 db.sqlite3
 *.pyo
 *.pyc
+/node_modules/
