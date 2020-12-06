@@ -653,7 +653,7 @@ class TestDocumentDetailView(APITestCase):
         document.save()
         self.document = document
 
-        self.url = reverse('document_detail', args=[self.corpus.id, self.document.id])
+        self.url = reverse('document_detail', args=[self.document.id])
     
     def test_allowed_view(self):
         """

@@ -61,6 +61,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
             'reviewer_labels': {'required': False},
             'annotator_labels': {'required': False},
             'prediction_set': {'required': False},
+            'documents': {'required': False},
         }
         read_only_fields = ['task']
 

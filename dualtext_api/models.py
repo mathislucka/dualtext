@@ -38,7 +38,7 @@ class Task(AbstractBase):
     is_reviewed = models.BooleanField(blank=True, default=False)
 
 class Annotation(AbstractBase):
-    documents = models.ManyToManyField(Document)
+    documents = models.ManyToManyField(Document, blank=True)
     annotator_labels = models.ManyToManyField(Label, related_name='%(class)s_annotator')
     reviewer_labels = models.ManyToManyField(Label, related_name='%(class)s_reviewer')
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
