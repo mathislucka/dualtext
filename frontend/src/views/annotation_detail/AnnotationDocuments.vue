@@ -4,7 +4,7 @@
             v-for="(document, idx) in documents"
             :key="idx"
             :document="document"
-            class="mb-16"
+            :class="{ 'mb-16': idx !== documents.length - 1}"
             @remove-document="removeDocument" />
     </div>
 </template>

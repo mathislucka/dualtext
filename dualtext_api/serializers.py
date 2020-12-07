@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label
 
@@ -73,5 +74,10 @@ class PredictionSerializer(serializers.ModelSerializer):
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
-        fields = ['id', 'name', 'project'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'project', 'color'] + DEFAULT_FIELDS
         read_only_fields = ['project']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']

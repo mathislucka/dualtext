@@ -1,5 +1,6 @@
 import { serializeParams } from './ApiHelpers.js'
 import { NotificationStore } from './../store/Notify.js'
+import { UserStore } from './../store/User.js'
 
 const ApiBuilder = class {
     constructor (baseUrl) {

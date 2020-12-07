@@ -1,16 +1,16 @@
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import Project from './../store/Project.js'
 
-const useSingleProject = (id) => {
-    let project = ref({})
+const useSingleProject = (projectId) => {
     
-    const fetchProject = async () => {
-        project.value = await Project.actions.fetchProject(`/project/${id}`)
-            .then(() => Project.getters.getProject(id))
+    const fetchProject = () => {
+        Project.actions.fetchProject(`/project/${projectId.value}`)
     }
 
+    const project = computed(() => Project.items.value[projectId] || {})
+
     onMounted(fetchProject)
-    watch(id, fetchProject)
+    watch(projectId, fetchProject)
 
     return {
         project,

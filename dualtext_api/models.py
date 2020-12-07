@@ -28,6 +28,8 @@ class Project(AbstractBase):
 class Label(AbstractBase):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    color = models.JSONField()
+    key_code = models.CharField(max_length=1, null=True)
 
 class Task(AbstractBase):
     name = models.CharField(max_length=255)
@@ -39,8 +41,8 @@ class Task(AbstractBase):
 
 class Annotation(AbstractBase):
     documents = models.ManyToManyField(Document, blank=True)
-    annotator_labels = models.ManyToManyField(Label, related_name='%(class)s_annotator')
-    reviewer_labels = models.ManyToManyField(Label, related_name='%(class)s_reviewer')
+    annotator_labels = models.ManyToManyField(Label, related_name='%(class)s_annotator', blank=True)
+    reviewer_labels = models.ManyToManyField(Label, related_name='%(class)s_reviewer', blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
 class Prediction(AbstractBase):

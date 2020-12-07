@@ -9,12 +9,18 @@
 <script>
 import PageHeader from './components/shared/PageHeader.vue'
 import ToastBar from './components/shared/ToastBar.vue'
+import { UserStore } from './store/User.js'
 
 export default {
   name: 'App',
   components: {
     ToastBar,
     PageHeader,
+  },
+  mounted () {
+      if (sessionStorage.getItem('auth_token')) {
+          UserStore.actions.fetchCurrentUser()
+      }
   }
 }
 </script>

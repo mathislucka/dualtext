@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .models import Prediction, Project, Annotation, Task, Document, Corpus, Label
 from .serializers import LabelSerializer, TaskSerializer, ProjectSerializer, AnnotationSerializer, CorpusSerializer
-from .serializers import DocumentSerializer
+from .serializers import DocumentSerializer, UserSerializer
 from .permissions import TaskPermission, AnnotationPermission, MembersReadAdminEdit, AuthenticatedReadAdminCreate, DocumentPermission
 from dualtext_api.search.search import Search
 
@@ -117,6 +119,11 @@ class TaskListView(generics.ListCreateAPIView):
         serializer.save(project=project)
 
 # class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [TaskPermission]
+    lookup_url_kwarg = 'task_id'
 
 # class PredictionListView(generics.ListCreateAPIView):
 
@@ -138,6 +145,12 @@ class ProjectListView(generics.ListCreateAPIView):
             queryset = queryset.filter(allowed_groups__in=user_groups)
         return queryset
 
+class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [MembersReadAdminEdit]
+    lookup_url_kwarg = 'project_id'
+
 class SearchView(generics.ListAPIView):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
@@ -157,3 +170,8 @@ class SearchView(generics.ListAPIView):
         # if ['search', 'corpora', 'methods'] in query_params:
         #     print(query_params)
         return []
+
+class CurrentUserView(APIView):
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
