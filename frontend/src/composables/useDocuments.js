@@ -2,7 +2,7 @@ import { computed, watch, onMounted, ref } from 'vue'
 import Document from './../store/Document.js'
 import Annotation from './../store/Annotation.js'
 
-function useDocuments (annotation, currentAnnotationIdx, taskId) {
+function useDocuments (annotation, currentAnnotationIdx) {
     const annotations = computed(() => Object.values(Annotation.items.value))
     const areDocumentsLoading = ref(false)
     function getDocumentsForAnnotation (annotation) {
@@ -37,8 +37,7 @@ function useDocuments (annotation, currentAnnotationIdx, taskId) {
     function removeDocument (docId) {
         console.log('docId', docId)
         const documents = annotation.value.documents.filter(doc => doc !== docId)
-        console.log(documents)
-        Annotation.actions.updateAnnotation(`/task/${taskId.value}/annotation/${annotation.value.id}`, { documents, id: annotation.value.id })
+        Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, { documents, id: annotation.value.id })
     }
 
     onMounted(() => {

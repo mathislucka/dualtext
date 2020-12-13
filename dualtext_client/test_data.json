@@ -1,0 +1,12 @@
+{
+	"project": { "name": "created from json" },
+	"corpus": { "name": "corpus from json", "corpus_meta": { "source": "created from the cli" }},
+	"annotations": [
+		{
+			"documents": [ "doc1", "doc2" ]
+		},
+		{
+			"documents": [ "doc3", "doc4" ]
+		}
+	]
+}

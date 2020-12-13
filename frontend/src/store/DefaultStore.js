@@ -10,8 +10,12 @@ function initDefaultStoreMethods (state) {
         },
     
         async fetchResourceList (path, params = {}) {
+            state.isLoading = true
             const response = await Api.fetch(path, params)
-            state.items = normalizeResponse(response)
+            const { items, order } = normalizeResponse(response)
+            state.items = items
+            state.order = order
+            state.isLoading = false
             return response
         },
     

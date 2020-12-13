@@ -8,6 +8,7 @@ from .serializers import LabelSerializer, TaskSerializer, ProjectSerializer, Ann
 from .serializers import DocumentSerializer, UserSerializer
 from .permissions import TaskPermission, AnnotationPermission, MembersReadAdminEdit, AuthenticatedReadAdminCreate, DocumentPermission
 from dualtext_api.search.search import Search
+from dualtext_api.services.label_service import LabelService
 
 class AnnotationListView(generics.ListCreateAPIView):
     queryset = Annotation.objects.all()
@@ -67,7 +68,7 @@ class DocumentListView(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-        corpus = get_object_or_404(Corpus, id=self.kwargs['project_id'])
+        corpus = get_object_or_404(Corpus, id=self.kwargs['corpus_id'])
         serializer.save(corpus=corpus)
 
 class DocumentDetailView(generics.RetrieveAPIView):
@@ -95,7 +96,8 @@ class LabelListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         project = get_object_or_404(Project, id=self.kwargs['project_id'])
-        serializer.save(project=project)
+        ls = LabelService()
+        ls.create(serializer, project)
 
 # class LabelDetailView(generics.RetrieveUpdateDestroyAPIView):
 

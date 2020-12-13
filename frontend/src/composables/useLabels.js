@@ -3,7 +3,6 @@ import Label from './../store/Label.js'
 import Annotation from './../store/Annotation.js'
 
 function useLabels (project, annotation, userId, task) {
-    console.log('task', task)
     const areLabelsLoading = ref(false)
     function fetchProjectLabels () {
         areLabelsLoading.value = true
@@ -31,8 +30,7 @@ function useLabels (project, annotation, userId, task) {
         } else {
             labelPatch.reviewer_labels = annotation.value.reviewer_labels.filter(label => label !== labelId)
         }
-        console.log('patch', labelPatch)
-        Annotation.actions.updateAnnotation(`/task/${task.value.id}/annotation/${annotation.value.id}`, labelPatch)
+        Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
     }
 
     function addLabel (labelId) {
@@ -42,7 +40,7 @@ function useLabels (project, annotation, userId, task) {
         } else {
             labelPatch.reviewer_labels = [ ...annotation.value.reviewer_labels, labelId ]
         }
-        Annotation.actions.updateAnnotation(`/task/${task.value.id}/annotation/${annotation.value.id}`, labelPatch)
+        Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
     }
 
     const displayLabels = computed(() => {

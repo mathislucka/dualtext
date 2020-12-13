@@ -40,11 +40,20 @@ class TestLabelListView(APITestCase):
         self.assertEqual(Label.objects.get(id=1).name, 'TestLabel')
         self.assertEqual(Label.objects.get().project, self.project)
     
+    def test_automatic_color_allocation(self):
+        """
+        Ensure a new label automatically gets a color on creation.
+        """
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Label.objects.get(id=1).color, {'standard': '#97E8D8', 'light': '#EAFAF7'})
+    
     def test_superuser_view(self):
         """
         Ensure superusers can always view labels.
         """
-        label = Label(name='TestLabel', project=self.project)
+        label = Label(name='TestLabel', project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         label.save()
         self.client.force_authenticate(user=self.superuser)
 
@@ -65,7 +74,7 @@ class TestLabelListView(APITestCase):
         """
         Ensure a list of all labels can be viewed by project members
         """
-        label = Label(name='TestLabel', project=self.project)
+        label = Label(name='TestLabel', project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         label.save()
         self.client.force_authenticate(user=self.user)
 
@@ -81,9 +90,9 @@ class TestLabelListView(APITestCase):
         p2.save()
         p2.allowed_groups.add(self.group)
         p2.save()
-        l1 = Label(name="TestLabel", project=self.project)
+        l1 = Label(name="TestLabel", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         l1.save()
-        l2 = Label(name="Second", project=p2)
+        l2 = Label(name="Second", project=p2, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         l2.save()
 
         self.client.force_authenticate(user=self.user)
@@ -374,7 +383,7 @@ class TestAnnotationDetailView(APITestCase):
         annotation.save()
         self.annotation = annotation
 
-        self.url = reverse('annotation_detail', args=[self.task.id, self.annotation.id])
+        self.url = reverse('annotation_detail', args=[self.annotation.id])
     
     def test_reviewer_annotator_view(self):
         """
@@ -408,7 +417,7 @@ class TestAnnotationDetailView(APITestCase):
         """
         Ensure that reviewers and annotators can edit an annotation.
         """
-        label = Label(name="annotator", project=self.project)
+        label = Label(name="annotator", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         label.save()
 
         self.client.force_authenticate(user=self.user)
@@ -428,7 +437,7 @@ class TestAnnotationDetailView(APITestCase):
         """
         Ensure that superusers can edit an annotation.
         """
-        label = Label(name="annotator", project=self.project)
+        label = Label(name="annotator", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         label.save()
 
         self.client.force_authenticate(user=self.superuser)

@@ -1,14 +1,16 @@
 function normalizeResponse (apiResponse) {
-    let normalizedResponse = {}
+    let items = {}
+    let order = []
     if (Array.isArray(apiResponse)) {
         apiResponse.forEach(resource => {
-            normalizedResponse[resource.id] = resource
+            items[resource.id] = resource
+            order.push(resource.id)
         })
     } else {
-        normalizedResponse[apiResponse.id] = apiResponse
+        items[apiResponse.id] = apiResponse
     }
 
-    return normalizedResponse
+    return { items, order }
 }
 
 export { normalizeResponse }

@@ -76,6 +76,9 @@ class LabelSerializer(serializers.ModelSerializer):
         model = Label
         fields = ['id', 'name', 'project', 'color'] + DEFAULT_FIELDS
         read_only_fields = ['project']
+        extra_kwargs = {
+            'color': {'required': False},
+        }
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

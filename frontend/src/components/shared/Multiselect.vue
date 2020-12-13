@@ -48,12 +48,16 @@ export default {
         required: false,
         default: () => ({})
     },
-    selection: {}
+    selection: {
+        type: Object,
+        required: false,
+        default: () => ({})
+    }
   },
   data () {
       return {
           isDropdownOpen: false,
-          selectedItems: {}
+          selectedItems: { ...this.selection }
       }
   },
   computed: {
@@ -63,7 +67,7 @@ export default {
   },
   watch: {
       selection () {
-          this.selectedItems = this.selection
+          this.selectedItems = { ...this.selection }
       }
   },
   methods: {
@@ -89,6 +93,7 @@ export default {
           } else if (!this.selectedItems[id]) {
               this.selectedItems[id] = this.items[id]
           }
+          this.$emit('selection-changed', { ...this.selectedItems })
       }
   }
 }

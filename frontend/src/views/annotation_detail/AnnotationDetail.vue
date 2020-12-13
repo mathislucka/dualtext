@@ -1,16 +1,21 @@
 <template>
-    <div>
+    <div class="h-full">
         <page-header />
-        <div class="w-1/2 mt-4">
-            <annotation-pager
-                :current-idx="annotationIdx + 1"
-                :next-annotation-id="nextAnnotationId"
-                :previous-annotation-id="previousAnnotationId"
-                :total-annotations="totalAnnotations" />
-            <annotation-documents
-                :annotation="annotation"
-                :annotation-idx="annotationIdx" />
-            <annotation-labels />
+        <div class="flex h-full">
+            <div class="ml-8 w-1/2 mt-4 mr-4 shadow mb-8">
+                <annotation-documents
+                    :annotation="annotation"
+                    :annotation-idx="annotationIdx" />
+                <annotation-labels />
+                <annotation-pager
+                    :current-idx="annotationIdx + 1"
+                    :next-annotation-id="nextAnnotationId"
+                    :previous-annotation-id="previousAnnotationId"
+                    :total-annotations="totalAnnotations" />
+            </div>
+            <div class="w-1/2 h-full mt-4 mr-8 ml-4 shadow mb-8 border border-grey-200">
+                <search-result-list class="h-full overflow-auto" :is-annotation-view="true" />
+            </div>
         </div>
     </div>
 </template>
@@ -25,13 +30,15 @@ import AnnotationPager from './AnnotationPager.vue'
 import AnnotationDocuments from './AnnotationDocuments.vue'
 import AnnotationLabels from './AnnotationLabels.vue'
 import PageHeader from './../../components/shared/PageHeader.vue'
+import SearchResultList from './../../components/shared/SearchResultList.vue'
 export default {
     name: 'AnnotationDetail',
     components: {
         AnnotationDocuments,
         AnnotationPager,
         AnnotationLabels,
-        PageHeader
+        PageHeader,
+        SearchResultList
     },
     props: {
         projectId: {

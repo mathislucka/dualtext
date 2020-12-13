@@ -1,0 +1,8 @@
+dualtext.py
+setup.py
+DualtextCli.egg-info/PKG-INFO
+DualtextCli.egg-info/SOURCES.txt
+DualtextCli.egg-info/dependency_links.txt
+DualtextCli.egg-info/entry_points.txt
+DualtextCli.egg-info/requires.txt
+DualtextCli.egg-info/top_level.txt

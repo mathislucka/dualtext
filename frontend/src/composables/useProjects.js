@@ -1,13 +1,17 @@
-import { ref, onMounted, watch, computed } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import Project from './../store/Project.js'
 
 const useSingleProject = (projectId) => {
     
     const fetchProject = () => {
-        Project.actions.fetchProject(`/project/${projectId.value}`)
+        console.log('attempting to fetch project', projectId)
+        if (!Project.items.value[projectId.value]) {
+            console.log('fetching project')
+            Project.actions.fetchProject(`/project/${projectId.value}`)
+        }
     }
 
-    const project = computed(() => Project.items.value[projectId] || {})
+    const project = computed(() => Project.items.value[projectId.value] || {})
 
     onMounted(fetchProject)
     watch(projectId, fetchProject)

@@ -2,7 +2,8 @@ import { computed, reactive } from 'vue'
 import { initDefaultStoreMethods } from './DefaultStore.js'
 
 let state = reactive({
-    items: {}
+    items: {},
+    order: []
 })
 
 const { actions } = initDefaultStoreMethods(state)

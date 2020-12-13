@@ -34,7 +34,7 @@ export default {
         const {
             currentDocuments,
             removeDocument
-        } = useDocuments(annotation, annotationIdx, taskId)
+        } = useDocuments(annotation, annotationIdx)
 
         return {
             documents: computed(() => {
