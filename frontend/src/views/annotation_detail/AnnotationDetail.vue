@@ -1,7 +1,6 @@
 <template>
-    <div class="h-full">
         <page-header />
-        <div class="flex h-full">
+        <main class="flex">
             <div class="ml-8 w-1/2 mt-4 mr-4 shadow mb-8">
                 <annotation-documents
                     :annotation="annotation"
@@ -13,11 +12,10 @@
                     :previous-annotation-id="previousAnnotationId"
                     :total-annotations="totalAnnotations" />
             </div>
-            <div class="w-1/2 h-full mt-4 mr-8 ml-4 shadow mb-8 border border-grey-200">
-                <search-result-list class="h-full overflow-auto" :is-annotation-view="true" />
+            <div class="w-1/2 mt-4 mr-8 ml-4 shadow mb-8 overflow-auto">
+                <search-result-list class="overflow-auto" :is-annotation-view="true" />
             </div>
-        </div>
-    </div>
+        </main>
 </template>
 
 <script>

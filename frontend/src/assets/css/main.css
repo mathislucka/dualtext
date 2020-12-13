@@ -76,5 +76,21 @@
 
     body {
         font-family: 'Source Sans Pro';
+        height: 100vh;
+    }
+
+    #app {
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+    }
+
+    main {
+        flex: 1 1 auto;
+        overflow: auto;
+    }
+
+    header {
+        flex: 0 0 auto;
     }
 }

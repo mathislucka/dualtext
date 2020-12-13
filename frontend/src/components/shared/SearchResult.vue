@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col">
         <div class="flex flex-row justify-start content-end">
-            <button v-if="isAnnotationView" @click="addDocument(result.id)"><icon :icon="'add'" class="text-blue-300 hover:text-blue-600 mr-1" /></button>
-            <div class="relative w-full"><span class="text-sm text-grey-500 absolute -bottom-1">method: {{ result.method }}</span></div>
+            <button v-if="isAnnotationView" @click="addDocument(result.id)"><icon :icon="'plus'" class="text-grey-300 hover:text-grey-700 mr-1" :height="16" :width="16" /></button>
+            <div class="relative w-full"><span class="text-sm text-grey-500 text-center">method: {{ result.method }}</span></div>
         </div>
         <span>{{ result.content }}</span>
     </div>

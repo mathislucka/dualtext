@@ -1,13 +1,13 @@
 <template>
-    <div class="h-full">
+    <div>
         <loading v-if="isLoading" />
-        <div class="flex flex-col p-4" v-if="!isLoading">
+        <div class="p-4" v-if="!isLoading">
             <search-result
                 :is-annotation-view="isAnnotationView"
                 v-for="result in results"
                 :key="result.id"
                 :result="result"
-                class="mb-4" />
+                class="block mb-4" />
         </div>
     </div>
 </template>

@@ -45,7 +45,8 @@ export default {
                 'chevron-left': '<polyline points="15 18 9 12 15 6"></polyline>',
                 'chevron-right': '<polyline points="9 18 15 12 9 6"></polyline>',
                 'close': '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
-                'error': '<circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>'
+                'error': '<circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>',
+                'plus': '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>',
             }
         }
     },

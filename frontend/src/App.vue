@@ -1,8 +1,6 @@
 <template>
-    <div class="h-screen w-full">
         <toast-bar />
         <router-view />
-    </div>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
     <div>
         <span class="font-bold">Available Labels</span>
-        <div class="w-full p-4 minimum-height border border-grey-200">
+        <div class="w-full p-4 minimum-height bg-blue-100">
             <annotation-label
                 @click="$emit('label-added', label.id)"
                 class="mr-2"

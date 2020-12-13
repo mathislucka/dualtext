@@ -1,5 +1,5 @@
 <template>
-    <div class="flex">
+    <div class="flex p-4">
         <div class="w-1/12 flex justify-start items-center">
             <router-link
                 v-if="previousAnnotationId > -1"

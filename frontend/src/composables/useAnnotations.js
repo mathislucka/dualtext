@@ -25,7 +25,7 @@ const useAnnotations = (taskId, annotationId) => {
     const fetchAnnotations = () => {
         if (Object.keys(annotation.value).length === 0) {
             isAnnotationLoading.value = true
-            Annotation.actions.fetchAnnotationList(`/task/${taskId.value}/annotation`)
+            Annotation.actions.fetchAnnotationList(`/task/${taskId.value}/annotation/`)
                 .then(() => {
                     console.log(Annotation.items)
                     isAnnotationLoading.value = false

@@ -1,0 +1,20 @@
+{
+    "project": {
+        "name": "<project_name>"
+    },
+    "corpus": {
+        "name": "<corpus_name>"
+    },
+    "labels": [
+        { "name": "<label_name>" },
+        { "name": "<label_name>" }
+    ],
+    "annotations": [
+        {
+            "documents": [ "<document_content>", "<document_content>" ]
+        },
+        {
+            "documents": [ "<document_content>", "<document_content>" ]
+        }
+    ]
+}
