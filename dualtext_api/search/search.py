@@ -22,7 +22,6 @@ class Search():
     
     def postprocess_results(self, results):
         sorted_ids = sorted(results, key=lambda tup: tup[1], reverse=True)
-        print('The sorted results are {}.'.format(sorted_ids))
         seen = set()
         unique_ids = []
         methods = []
@@ -31,8 +30,6 @@ class Search():
                 seen.add(doc_id)
                 unique_ids.append(doc_id)
                 methods.append(method)
-        print('The unique_ids are {}.'.format(unique_ids))
-        print('The methods are {}.'.format(methods))
         preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(unique_ids)])
         queryset = Document.objects.filter(pk__in=unique_ids).order_by(preserved)
         for idx, q in enumerate(queryset):

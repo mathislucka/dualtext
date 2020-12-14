@@ -27,7 +27,6 @@ const useAnnotations = (taskId, annotationId) => {
             isAnnotationLoading.value = true
             Annotation.actions.fetchAnnotationList(`/task/${taskId.value}/annotation/`)
                 .then(() => {
-                    console.log(Annotation.items)
                     isAnnotationLoading.value = false
                 })
         }

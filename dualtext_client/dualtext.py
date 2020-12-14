@@ -25,11 +25,13 @@ def cli(ctx):
         default=sys.stdin)
 @click.pass_context
 def make_project(ctx, project_data):
+    print('Starting to create a project...')
     token = ctx.obj['Token']
     s = Session()
     s = s.set_token(token)
     p = Project(s)
     with project_data:
         data = json.loads(project_data.read())
-    p.create_from_scratch(data, 1)
+    proj = p.create_from_scratch(data, 1)
+    print('Finished creating the project. Project id is {}'.format(proj['id']))
 

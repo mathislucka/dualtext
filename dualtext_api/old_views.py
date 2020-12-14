@@ -120,7 +120,6 @@ class TaskListView(generics.ListCreateAPIView):
         project = get_object_or_404(Project, id=self.kwargs['project_id'])
         serializer.save(project=project)
 
-# class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
@@ -164,13 +163,8 @@ class SearchView(generics.ListAPIView):
         query = query_params.get('query', None)
         if corpora and methods and query:
             corpora = [int(c) for c in corpora]
-            print(query_params)
-            print(methods)
-            print(corpora)
             s = Search(query, corpora, methods)
             return s.run()
-        # if ['search', 'corpora', 'methods'] in query_params:
-        #     print(query_params)
         return []
 
 class CurrentUserView(APIView):

@@ -25,6 +25,7 @@ class Project(ApiBase):
 
         for idx, task_chunk in enumerate(tasks):
             self.create_project_task(task_chunk, project['id'], idx, created_corpus['id'])
+        return project
 
     def create_annotation_documents(self, documents, corpus_id):
         doc = Document(self.session, corpus_id)
@@ -43,5 +44,6 @@ class Project(ApiBase):
         annotation_instance = Annotation(self.session, task['id'])
         for annotation in task_chunk:
             doc_ids = self.create_annotation_documents(annotation['documents'], corpus_id)
+            print(doc_ids)
             annotation_instance.create({'documents': doc_ids})
 
