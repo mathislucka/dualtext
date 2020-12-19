@@ -16,7 +16,7 @@ class ProjectService():
     def get_reviewed_annotations(self):
         tasks = [task.id for task in self.get_total_tasks().all()]
         return Annotation.objects.filter(Q(task__in=tasks) & Q(task__is_reviewed=True))
-    
+
     def get_annotation_statistics(self):
         total = self.get_total_annotations().count()
         annotated = self.get_annotated_annotations().count()
@@ -28,7 +28,7 @@ class ProjectService():
         else:
             percent_annotated = 0
             percent_reviewed = 0
-        
+
         return {
             'total': total,
             'annotated_absolute': annotated,
