@@ -2,6 +2,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Project, Corpus
 
 def check_member_status(entity, user):
+    print(entity)
     user_groups = user.groups.all()
     entity_groups = entity.allowed_groups.all()
     ug_set = set(user_groups)
