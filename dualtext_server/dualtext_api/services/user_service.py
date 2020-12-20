@@ -60,28 +60,28 @@ class UserService():
         if self.closed_annotations is not None:
             return self.closed_annotations
         else:
-            self.closed_annotations = self.get_closed_annotation_tasks().annotation_set
+            self.closed_annotations = Annotation.objects.filter(task__in=self.get_closed_annotation_tasks())
             return self.closed_annotations
 
     def get_closed_reviews(self):
         if self.closed_reviews is not None:
             return self.closed_reviews
         else:
-            self.closed_reviews = self.get_closed_review_tasks().annotation_set
+            self.closed_reviews = Annotation.objects.filter(task__in=self.get_closed_review_tasks())
             return self.closed_reviews
 
     def get_open_annotations(self):
         if self.open_annotations is not None:
             return self.open_annotations
         else:
-            self.open_annotations = self.get_open_annotation_tasks().annotation_set
+            self.open_annotations = Annotation.objects.filter(task__in=self.get_open_annotation_tasks())
             return self.open_annotations
 
     def get_open_reviews(self):
         if self.open_reviews is not None:
             return self.open_reviews
         else:
-            self.open_reviews = self.get_open_review_tasks().annotation_set
+            self.open_reviews = Annotation.objects.filter(task__in=self.get_open_review_tasks())
             return self.open_reviews
 
     def get_user_statistics(self):

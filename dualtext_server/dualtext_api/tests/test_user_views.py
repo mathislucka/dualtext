@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from dualtext_api.models import Project, Task
+from dualtext_api.models import Project, Task, Annotation
 from .helpers import run_standard_setup
 
 class TestCurrentUserView(APITestCase):

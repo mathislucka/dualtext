@@ -10,5 +10,6 @@ class CurrentUserView(APIView):
 
 class CurrentUserStatisticsView(APIView):
     def get(self, request):
-        
-        return Response(serializer.data)
+        us = UserService(self.request.user.id)
+        stats = us.get_user_statistics()
+        return Response(stats)
