@@ -23,7 +23,7 @@
 
 <script>
 import { inject, computed, watch, onMounted, ref } from 'vue'
-import { useCorpora } from '../../composables/useCorpora'
+import { useCorpora, useMultipleCorpora } from '../../composables/useCorpora'
 import Multiselect from './Multiselect.vue'
 import { useSingleProject } from '../../composables/useProjects'
 export default {
@@ -42,9 +42,17 @@ export default {
       }
   },
   setup (props, context) {
-      const projectId = inject('projectId')
-      const { project } = useSingleProject(projectId)
-      const { corpora } = useCorpora(project)
+      const projectId = inject('projectId', null)
+      let corpora
+      if (projectId) {
+        const { project } = useSingleProject(projectId)
+        const corporaWrapper = useCorpora(project)
+        corpora = corporaWrapper.corpora
+      } else {
+        const corporaWrapper = useMultipleCorpora()
+        console.log(corporaWrapper)
+        corpora = corporaWrapper.corpora
+      }
 
       const transformedCorpora = computed(() => {
         return corpora.value.reduce((acc, corpus) => {

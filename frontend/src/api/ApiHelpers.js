@@ -20,11 +20,9 @@ function serializeArray(arr, key) {
 }
 
 async function safe (promise) {
-    console.log(promise)
     let returnVal = {}
     try {
         const response = await promise
-        console.log('resolved', promise)
         if (!response.ok) {
             returnVal = { error: response.json(), response: null }
         } else {
@@ -34,7 +32,6 @@ async function safe (promise) {
     } catch(e) {
         returnVal = { error: e, response: null }
     }
-    console.log(returnVal)
    return returnVal
 }
 

@@ -77,6 +77,7 @@
     body {
         font-family: 'Source Sans Pro';
         height: 100vh;
+        background-color: rgba(245, 245, 245, 0.5);
     }
 
     #app {
@@ -93,4 +94,18 @@
     header {
         flex: 0 0 auto;
     }
+
+    .main-bg {
+        background-color: rgba(245, 245, 245, 0.5);
+    }
+
+    .visually-hidden {
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        height: 1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
+      }
 }

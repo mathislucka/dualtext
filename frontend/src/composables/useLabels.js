@@ -12,7 +12,6 @@ function useLabels (project, annotation, userId, task) {
     }
 
     function getAnnotatorLabels () {
-        console.log('tried to get annotator labels', annotation.value)
         const ids = annotation.value.annotator_labels
         return ids.map(id => Label.items.value[id])
     }
@@ -23,7 +22,6 @@ function useLabels (project, annotation, userId, task) {
     }
 
     function removeLabel (labelId) {
-        console.log(labelId)
         let labelPatch = { id: annotation.value.id }
         if (userId.value === task.value.annotator) {
             labelPatch.annotator_labels = annotation.value.annotator_labels.filter(label => label !== labelId)

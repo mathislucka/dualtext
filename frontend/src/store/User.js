@@ -2,7 +2,8 @@ import { computed, reactive } from 'vue'
 import { Api } from './../api/Api.js'
 
 const state = reactive({
-    user: {}
+    user: {},
+    statistics: {}
 })
 
 const UserStore = {
@@ -15,13 +16,20 @@ const UserStore = {
             })
         },
         fetchCurrentUser () {
-            Api.fetch('/user/current').then(response => {
-                state.user = response
-                console.log(state.user)
+            if (Object.keys(state.user).length === 0) {
+                Api.fetch('/user/current').then(response => {
+                    state.user = response
+                })
+            }
+        },
+        fetchUserStatistics () {
+            Api.fetch('/user/current/statistics').then(response => {
+                state.statistics = response
             })
         }
     },
-    user: computed(() => state.user)
+    user: computed(() => state.user),
+    statistics: computed(() => state.statistics)
 }
 
 export { UserStore }

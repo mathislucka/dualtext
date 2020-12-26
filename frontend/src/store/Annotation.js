@@ -3,7 +3,9 @@ import { initDefaultStoreMethods } from './DefaultStore.js'
 
 let state = reactive({
     items: {},
-    order: []
+    order: [],
+    isLoading: false,
+    requests: []
 })
 
 const { actions } = initDefaultStoreMethods(state)
@@ -14,5 +16,7 @@ export default {
         fetchAnnotationList: actions.fetchResourceList,
         updateAnnotation: actions.updateResource
     },
-    items: computed(() => state.items)
+    isLoading: computed(() => state.isLoading),
+    items: computed(() => state.items),
+    requests: computed(() => state.requests)
 }

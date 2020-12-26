@@ -9,7 +9,6 @@ function useDocuments (annotation, currentAnnotationIdx) {
         const currentlyFetchingDocuments = []
         annotation.documents.forEach(docId => {
             if (!Document.items.value[docId]) {
-                console.log(Document.items)
                 currentlyFetchingDocuments.push(Document.actions.fetchDocument(`/document/${docId}`))
             }
         })
@@ -35,7 +34,6 @@ function useDocuments (annotation, currentAnnotationIdx) {
     }
 
     function removeDocument (docId) {
-        console.log('docId', docId)
         const documents = annotation.value.documents.filter(doc => doc !== docId)
         Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, { documents, id: annotation.value.id })
     }

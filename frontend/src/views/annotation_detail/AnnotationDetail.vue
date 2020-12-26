@@ -1,7 +1,7 @@
 <template>
         <page-header />
-        <main class="flex">
-            <div class="ml-8 w-1/2 mt-4 mr-4 shadow mb-8">
+        <two-column :fixedHeight="true">
+            <template v-slot:left>
                 <annotation-documents
                     :annotation="annotation"
                     :annotation-idx="annotationIdx" />
@@ -11,24 +11,29 @@
                     :next-annotation-id="nextAnnotationId"
                     :previous-annotation-id="previousAnnotationId"
                     :total-annotations="totalAnnotations" />
-            </div>
-            <div class="w-1/2 mt-4 mr-8 ml-4 shadow mb-8 overflow-auto">
-                <search-result-list class="overflow-auto" :is-annotation-view="true" />
-            </div>
-        </main>
+            </template>
+            <template v-slot:right>
+                <search-result-list :is-annotation-view="true" />
+            </template>
+        </two-column>
+        <teleport to="#menu-content">
+            <span v-for="task in openAnnotationTasks" :key="task.id">{{ task.name }}</span>
+        </teleport>
 </template>
 
 <script>
-import { toRefs, provide } from 'vue'
+import { toRefs, provide, computed } from 'vue'
 import { useAnnotations } from './../../composables/useAnnotations.js'
 import { useSingleProject } from './../../composables/useProjects.js'
-import { useTask } from './../../composables/useTask.js'
+import { useTask, useOpenTasks } from './../../composables/useTask.js'
+import { useUser } from './../../composables/useUser.js'
 
 import AnnotationPager from './AnnotationPager.vue'
 import AnnotationDocuments from './AnnotationDocuments.vue'
 import AnnotationLabels from './AnnotationLabels.vue'
 import PageHeader from './../../components/shared/PageHeader.vue'
 import SearchResultList from './../../components/shared/SearchResultList.vue'
+import TwoColumn from './../../components/layout/TwoColumn.vue'
 export default {
     name: 'AnnotationDetail',
     components: {
@@ -36,7 +41,8 @@ export default {
         AnnotationPager,
         AnnotationLabels,
         PageHeader,
-        SearchResultList
+        SearchResultList,
+        TwoColumn
     },
     props: {
         projectId: {
@@ -65,6 +71,11 @@ export default {
         useSingleProject(projectId)
         useTask(taskId)
 
+        const { user } = useUser()
+        const userId = computed(() => user.value.id || '' )
+
+        const { openAnnotationTasks, openReviewTasks } = useOpenTasks(userId, projectId)
+
         const {
             nextAnnotationId,
             previousAnnotationId,
@@ -82,6 +93,8 @@ export default {
             nextAnnotationId,
             previousAnnotationId,
             totalAnnotations,
+            openAnnotationTasks,
+            openReviewTasks,
             projectProvider,
             annotationProvider,
             taskProvider

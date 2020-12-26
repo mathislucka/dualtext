@@ -4,13 +4,16 @@
             class="w-full px-4 pt-2 flex border-grey-200"
             :class="{ 'rounded-b-md': !isDropdownOpen && borders, 'rounded-t-md border': borders }"
             @click.stop="toggleDropdown">
-            <div class="flex flex-wrap items-center">
+            <div class="flex items-center flex-wrap">
                 <span
-                    class="rounded-xl px-2 leading-none py-1 bg-grey-200 mr-2 text-xs mb-2"
+                    class="rounded-xl px-2 leading-none py-1 bg-grey-200 mr-2 text-xs mb-2 whitespace-nowrap"
                     v-for="(item, id) in selectedItems"
-                    :key="id">
+                    :key="id"
+                    :ref="'tag' + id"
+                    :class="{ 'visually-hidden': wrappedItems[id] }">
                     {{ item }}
                 </span>
+                <span v-show="Object.keys(wrappedItems).length > 0" class="mb-2 text-grey-600">...</span>
             </div>
             <div class="ml-auto flex content-center items-center mb-2">
                 <button
@@ -35,7 +38,7 @@ import Icon from './Icon.vue'
 export default {
   name: 'Multiselect',
   components: {
-      Icon
+      Icon,
   },
   props: {
     borders: {
@@ -57,7 +60,8 @@ export default {
   data () {
       return {
           isDropdownOpen: false,
-          selectedItems: { ...this.selection }
+          selectedItems: { ...this.selection },
+          wrappedItems: {}
       }
   },
   computed: {
@@ -68,12 +72,32 @@ export default {
   watch: {
       selection () {
           this.selectedItems = { ...this.selection }
+      },
+      selectedItems: {
+
+        handler () {
+            this.wrappedItems = {}
+            this.$nextTick(() => {
+                const elements = []
+                Object.keys(this.selectedItems).forEach(id => {
+                    elements.push({ el: this.$refs['tag' + id], id })
+                })
+                let previousTop = null
+                elements.forEach(item => {
+                    const { top } = item.el.getBoundingClientRect()
+                    if (previousTop && top > previousTop) {
+                        this.wrappedItems[item.id] = true
+                    } else {
+                        previousTop = top
+                    }
+                })
+            })
+        },
+        deep: true
       }
   },
   methods: {
       closeOnClick (e) {
-          console.log(e)
-          console.log(this.$refs.rootEl)
           if (!this.$refs.rootEl.contains(e.target)) {
               this.isDropdownOpen = false
               document.body.removeEventListener('click', this.closeOnClick)

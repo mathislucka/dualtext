@@ -1,6 +1,5 @@
 import { serializeParams } from './ApiHelpers.js'
 import { NotificationStore } from './../store/Notify.js'
-import { UserStore } from './../store/User.js'
 
 const ApiBuilder = class {
     constructor (baseUrl) {
@@ -28,7 +27,6 @@ const ApiBuilder = class {
 
             if (!response.ok) {
                 returnVal = { error: await response.json(), response: null }
-                console.log(returnVal.error.password)
             } else {
                 returnVal = { error: null, response: await response.json() }
             }
@@ -45,7 +43,6 @@ const ApiBuilder = class {
     }
     
     async fetch (path, params = {}) {
-        console.log(this.headers)
         const response = await this.genericFetch('GET', path, null, params)
         return response
     }

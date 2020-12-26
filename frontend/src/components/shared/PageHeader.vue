@@ -44,11 +44,9 @@ export default {
     },
     methods: {
         runSearch () {
-            console.log(this.currentQuery)
             SearchStore.actions.fetchSearchResult('/search/', this.currentQuery)
         },
         updateQueryParams (params) {
-            console.log('filters-changed', params)
             this.filters = params.value
         }
     },

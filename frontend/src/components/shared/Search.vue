@@ -3,7 +3,7 @@
         :class="{ 'ring-inset ring-2': hasFocus }">
         <input
             type="text"
-            class="w-full :focus-outline-none outline-none h-full"
+            class="w-full :focus-outline-none outline-none h-full main-bg"
             placeholder="Search corpora..."
             :value="query"
             @input="$emit('update:query', $event.target.value)"

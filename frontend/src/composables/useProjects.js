@@ -4,9 +4,7 @@ import Project from './../store/Project.js'
 const useSingleProject = (projectId) => {
     
     const fetchProject = () => {
-        console.log('attempting to fetch project', projectId)
-        if (!Project.items.value[projectId.value]) {
-            console.log('fetching project')
+        if (!Project.items.value[projectId.value] && Project.isLoading.value === false) {
             Project.actions.fetchProject(`/project/${projectId.value}`)
         }
     }
@@ -22,4 +20,19 @@ const useSingleProject = (projectId) => {
     }
 }
 
-export { useSingleProject }
+const useMultipleProjects = () => {
+    const fetchProjects = () => {
+        const isCached = Project.requests.value.find(request => request.type === 'list')
+        if (!Project.isLoading.value && !isCached) {
+            Project.actions.fetchProjectList('/project/')
+        }
+    }
+
+    onMounted(fetchProjects)
+
+    return {
+        projects: Project.items
+    }
+}
+
+export { useSingleProject, useMultipleProjects }
