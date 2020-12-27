@@ -55,7 +55,6 @@ function createDonut (data, elementSelector) {
               .style("fill", "none")
               .attr("stroke-width", 1)
               .attr('points', function(d) {
-                    console.log('points', d)
                     const posA = firstArc.centroid(d) // line insertion in the slice
                     const posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
                     let posC = outerArc.centroid(d); // Label position = almost the same as posB

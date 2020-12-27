@@ -9,7 +9,7 @@
                     <li class="mb-2">
                         <router-link
                             class="underline font-semibold text-blue-500 hover:text-blue-700"
-                            :to="{ name: 'project_detail' }">
+                            :to="{ name: 'project_detail', params: { projectId: 1 } }">
                             {{ corpus.name }}
                         </router-link>
                     </li>

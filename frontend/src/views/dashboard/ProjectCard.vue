@@ -1,7 +1,7 @@
 <template>
     <card>
         <template v-slot:header>
-            <h2 class="font-semibold text-xl text-grey-800">Assigned Projects</h2>
+            <h2 class="font-semibold text-xl text-grey-800">Your Projects</h2>
         </template>
         <template v-slot:content>
             <ul>
@@ -9,7 +9,7 @@
                     <li class="mb-2">
                         <router-link
                             class="underline font-semibold text-blue-500 hover:text-blue-700"
-                            :to="{ name: 'project_detail' }">
+                            :to="{ name: 'project_detail', params: { projectId: project.id } }">
                             {{ project.name }}
                         </router-link>
                     </li>

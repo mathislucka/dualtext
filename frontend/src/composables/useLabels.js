@@ -1,4 +1,4 @@
-import { computed, watch, ref } from 'vue'
+import { computed, watch, ref, onMounted } from 'vue'
 import Label from './../store/Label.js'
 import Annotation from './../store/Annotation.js'
 
@@ -63,6 +63,8 @@ function useLabels (project, annotation, userId, task) {
     watch(project, () => {
         fetchProjectLabels()
     })
+
+    onMounted(fetchProjectLabels)
 
     return {
         addLabel,

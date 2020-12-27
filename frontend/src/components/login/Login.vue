@@ -41,7 +41,9 @@ export default {
     },
     methods: {
         loginUser () {
-            UserStore.actions.login({ username: this.username, password: this.password })
+            UserStore.actions.login({ username: this.username, password: this.password }).then(() => {
+                this.$router.push({ name: 'dashboard' })
+            })
         }
     }
 }

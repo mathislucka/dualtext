@@ -2,8 +2,7 @@ import { computed, onMounted, watch } from 'vue'
 import Task from './../store/Task.js'
 
 function fetchProjectTasks (projectId) {
-    const isCached = Task.requests.value.find(request => request.type === 'list')
-    if (!Task.isLoading.value && !isCached) {
+    if (!Task.isLoading.value) {
         Task.actions.fetchTaskList(`/project/${projectId.value}/task/`)
     }
 }
@@ -56,5 +55,30 @@ function useOpenTasks (userId, projectId) {
     }
 }
 
-export { useTask, getTask, useOpenTasks }
+function useClosedTasks (userId, projectId) {
+    const closedAnnotationTasks = computed(() => {
+        return Object.values(Task.items.value)
+            .filter(task => task.annotator === userId.value && task.is_annotated === true)
+    })
+
+    const closedReviewTasks = computed(() => {
+        return Object.values(Task.items.value)
+            .filter(task => task.reviewer === userId.value && task.is_reviewed === true)
+    })
+
+    watch(projectId, () => {
+        fetchProjectTasks(projectId)
+    })
+
+    onMounted(() => {
+        fetchProjectTasks(projectId)
+    })
+
+    return {
+        closedAnnotationTasks,
+        closedReviewTasks
+    }
+}
+
+export { useTask, getTask, useOpenTasks, useClosedTasks }
 

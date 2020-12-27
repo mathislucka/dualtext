@@ -1,0 +1,81 @@
+<template>
+    <card>
+        <template v-slot:header>
+            <h2 class="font-semibold text-xl text-grey-800">{{ heading }}</h2>
+        </template>
+        <template v-slot:content>
+            <div class="flex w-full">
+                <div class="w-1/2">
+                    <h3 class="text-lg font-semibold">Open</h3>
+                    <ul>
+                        <template v-for="task in openTasks" :key="task.id + 'open'">
+                            <li class="mb-2">
+                                <router-link
+                                    class="underline font-semibold text-blue-500 hover:text-blue-700"
+                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id, annotationId: 1 } }">
+                                    {{ task.name }}
+                                </router-link>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="w-1/2">
+                    <h3 class="text-lg font-semibold">Closed</h3>
+                    <ul>
+                        <template v-for="task in closedTasks" :key="task.id + 'closed'">
+                            <li class="mb-2">
+                                <router-link
+                                    class="underline font-semibold text-blue-500 hover:text-blue-700"
+                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id, annotationId: 1 } }">
+                                    {{ task.name }}
+                                </router-link>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </template>
+    </card>
+</template>
+
+<script>
+import { useOpenTasks, useClosedTasks } from './../../composables/useTask.js'
+import { useUser } from './../../composables/useUser.js'
+import Card from '../../components/layout/Card.vue'
+import { computed, inject, toRefs } from 'vue'
+
+export default {
+    name: 'TaskCard',
+    components: {
+        Card
+    },
+    props: {
+        taskType: {
+            type: String,
+            required: false,
+            default: 'annotation'
+        }
+    },
+    setup (props) {
+        const { taskType } = toRefs(props)
+        const projectId = inject('projectId')
+    
+        const { user } = useUser()
+        const userId = computed(() => user.value.id || '' )
+
+        const { openAnnotationTasks, openReviewTasks } = useOpenTasks(userId, projectId)
+        const { closedAnnotationTasks, closedReviewTasks } = useClosedTasks(userId, projectId)
+
+        const openTasks = taskType.value === 'annotation' ? openAnnotationTasks : openReviewTasks
+        const closedTasks = taskType.value === 'annotation' ? closedAnnotationTasks : closedReviewTasks
+
+        const heading = computed(() => taskType.value === 'annotation' ? 'Annotation Tasks' : 'Review Tasks')
+        return {
+            closedTasks,
+            heading,
+            openTasks,
+            projectId
+        }
+    }
+}
+</script>

@@ -78,19 +78,7 @@ export default {
         handler () {
             this.wrappedItems = {}
             this.$nextTick(() => {
-                const elements = []
-                Object.keys(this.selectedItems).forEach(id => {
-                    elements.push({ el: this.$refs['tag' + id], id })
-                })
-                let previousTop = null
-                elements.forEach(item => {
-                    const { top } = item.el.getBoundingClientRect()
-                    if (previousTop && top > previousTop) {
-                        this.wrappedItems[item.id] = true
-                    } else {
-                        previousTop = top
-                    }
-                })
+                this.hideWrappedElements()
             })
         },
         deep: true
@@ -102,6 +90,21 @@ export default {
               this.isDropdownOpen = false
               document.body.removeEventListener('click', this.closeOnClick)
           }
+      },
+      hideWrappedElements () {
+        const elements = []
+        Object.keys(this.selectedItems).forEach(id => {
+            elements.push({ el: this.$refs['tag' + id], id })
+        })
+        let previousTop = null
+        elements.forEach(item => {
+            const { top } = item.el.getBoundingClientRect()
+            if (previousTop && top > previousTop) {
+                this.wrappedItems[item.id] = true
+            } else {
+                previousTop = top
+            }
+        })
       },
       toggleDropdown () {
           if (this.isDropdownOpen) {
@@ -119,6 +122,11 @@ export default {
           }
           this.$emit('selection-changed', { ...this.selectedItems })
       }
+  },
+  mounted () {
+      this.$nextTick(() => {
+          this.hideWrappedElements()
+      })
   }
 }
 </script>
