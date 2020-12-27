@@ -16,10 +16,9 @@ const routes = [
         props: route => ({ projectId: parseInt(route.params.projectId) })
     },
     {
-        path: '/project/:projectId/task/:taskId/annotation/:annotationId',
+        path: '/project/:projectId/task/:taskId/annotation/:annotationId?',
         name: 'annotation_detail',
         component: AnnotationDetail,
-        props: route => ({ projectId: parseInt(route.params.projectId), taskId: parseInt(route.params.taskId), annotationId: parseInt(route.params.annotationId) })
     },
     {
         path: '/login',

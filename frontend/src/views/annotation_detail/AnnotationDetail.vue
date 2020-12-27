@@ -22,11 +22,12 @@
 </template>
 
 <script>
-import { toRefs, provide, computed } from 'vue'
+import { toRefs, provide, computed, watch } from 'vue'
 import { useAnnotations } from './../../composables/useAnnotations.js'
 import { useSingleProject } from './../../composables/useProjects.js'
 import { useTask, useOpenTasks } from './../../composables/useTask.js'
 import { useUser } from './../../composables/useUser.js'
+import { useRoute, useRouter } from 'vue-router'
 
 import AnnotationPager from './AnnotationPager.vue'
 import AnnotationDocuments from './AnnotationDocuments.vue'
@@ -44,29 +45,17 @@ export default {
         SearchResultList,
         TwoColumn
     },
-    props: {
-        projectId: {
-            type: Number,
-            required: true
-        },
-
-        taskId: {
-            type: Number,
-            required: true
-        },
-
-        annotationId: {
-            type: Number,
-            required: true
-        }
-    },
-
     setup (props, context) {
-        const { annotationId, taskId, projectId } = toRefs(props)
-        
-        const projectProvider = provide('projectId', projectId)
-        const annotationProvider = provide('annotationId', annotationId)
-        const taskProvider = provide('taskId', taskId)
+        const route = useRoute()
+        const router = useRouter()
+
+        const annotationId = computed(() => parseInt(route.params.annotationId || -1))
+        const projectId = computed(() => parseInt(route.params.projectId))
+        const taskId = computed(() => parseInt(route.params.taskId))
+
+        provide('projectId', projectId)
+        provide('annotationId', annotationId)
+        provide('taskId', taskId)
 
         useSingleProject(projectId)
         useTask(taskId)
@@ -86,6 +75,13 @@ export default {
             isAnnotationLoading
         } = useAnnotations(taskId, annotationId)
 
+        // redirect to the first annotation without labels when no annotationId was provided
+        watch(annotation, () => {
+            if (annotationId.value === -1) {
+                router.push({ name: 'annotation_detail', params: { projectId: projectId.value, taskId: taskId.value, annotationId: annotation.value.id }})
+            }
+        })
+
         return {
             isAnnotationLoading,
             annotation,
@@ -95,9 +91,6 @@ export default {
             totalAnnotations,
             openAnnotationTasks,
             openReviewTasks,
-            projectProvider,
-            annotationProvider,
-            taskProvider
         }
     }
 }

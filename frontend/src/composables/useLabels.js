@@ -6,7 +6,7 @@ function useLabels (project, annotation, userId, task) {
     const areLabelsLoading = ref(false)
     function fetchProjectLabels () {
         areLabelsLoading.value = true
-        Label.actions.fetchLabelList(`/project/${project.value.id}/label`).then(() => {
+        project.value.id && Label.actions.fetchLabelList(`/project/${project.value.id}/label`).then(() => {
             areLabelsLoading.value = false
         })
     }
