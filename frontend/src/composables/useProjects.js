@@ -35,4 +35,22 @@ const useMultipleProjects = () => {
     }
 }
 
-export { useSingleProject, useMultipleProjects }
+function useProjectStatistics (projectId) {
+    onMounted(() => {
+        if (projectId.value) {
+            Project.actions.fetchProjectStatistics(projectId.value)
+        }
+    })
+
+    watch(projectId, () => {
+        if (projectId.value) {
+            Project.actions.fetchProjectStatistics(projectId.value)
+        }
+    })
+
+    return {
+        projectStatistics: Project.statistics
+    }
+}
+
+export { useSingleProject, useMultipleProjects, useProjectStatistics }

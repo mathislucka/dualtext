@@ -7,11 +7,13 @@ function useDocuments (annotation, currentAnnotationIdx) {
     const areDocumentsLoading = ref(false)
     function getDocumentsForAnnotation (annotation) {
         const currentlyFetchingDocuments = []
-        annotation.documents.forEach(docId => {
-            if (!Document.items.value[docId]) {
-                currentlyFetchingDocuments.push(Document.actions.fetchDocument(`/document/${docId}`))
-            }
-        })
+        if (annotation.documents) {
+            annotation.documents.forEach(docId => {
+                if (!Document.items.value[docId]) {
+                    currentlyFetchingDocuments.push(Document.actions.fetchDocument(`/document/${docId}`))
+                }
+            })
+        }
         return currentlyFetchingDocuments
     }
 

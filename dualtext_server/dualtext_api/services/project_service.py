@@ -79,7 +79,10 @@ class ProjectService():
         total_labels = sum(label_counts.values())
         relative_label_counts = {}
         for item in label_counts.items():
-            rel = round(item[1] / total_labels, 2)
+            if total_labels != 0:
+                rel = round(item[1] / total_labels, 2)
+            else:
+                rel = 0
             relative_label_counts[item[0]] = rel
 
         return {
@@ -89,9 +92,15 @@ class ProjectService():
         }
 
     def get_task_label_count(self, task, label):
-        label_count = task.annotation_set.filter(
-            (Q(annotator_labels__id__contains=label.id) & Q(reviewer_labels=None)) | Q(reviewer_labels__id__contains=label.id)
-        ).count()
+        annotations = task.annotation_set.all()
+        label_count = 0
+        for annotation in annotations:
+            labels = annotation.annotator_labels.all()
+            reviewer = annotation.reviewer_labels.all()
+            anno_count = len([l for l in labels if label.id == l.id and len(reviewer) == 0])
+            rev_count = len([l for l in reviewer if l.id == label.id])
+            label_count = label_count + anno_count + rev_count
+
         return (label.name, label_count)
 
     def get_project_statistics(self):

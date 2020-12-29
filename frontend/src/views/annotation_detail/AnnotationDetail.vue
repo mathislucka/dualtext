@@ -77,7 +77,7 @@ export default {
 
         // redirect to the first annotation without labels when no annotationId was provided
         watch(annotation, () => {
-            if (annotationId.value === -1) {
+            if (annotationId.value === -1 && route.name === 'annotation_detail') {
                 router.push({ name: 'annotation_detail', params: { projectId: projectId.value, taskId: taskId.value, annotationId: annotation.value.id }})
             }
         })

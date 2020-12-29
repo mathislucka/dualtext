@@ -12,7 +12,7 @@
                             <li class="mb-2">
                                 <router-link
                                     class="underline font-semibold text-blue-500 hover:text-blue-700"
-                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id, annotationId: 1 } }">
+                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
                             </li>
@@ -26,7 +26,7 @@
                             <li class="mb-2">
                                 <router-link
                                     class="underline font-semibold text-blue-500 hover:text-blue-700"
-                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id, annotationId: 1 } }">
+                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
                             </li>

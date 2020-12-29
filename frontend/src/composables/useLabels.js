@@ -2,15 +2,11 @@ import { computed, watch, ref, onMounted } from 'vue'
 import Label from './../store/Label.js'
 import Annotation from './../store/Annotation.js'
 
-function useLabels (project, annotation, userId, task) {
-    const areLabelsLoading = ref(false)
-    function fetchProjectLabels () {
-        areLabelsLoading.value = true
-        project.value.id && Label.actions.fetchLabelList(`/project/${project.value.id}/label`).then(() => {
-            areLabelsLoading.value = false
-        })
-    }
+function fetchProjectLabels (projectId) {
+    projectId && Label.actions.fetchLabelList(`/project/${projectId}/label`)
+}
 
+function useLabels (project, annotation, userId, task) {
     function getAnnotatorLabels () {
         const ids = annotation.value.annotator_labels
         return ids.map(id => Label.items.value[id])
@@ -34,15 +30,15 @@ function useLabels (project, annotation, userId, task) {
     function addLabel (labelId) {
         let labelPatch = { id: annotation.value.id }
         if (userId.value === task.value.annotator) {
-            labelPatch.annotator_labels = [ ...annotation.value.annotator_labels, labelId ]
+            labelPatch.annotator_labels = [ ...annotation.value.annotator_labels || [], labelId ]
         } else {
-            labelPatch.reviewer_labels = [ ...annotation.value.reviewer_labels, labelId ]
+            labelPatch.reviewer_labels = [ ...annotation.value.reviewer_labels || [], labelId ]
         }
         Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
     }
 
     const displayLabels = computed(() => {
-        if (areLabelsLoading.value || Object.keys(annotation.value).length === 0) {
+        if (Object.keys(annotation.value).length === 0) {
             return []
         }
 
@@ -61,10 +57,12 @@ function useLabels (project, annotation, userId, task) {
     })
 
     watch(project, () => {
-        fetchProjectLabels()
+        fetchProjectLabels(project.value.id)
     })
 
-    onMounted(fetchProjectLabels)
+    onMounted(() => {
+        fetchProjectLabels(project.value.id)
+    })
 
     return {
         addLabel,
@@ -74,4 +72,20 @@ function useLabels (project, annotation, userId, task) {
     }
 }
 
-export { useLabels }
+function useProjectLabels (projectId) {
+    onMounted(() => {
+        fetchProjectLabels(projectId.value)
+    })
+
+    watch(projectId, () => {
+        fetchProjectLabels(projectId.value)
+    })
+
+    const labels = computed(() => Object.values(Label.items.value))
+
+    return {
+        labels
+    }
+}
+
+export { useLabels, useProjectLabels }

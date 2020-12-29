@@ -12,6 +12,8 @@ const useAnnotations = (taskId, annoId) => {
         }
         return id
     })
+    console.log('annoId is', annoId.value)
+    console.log('annotationId is', annotationId.value)
     const isAnnotationLoading = ref(false)
     const annotation = computed(() => annotationId.value === -1 ? {} : annotations.value.find(anno => anno.id === annotationId.value) || {})
     const annotationIdx = computed(() => annotations.value.findIndex(anno => anno.id === annotationId.value))
@@ -46,6 +48,7 @@ const useAnnotations = (taskId, annoId) => {
     } 
 
     onMounted(fetchAnnotations)
+    watch(taskId, fetchAnnotations)
     watch(annotationId, fetchAnnotation)
 
     return {
