@@ -80,5 +80,38 @@ function useClosedTasks (userId, projectId) {
     }
 }
 
-export { useTask, getTask, useOpenTasks, useClosedTasks }
+function useTaskClaiming(projectId) {
+    const claimAnnotationTask = () => {
+        Task.actions.claim(`/project/${projectId.value}/task/claim/annotation/`).then(() => fetchClaimableTasks())
+    }
+
+    const claimReviewTask = () => {
+        Task.actions.claim(`/project/${projectId.value}/task/claim/review/`).then(() => fetchClaimableTasks())
+    }
+
+    const fetchClaimableTasks = () => {
+        Task.actions.fetchClaimableTasks(`/project/${projectId.value}/task/claim/`)
+    }
+
+    const unclaimAnnotationTask = (taskId) => {
+        Task.actions.updateTask(`/task/${taskId}`, { id: taskId, annotator: null }).then(() => fetchClaimableTasks())
+    }
+
+    const unclaimReviewTask = (taskId) => {
+        Task.actions.updateTask(`/task/${taskId}`, { id: taskId, reviewer: null }).then(() => fetchClaimableTasks())
+    }
+
+    onMounted(fetchClaimableTasks)
+    watch(projectId, fetchClaimableTasks)
+
+    return {
+        claimAnnotationTask,
+        claimReviewTask,
+        claimableTasks: Task.claimable,
+        unclaimAnnotationTask,
+        unclaimReviewTask
+    }
+}
+
+export { useTask, getTask, useOpenTasks, useClosedTasks, useTaskClaiming }
 

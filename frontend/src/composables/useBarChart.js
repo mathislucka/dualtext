@@ -4,7 +4,7 @@ import { watch, ref } from 'vue'
 function createBarChart (data) {
     console.log(data)
     const margin = { top: 10, right: 0, bottom: 10, left: 0 }
-    const barHeight = 25
+    const barHeight = 33
     const height = Math.ceil((data.length + 0.1) * barHeight) + margin.top + margin.bottom
     const width = 600 // make responsive later
     const y = scaleBand()
@@ -38,7 +38,7 @@ function createBarChart (data) {
     svg.append('g')
         .attr('fill', 'black')
         .attr('text-anchor', 'end')
-        .attr('font-size', 12)
+        .attr('font-size', 14)
         .selectAll('text')
         .data(data)
         .join('text')

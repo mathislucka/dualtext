@@ -2,12 +2,30 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Project, Corpus
 
 def check_member_status(entity, user):
-    print(entity)
     user_groups = user.groups.all()
     entity_groups = entity.allowed_groups.all()
     ug_set = set(user_groups)
     eg_set = set(entity_groups)
     return bool(len(ug_set.intersection(eg_set)) > 0 or user.is_superuser)
+
+class MembersEdit(BasePermission):
+    def has_permission(self, request, view):
+        entity = None
+        if 'corpus_id' in view.kwargs:
+            entity = Corpus.objects.get(id=view.kwargs['corpus_id'])
+        elif 'project_id' in view.kwargs:
+            entity = Project.objects.get(id=view.kwargs['project_id'])
+        
+        if entity is not None and request.user:
+            return check_member_status(entity, request.user)
+        else:
+            return False
+    
+    def has_object_permission(self, request, view, obj):
+        if request.user:
+            return check_member_status(obj, request.user)
+        else:
+            return False
 
 class MembersReadAdminEdit(BasePermission):
     def has_permission(self, request, view):

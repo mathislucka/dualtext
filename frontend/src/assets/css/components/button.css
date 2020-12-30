@@ -1,3 +1,7 @@
 .btn-icon {
     @apply text-blue-500 outline-none focus:outline-none hover:text-blue-700 hover:bg-grey-200 rounded-full p-1;
 }
+
+.btn-primary {
+    @apply px-4 py-2 text-white bg-blue-500 rounded shadow hover:bg-blue-600;
+}

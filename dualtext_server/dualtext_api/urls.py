@@ -3,6 +3,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from .views import LabelListView, ProjectListView, TaskListView, AnnotationListView, AnnotationDetailView
 from .views import CorpusDetailView, DocumentListView, CorpusListView, DocumentDetailView, SearchView
 from .views import CurrentUserView, CurrentUserStatisticsView, ProjectDetailView, TaskDetailView, ProjectStatisticsView
+from .views import ClaimTaskView
 
 urlpatterns = [
     path('annotation/<int:annotation_id>', AnnotationDetailView.as_view(), name='annotation_detail'),
@@ -15,6 +16,8 @@ urlpatterns = [
     path('project/<int:project_id>/statistics', ProjectStatisticsView.as_view(), name='project_statistics'),
     path('project/', ProjectListView.as_view(), name='project_list'),
     path('project/<int:project_id>/label', LabelListView.as_view(), name='label_list'),
+    path('project/<int:project_id>/task/claim/<str:claim_type>/', ClaimTaskView.as_view(), name='task_claim'),
+    path('project/<int:project_id>/task/claim/', ClaimTaskView.as_view(), name='task_claimable'),
     path('project/<int:project_id>/task/', TaskListView.as_view(), name='task_list'),
     path('task/<int:task_id>', TaskDetailView.as_view(), name='task_detail'),
     path('task/<int:task_id>/annotation/', AnnotationListView.as_view(), name='annotation_list'),

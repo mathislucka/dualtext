@@ -21,7 +21,7 @@
         <div class="flex content-right">
             <button
                 type="button"
-                class="px-4 py-2 text-white bg-blue-500 rounded shadow ml-auto mr-0 hover:bg-blue-600"
+                class="btn-primary ml-auto mr-0"
                 @click="loginUser">
                     Submit
             </button>

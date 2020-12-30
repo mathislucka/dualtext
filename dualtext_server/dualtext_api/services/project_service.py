@@ -45,6 +45,30 @@ class ProjectService():
 
     def get_total_tasks(self):
         return self.project.task_set
+    
+    def get_open_annotation_tasks(self):
+        return self.project.task_set.filter(Q(is_annotated=False) & Q(annotator=None))
+    
+    def get_open_review_tasks(self):
+        return self.project.task_set.filter(Q(is_annotated=True) & Q(is_reviewed=False) & Q(reviewer=None))
+    
+    def claim_annotation_task(self, user):
+        task = self.get_open_annotation_tasks().first()
+        if task is not None:
+            task.annotator = user
+            task.save()
+            return task
+        else:
+            return None
+    
+    def claim_review_task(self, user):
+        task = self.get_open_review_tasks().first()
+        if task is not None:
+            task.reviewer = user
+            task.save()
+            return task
+        else:
+            return None
 
     def get_task_statistics(self):
         total = self.get_total_tasks().count()

@@ -5,16 +5,17 @@
         </template>
         <template v-slot:content>
             <div class="w-full">
-                <h3 class="font-semibold text-lg text-grey-600">Label distribution</h3>
-                <div id="chart" v-html="barHtml"></div>
-                <div class="flex flex-wrap">
-                    <swatch v-for="swatch in swatches" :key="swatch.key" :swatch="swatch" />
-                </div>
-                <h3 class="font-semibold text-lg mt-4 text-grey-600 mb-2">Annotation Progress</h3>
+                <h3 class="font-semibold text-lg text-grey-600 mb-2">Annotation Progress</h3>
                 <div class="flex flex-wrap">
                     <swatch v-for="swatch in divergingBarChartData" :key="swatch.key" :swatch="swatch" />
                 </div>
                 <div v-html="divergingHtml" />
+
+                <h3 class="font-semibold text-lg text-grey-600 mt-8">Label distribution</h3>
+                <div id="chart" v-html="barHtml"></div>
+                <div class="flex flex-wrap">
+                    <swatch v-for="swatch in swatches" :key="swatch.key" :swatch="swatch" />
+                </div>
             </div>
         </template>
     </card>

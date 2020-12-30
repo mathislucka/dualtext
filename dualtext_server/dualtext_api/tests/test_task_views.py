@@ -90,3 +90,83 @@ class TestTaskListView(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
         self.assertEqual(len(response.data), 0)
+
+class TestClaimTaskView(APITestCase):
+    def setUp(self):
+        standards = run_standard_setup()
+        self.project = standards['project']
+        self.group = standards['group']
+        self.user = standards['user']
+        self.superuser = standards['superuser']
+    
+    def test_claimable_tasks(self):
+        """
+        Ensure that the number of unclaimed annotation tasks and unclaimed review tasks is returned.
+        """
+        self.project.allowed_groups.add(self.group)
+        self.project.save()
+        self.user.groups.add(self.group)
+        self.user.save()
+
+        t1 = Task(name="first task", project=self.project)
+        t1.save()
+        t2 = Task(name="claimed task", project=self.project, annotator=self.user, is_annotated=True)
+        t2.save()
+
+        url = reverse('task_claimable', args=[self.project.id])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(url, format='json')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['open_annotations'], 1)
+        self.assertEqual(response.data['open_reviews'], 1)
+    
+    def test_annotation_task_claiming(self):
+        """
+        Ensure that the first task without an annotator is claimed.
+        """
+        self.project.allowed_groups.add(self.group)
+        self.project.save()
+        self.user.groups.add(self.group)
+        self.user.save()
+
+        t1 = Task(name="first task", project=self.project)
+        t1.save()
+
+        url = reverse('task_claim', args=[self.project.id, 'annotation'])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], t1.id)
+    
+    def test_review_task_claiming(self):
+        """
+        Ensure that the first annotated task without a reviewer is claimed.
+        """
+        self.project.allowed_groups.add(self.group)
+        self.project.save()
+        self.user.groups.add(self.group)
+        self.user.save()
+
+        t1 = Task(name="first task", project=self.project, is_annotated=True)
+        t1.save()
+
+        url = reverse('task_claim', args=[self.project.id, 'review'])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], t1.id)
+    
+    def test_deny_non_members(self):
+        """
+        Ensure that only project members can claim a task.
+        """
+        self.project.allowed_groups.remove(self.group)
+        self.project.save()
+        t1 = Task(name="first task", project=self.project)
+        t1.save()
+
+        url = reverse('task_claim', args=[self.project.id, 'annotation'])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

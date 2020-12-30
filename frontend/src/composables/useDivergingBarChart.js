@@ -11,7 +11,7 @@ function computeIdx (idx) {
 }
 function createDivergingBarChart(data) {
     const margin = { top: 0, right: 60, bottom: 10, left: 60 }
-    const barHeight = 25
+    const barHeight = 33
     const width = 480
     const height = Math.ceil((data.length / 2 + 0.1) * barHeight) + margin.top + margin.bottom
 
@@ -47,7 +47,7 @@ function createDivergingBarChart(data) {
     svg.append('g')
         .attr('fill', 'black')
         .attr('text-anchor', 'end')
-        .attr('font-size', 12)
+        .attr('font-size', 14)
         .selectAll('text')
         .data(data)
         .join('text')
