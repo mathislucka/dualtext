@@ -1,21 +1,13 @@
-import { ref, onMounted, watch, computed } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import Annotation from './../store/Annotation.js'
 
-const useAnnotations = (taskId, annoId) => {
+function fetchAnnotations (taskId) {
+    return Annotation.actions.fetchAnnotationList(`/task/${taskId}/annotation/`)
+}
+
+const useAnnotations = (taskId, annotationId) => {
     const annotations = computed(() => Object.values(Annotation.items.value))
-    const annotationId = computed(() => {
-        let id = annoId.value
-        // if there is no annotationId select the first annotation without labels so that the annotator can pick up where they left off
-        if (annoId.value === -1) {
-            const firstOpenAnnotation = annotations.value.find(anno => anno.annotator_labels.length === 0)
-            id = firstOpenAnnotation && firstOpenAnnotation.id || annotations.value[annotations.value.length -1] || -1
-        }
-        return id
-    })
-    console.log('annoId is', annoId.value)
-    console.log('annotationId is', annotationId.value)
-    const isAnnotationLoading = ref(false)
-    const annotation = computed(() => annotationId.value === -1 ? {} : annotations.value.find(anno => anno.id === annotationId.value) || {})
+    const annotation = computed(() => Annotation.items.value[annotationId.value] || {})
     const annotationIdx = computed(() => annotations.value.findIndex(anno => anno.id === annotationId.value))
     const totalAnnotations = computed(() => annotations.value.length)
     const nextAnnotationId = computed(() => {
@@ -33,28 +25,25 @@ const useAnnotations = (taskId, annoId) => {
         return id
     })
 
-    const fetchAnnotations = () => {
-        isAnnotationLoading.value = true
-        Annotation.actions.fetchAnnotationList(`/task/${taskId.value}/annotation/`)
-            .then(() => {
-                isAnnotationLoading.value = false
-            })
-    }
-
     const fetchAnnotation = () => {
         if (!Annotation.items.value[annotationId.value] && annotationId.value !== -1) {
             Annotation.actions.fetchAnnotation(`/annotation/${annotationId.value}`)
         }
     } 
 
-    onMounted(fetchAnnotations)
-    watch(taskId, fetchAnnotations)
+    onMounted(() => {
+        fetchAnnotations(taskId.value)
+    })
+    
+    watch(taskId, () => {
+        fetchAnnotations(taskId.value)
+    })
+
     watch(annotationId, fetchAnnotation)
 
     return {
         annotation,
         annotations,
-        isAnnotationLoading,
         annotationIdx,
         totalAnnotations,
         nextAnnotationId,
@@ -63,4 +52,18 @@ const useAnnotations = (taskId, annoId) => {
     }
 }
 
-export { useAnnotations }
+function useAnnotationDecider (projectId, taskId, router) {
+    onMounted(() => {
+        fetchAnnotations(taskId).then(() => {
+            const annotations = Object.values(Annotation.items.value)
+            const nextOpenAnnotation = annotations.find(anno => anno.annotator_labels.length === 0) || annotations[annotations.length - 1]
+            if (nextOpenAnnotation && nextOpenAnnotation.id) {
+                router.push({ name: 'annotation_detail', params: { projectId: projectId, taskId: taskId, annotationId: nextOpenAnnotation.id }})
+            } else {
+                router.push({ name: 'project_detail', params: { projectId: projectId }})
+            }
+        })
+    })
+}
+
+export { useAnnotations, useAnnotationDecider }

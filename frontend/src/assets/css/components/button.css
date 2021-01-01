@@ -5,3 +5,7 @@
 .btn-primary {
     @apply px-4 py-2 text-white bg-blue-500 rounded shadow hover:bg-blue-600;
 }
+
+.btn-disabled {
+    @apply px-4 py-2 text-white bg-grey-300 rounded shadow cursor-not-allowed;
+}

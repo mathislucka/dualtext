@@ -38,7 +38,7 @@ function useLabels (project, annotation, userId, task) {
     }
 
     const displayLabels = computed(() => {
-        if (Object.keys(annotation.value).length === 0) {
+        if (Object.keys(annotation.value).length === 0 || Label.isLoading.value) {
             return []
         }
 
@@ -53,7 +53,7 @@ function useLabels (project, annotation, userId, task) {
     })
 
     const availableLabels = computed(() => {
-        return Object.values(Label.items.value)
+        return Label.isLoading.value ? [] : Object.values(Label.items.value)
     })
 
     watch(project, () => {

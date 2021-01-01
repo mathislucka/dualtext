@@ -3,7 +3,10 @@
         <template v-slot:header>
             <div class="flex justify-between">
                 <h2 class="font-semibold text-xl text-grey-800">{{ heading }}</h2>
-                <button class="btn-primary" type="button" v-if="claimable > 0" @click="claimTask">Claim new</button>
+                <button
+                    :class="{ 'btn-primary': claimable > 0, 'btn-disabled': claimable === 0 }"
+                    type="button"
+                    @click="() => (claimable > 0 && claimTask())">Claim new ({{ claimable }})</button>
             </div>
         </template>
         <template v-slot:content>
@@ -15,7 +18,7 @@
                             <li class="mb-2 flex">
                                 <router-link
                                     class="underline font-semibold text-blue-500 hover:text-blue-700 mr-4"
-                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id } }">
+                                    :to="{ name: 'annotation_decider', params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
                                 <button
@@ -36,7 +39,7 @@
                             <li class="mb-2">
                                 <router-link
                                     class="underline font-semibold text-blue-500 hover:text-blue-700"
-                                    :to="{ name: 'annotation_detail', params: { projectId, taskId: task.id } }">
+                                    :to="{ name: 'annotation_decider', params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
                             </li>

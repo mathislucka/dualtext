@@ -41,8 +41,8 @@ export default {
             addLabel,
             selectedLabels,
             availableLabels: computed(() => {
-                const selectedIds = selectedLabels.value.map(label => label.id)
-                return availableLabels.value.filter(label => !selectedIds.includes(label.id))
+                const selectedIds = selectedLabels.value.map(label => label && label.id)
+                return availableLabels.value.filter(label => !selectedIds.includes(label && label.id))
             }),
             removeLabel
         }

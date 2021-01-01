@@ -47,50 +47,43 @@ export default {
     },
     setup (props, context) {
         const route = useRoute()
-        const router = useRouter()
 
         const annotationId = computed(() => parseInt(route.params.annotationId || -1))
-        const projectId = computed(() => parseInt(route.params.projectId))
-        const taskId = computed(() => parseInt(route.params.taskId))
+        const projectId = computed(() => parseInt(route.params.projectId || -1))
+        const taskId = computed(() => parseInt(route.params.taskId || -1))
 
         provide('projectId', projectId)
         provide('annotationId', annotationId)
         provide('taskId', taskId)
+        if (projectId.value !== -1 && taskId.value !== -1 && annotationId.value !== -1) {
+            useSingleProject(projectId)
+            useTask(taskId)
 
-        useSingleProject(projectId)
-        useTask(taskId)
+            const { user } = useUser()
+            const userId = computed(() => user.value.id || '' )
 
-        const { user } = useUser()
-        const userId = computed(() => user.value.id || '' )
+            const { openAnnotationTasks, openReviewTasks } = useOpenTasks(userId, projectId)
 
-        const { openAnnotationTasks, openReviewTasks } = useOpenTasks(userId, projectId)
+            const {
+                nextAnnotationId,
+                previousAnnotationId,
+                totalAnnotations,
+                annotation,
+                annotations,
+                annotationIdx,
+            } = useAnnotations(taskId, annotationId)
 
-        const {
-            nextAnnotationId,
-            previousAnnotationId,
-            totalAnnotations,
-            annotation,
-            annotations,
-            annotationIdx,
-            isAnnotationLoading
-        } = useAnnotations(taskId, annotationId)
-
-        // redirect to the first annotation without labels when no annotationId was provided
-        watch(annotation, () => {
-            if (annotationId.value === -1 && route.name === 'annotation_detail') {
-                router.push({ name: 'annotation_detail', params: { projectId: projectId.value, taskId: taskId.value, annotationId: annotation.value.id }})
+            return {
+                annotation,
+                annotationIdx,
+                nextAnnotationId,
+                previousAnnotationId,
+                totalAnnotations,
+                openAnnotationTasks,
+                openReviewTasks,
             }
-        })
-
-        return {
-            isAnnotationLoading,
-            annotation,
-            annotationIdx,
-            nextAnnotationId,
-            previousAnnotationId,
-            totalAnnotations,
-            openAnnotationTasks,
-            openReviewTasks,
+        } else {
+            return {}
         }
     }
 }
