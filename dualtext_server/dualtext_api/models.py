@@ -44,6 +44,7 @@ class Annotation(AbstractBase):
     annotator_labels = models.ManyToManyField(Label, related_name='%(class)s_annotator', blank=True)
     reviewer_labels = models.ManyToManyField(Label, related_name='%(class)s_reviewer', blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    is_reviewed = models.BooleanField(blank=True, default=False)
 
 class Prediction(AbstractBase):
     annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)

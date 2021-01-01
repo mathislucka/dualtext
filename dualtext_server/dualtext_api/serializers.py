@@ -56,13 +56,15 @@ class AnnotationSerializer(serializers.ModelSerializer):
             'annotator_labels',
             'reviewer_labels',
             'task',
-            'prediction_set'
+            'prediction_set',
+            'is_reviewed'
         ] + DEFAULT_FIELDS
         extra_kwargs = {
             'reviewer_labels': {'required': False},
             'annotator_labels': {'required': False},
             'prediction_set': {'required': False},
             'documents': {'required': False},
+            'is_reviewed': {'required': False},
         }
         read_only_fields = ['task']
 

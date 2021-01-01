@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full p-4 mt-8">
+    <div class="w-full mt-8">
         <selected-labels
             @label-removed="removeLabel"
             class="mb-8"

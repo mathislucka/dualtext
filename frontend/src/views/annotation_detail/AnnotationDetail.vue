@@ -1,21 +1,25 @@
 <template>
         <page-header />
-        <two-column :fixedHeight="true">
-            <template v-slot:left>
-                <annotation-documents
-                    :annotation="annotation"
-                    :annotation-idx="annotationIdx" />
-                <annotation-labels />
-                <annotation-pager
-                    :current-idx="annotationIdx + 1"
-                    :next-annotation-id="nextAnnotationId"
-                    :previous-annotation-id="previousAnnotationId"
-                    :total-annotations="totalAnnotations" />
-            </template>
-            <template v-slot:right>
-                <search-result-list :is-annotation-view="true" />
-            </template>
-        </two-column>
+        <multi-column :columns="2">
+            <card class="overflow-auto" :use-header="false">
+                <template v-slot:content>
+                    <annotation-documents
+                        :annotation="annotation"
+                        :annotation-idx="annotationIdx" />
+                    <annotation-labels />
+                    <annotation-pager
+                        :current-idx="annotationIdx + 1"
+                        :next-annotation-id="nextAnnotationId"
+                        :previous-annotation-id="previousAnnotationId"
+                        :total-annotations="totalAnnotations" />
+                </template>
+            </card>
+            <card class="overflow-auto">
+                <template v-slot:content>
+                    <search-result-list :is-annotation-view="true" />
+                </template>
+            </card>
+        </multi-column>
         <teleport to="#menu-content">
             <span v-for="task in openAnnotationTasks" :key="task.id">{{ task.name }}</span>
         </teleport>
@@ -34,7 +38,8 @@ import AnnotationDocuments from './AnnotationDocuments.vue'
 import AnnotationLabels from './AnnotationLabels.vue'
 import PageHeader from './../../components/shared/PageHeader.vue'
 import SearchResultList from './../../components/shared/SearchResultList.vue'
-import TwoColumn from './../../components/layout/TwoColumn.vue'
+import MultiColumn from './../../components/layout/MultiColumn.vue'
+import Card from './../../components/layout/Card.vue'
 export default {
     name: 'AnnotationDetail',
     components: {
@@ -43,7 +48,8 @@ export default {
         AnnotationLabels,
         PageHeader,
         SearchResultList,
-        TwoColumn
+        MultiColumn,
+        Card
     },
     setup (props, context) {
         const route = useRoute()

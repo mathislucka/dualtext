@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4">
+    <div>
         <document 
             v-for="(document, idx) in documents"
             :key="idx"
