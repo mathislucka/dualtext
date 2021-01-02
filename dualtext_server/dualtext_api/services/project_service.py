@@ -1,4 +1,5 @@
 from django.db.models import Q
+from operator import itemgetter
 from dualtext_api.models import Project, Annotation
 
 class ProjectService():
@@ -133,4 +134,13 @@ class ProjectService():
             'labels': self.get_label_statistics(),
             'tasks': self.get_task_statistics()
         }
+
+    def get_desired_label(self):
+        labelStatistics = self.get_label_statistics()['absolute']
+        sortedStatistics = [(k, v) for k, v in labelStatistics.items()]
+        sortedStatistics.sort(key=itemgetter(1))
+        labelName = None
+        if len(sortedStatistics) > 0:
+            labelName = sortedStatistics[0][0]
+        return labelName
         

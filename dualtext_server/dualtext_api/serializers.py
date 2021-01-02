@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label
+from dualtext_api.services import ProjectService
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
 
