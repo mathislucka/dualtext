@@ -76,7 +76,7 @@ class PredictionSerializer(serializers.ModelSerializer):
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
-        fields = ['id', 'name', 'project', 'color'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'project', 'color', 'key_code'] + DEFAULT_FIELDS
         read_only_fields = ['project']
         extra_kwargs = {
             'color': {'required': False},

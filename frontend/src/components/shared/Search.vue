@@ -6,6 +6,8 @@
             class="w-full :focus-outline-none outline-none h-full main-bg"
             placeholder="Search corpora..."
             :value="query"
+            @keypress.stop="() => {}"
+            @keydown.stop="() => {}"
             @input="$emit('update:query', $event.target.value)"
             @focus="focusParent"
             @blur="unfocusParent">
@@ -35,6 +37,6 @@ export default {
       unfocusParent () {
           this.hasFocus = false
       }
-  }
+  },
 }
 </script>

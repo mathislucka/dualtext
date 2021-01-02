@@ -5,6 +5,7 @@
         <div v-if="document.content" class="p-4 relative text-2xl font-light">
             {{ document.content }}
             <button
+                v-if="!isReview"
                 @click="$emit('remove-document', document.id)"
                 class="absolute top-0 right-0 text-grey-400 hover:text-grey-700">
                 <icon :icon="'close'" :width="16" :height="16" />
@@ -17,6 +18,7 @@
 
 <script>
 import Icon from '../../components/shared/Icon.vue'
+import { inject } from 'vue'
 export default {
     components: { Icon },
     name: 'document',
@@ -25,6 +27,13 @@ export default {
             type: Object,
             required: false,
             default: () => ({})
+        }
+    },
+    setup () {
+        const isReview = inject('isReview')
+
+        return {
+            isReview
         }
     }
 }

@@ -18,7 +18,7 @@
                             <li class="mb-2 flex">
                                 <router-link
                                     class="underline font-semibold text-blue-500 hover:text-blue-700 mr-4"
-                                    :to="{ name: 'annotation_decider', params: { projectId, taskId: task.id } }">
+                                    :to="{ name: routeName, params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
                                 <button
@@ -39,7 +39,7 @@
                             <li class="mb-2">
                                 <router-link
                                     class="underline font-semibold text-blue-500 hover:text-blue-700"
-                                    :to="{ name: 'annotation_decider', params: { projectId, taskId: task.id } }">
+                                    :to="{ name: routeName, params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
                             </li>
@@ -100,6 +100,8 @@ export default {
         })
         const unclaimTask = taskType.value === 'annotation' ? unclaimAnnotationTask : unclaimReviewTask
 
+        const routeName = taskType.value === 'annotation' ? 'annotation_decider' : 'review_decider'
+
         const heading = computed(() => taskType.value === 'annotation' ? 'Annotation Tasks' : 'Review Tasks')
         return {
             claimable,
@@ -108,6 +110,7 @@ export default {
             heading,
             openTasks,
             projectId,
+            routeName,
             unclaimTask
         }
     }

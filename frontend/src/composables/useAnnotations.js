@@ -52,13 +52,15 @@ const useAnnotations = (taskId, annotationId) => {
     }
 }
 
-function useAnnotationDecider (projectId, taskId, router) {
+function useAnnotationDecider (projectId, taskId, router, isReview) {
+    const labelKey = isReview.value === true ? 'reviewer_labels' : 'annotator_labels'
+    const routeName = isReview.value === true ? 'review_detail' : 'annotation_detail'
     onMounted(() => {
         fetchAnnotations(taskId).then(() => {
             const annotations = Object.values(Annotation.items.value)
-            const nextOpenAnnotation = annotations.find(anno => anno.annotator_labels.length === 0) || annotations[annotations.length - 1]
+            const nextOpenAnnotation = annotations.find(anno => anno[labelKey].length === 0) || annotations[annotations.length - 1]
             if (nextOpenAnnotation && nextOpenAnnotation.id) {
-                router.push({ name: 'annotation_detail', params: { projectId: projectId, taskId: taskId, annotationId: nextOpenAnnotation.id }})
+                router.push({ name: routeName, params: { projectId: projectId, taskId: taskId, annotationId: nextOpenAnnotation.id }})
             } else {
                 router.push({ name: 'project_detail', params: { projectId: projectId }})
             }

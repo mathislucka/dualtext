@@ -35,6 +35,23 @@ const routes = [
         component: AnnotationDetail,
     },
     {
+        path: '/project/:projectId/task/:taskId/review',
+        name: 'review_decider',
+        component: AnnotationDecider,
+        beforeEnter: (to, from, next) => {
+            if (from.name === 'annotation_detail') {
+                next({ name: 'project_detail', params: { projectId: to.params.projectId }})
+            } else {
+                next()
+            }
+        }
+    },
+    {
+        path: '/project/:projectId/task/:taskId/review/:annotationId',
+        name: 'review_detail',
+        component: AnnotationDetail,
+    },
+    {
         path: '/login',
         name: 'login',
         component: Login,

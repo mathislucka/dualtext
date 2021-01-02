@@ -5,13 +5,16 @@
 <script>
 import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router'
 import { useAnnotationDecider } from './../../composables/useAnnotations.js'
+import { computed } from 'vue'
 export default {
     name: 'AnnotationDecider',
     setup () {
-        const { taskId, projectId } = useRoute().params
+        const route = useRoute()
+        const { taskId, projectId } = route.params
+        const isReview = computed(() => route.name === 'review_decider')
         const router = useRouter()
         if (taskId && projectId) {
-            useAnnotationDecider(projectId, taskId, router)
+            useAnnotationDecider(projectId, taskId, router, isReview)
         }
     },
 }
