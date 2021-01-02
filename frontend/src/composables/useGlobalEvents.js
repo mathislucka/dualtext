@@ -1,7 +1,6 @@
 import { onMounted, onUnmounted } from 'vue'
 
 function useGlobalEvents (eventType, callback) {
-    console.log('called')
     const body = document.getElementsByTagName('BODY')[0]
     onMounted(() => {
         body.addEventListener(eventType, callback)

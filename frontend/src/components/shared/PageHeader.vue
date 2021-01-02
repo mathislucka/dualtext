@@ -45,6 +45,9 @@ export default {
     methods: {
         runSearch () {
             SearchStore.actions.fetchSearchResult('/search/', this.currentQuery)
+            if (this.$route.name !== 'annotation_detail') {
+                this.$router.push({ name: 'explore_corpora' })
+            }
         },
         updateQueryParams (params) {
             this.filters = params.value

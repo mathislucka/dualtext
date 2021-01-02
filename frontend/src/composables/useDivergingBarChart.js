@@ -40,7 +40,7 @@ function createDivergingBarChart(data) {
         .join('rect')
         .attr('fill', d => d.color)
         .attr('x', d => x(Math.min(d.value, 0)))
-        .attr('y', (d, i) => console.log('i is', i) || y(computeIdx(i)))
+        .attr('y', (d, i) => y(computeIdx(i)))
         .attr('width', d => Math.abs(x(d.value) - x(0)))
         .attr('height', y.bandwidth())
     

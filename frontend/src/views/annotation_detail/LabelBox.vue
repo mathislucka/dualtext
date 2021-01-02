@@ -5,6 +5,7 @@
             class="w-full px-4 pb-4 minimum-height flex flex-wrap"
             :class="backgroundColor">
             <annotation-label
+                :uses-key="event !== ''"
                 @click="clickEvent(label.id)"
                 class="mr-2 mt-4"
                 v-for="label in labels" 

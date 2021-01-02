@@ -2,7 +2,6 @@ import { axisLeft, create, range, scaleBand, scaleLinear, max } from 'd3'
 import { watch, ref } from 'vue'
 
 function createBarChart (data) {
-    console.log(data)
     const margin = { top: 10, right: 0, bottom: 10, left: 0 }
     const barHeight = 33
     const height = Math.ceil((data.length + 0.1) * barHeight) + margin.top + margin.bottom
@@ -64,7 +63,6 @@ function useBarChart (data) {
         const svg = createBarChart(data.value)
         const intermediate = document.createElement('div')
         intermediate.appendChild(svg)
-        console.log(intermediate)
         html.value = intermediate.innerHTML
     })
 

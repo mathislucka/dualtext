@@ -17,7 +17,7 @@
                         :total-annotations="totalAnnotations" />
                 </template>
             </card>
-            <card class="overflow-auto" v-if="isReview === false">
+            <card class="overflow-auto" v-if="isReview === false" :use-header="false">
                 <template v-slot:content>
                     <search-result-list :is-annotation-view="true" />
                 </template>

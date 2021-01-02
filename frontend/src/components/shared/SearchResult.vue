@@ -30,7 +30,7 @@ export default {
         }
     },
     setup (props) {
-        const annotationId = inject('annotationId')
+        const annotationId = inject('annotationId', null)
 
         const addDocument = (docId) => {
             const annotation = Annotation.items.value[annotationId.value]

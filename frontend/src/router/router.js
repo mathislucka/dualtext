@@ -1,15 +1,21 @@
-import { onMounted } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from './../components/login/Login.vue'
 import AnnotationDetail from './../views/annotation_detail/AnnotationDetail.vue'
 import AnnotationDecider from './../views/annotation_detail/AnnotationDecider.vue'
 import Dashboard from './../views/dashboard/Dashboard.vue'
 import ProjectDetail from './../views/project_detail/ProjectDetail.vue'
+import ExploreCorpora from './../views/explore_corpora/ExploreCorpora.vue'
+import Search from '../store/Search.js'
 const routes = [
     {
         path: '/dashboard',
         name: 'dashboard',
         component: Dashboard
+    },
+    {
+        path: '/explore',
+        name: 'explore_corpora',
+        component: ExploreCorpora
     },
     {
         path: '/project/:projectId',
@@ -33,6 +39,10 @@ const routes = [
         path: '/project/:projectId/task/:taskId/annotation/:annotationId',
         name: 'annotation_detail',
         component: AnnotationDetail,
+        beforeEnter: () => {
+            Search.actions.resetSearchResults()
+            return true
+        }
     },
     {
         path: '/project/:projectId/task/:taskId/review',

@@ -17,7 +17,7 @@
             </div>
             <div class="ml-auto flex content-center items-center mb-2">
                 <button
-                    class="text-blue-500 outline-none focus:outline-none hover:text-blue-700 hover:bg-grey-200 rounded-full p-1 flex-none"
+                    class="btn-icon rounded-full p-1 flex-none"
                     @click.stop.prevent="toggleDropdown"><icon :icon="iconType" :width="16" :height="16" /></button>
             </div>
         </div>

@@ -1,5 +1,5 @@
 .btn-icon {
-    @apply text-blue-500 outline-none focus:outline-none hover:text-blue-700 hover:bg-grey-200 rounded-full p-1;
+    @apply text-blue-500 outline-none focus:outline-none hover:text-blue-700 hover:bg-grey-200 rounded-full p-1 focus:ring-2 focus:ring-blue-700;
 }
 
 .btn-primary {

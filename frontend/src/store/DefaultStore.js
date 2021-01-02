@@ -39,6 +39,13 @@ function initDefaultStoreMethods (state) {
             const response = await Api.patch(path, payload, params)
             handleCache(state, 'update')
             return response
+        },
+
+        resetStore () {
+            state.isLoading = false
+            state.items = {}
+            state.order = []
+            state.requests = []
         }
     }
     

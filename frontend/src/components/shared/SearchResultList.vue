@@ -1,7 +1,7 @@
 <template>
     <div>
         <loading v-if="isLoading" />
-        <div class="p-4" v-if="!isLoading">
+        <div v-if="!isLoading">
             <search-result
                 :is-annotation-view="isAnnotationView"
                 v-for="result in results"
@@ -16,7 +16,8 @@
 import SearchResult from './SearchResult.vue'
 import Search from './../../store/Search.js'
 import Loading from './Loading.vue'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { onBeforeRouteUpdate } from 'vue-router'
 
 export default {
     name: 'SearchResultList',
@@ -32,6 +33,12 @@ export default {
         }
     },
     setup () {
+        onBeforeRouteUpdate((to, from) => {
+            if (to.name === 'annotation_detail') {
+                console.log('called')
+                Search.actions.resetSearchResults()
+            }
+        })
         return {
             results: computed(() => Search.results.value),
             isLoading: computed(() => Search.isLoading.value)

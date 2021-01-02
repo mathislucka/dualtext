@@ -7,7 +7,7 @@
             placeholder="Search corpora..."
             :value="query"
             @keypress.stop="() => {}"
-            @keydown.stop="() => {}"
+            @keydown.stop="bubbleEnter($event)"
             @input="$emit('update:query', $event.target.value)"
             @focus="focusParent"
             @blur="unfocusParent">
@@ -17,7 +17,7 @@
 <script>
 export default {
   name: 'Search',
-  emits: [ 'update:query' ],
+  emits: [ 'update:query', 'keydown' ],
   props: {
     query: {
         type: String,
@@ -36,6 +36,11 @@ export default {
       },
       unfocusParent () {
           this.hasFocus = false
+      },
+      bubbleEnter (e) {
+          if (e.code === 'Enter') {
+              this.$emit('keydown', e)
+          }
       }
   },
 }

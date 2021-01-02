@@ -63,7 +63,6 @@ export default {
         const router = useRouter()
 
         const keyboardSwitch = (e) => {
-            console.log(e)
             const key = e.key
             if (key === 'ArrowLeft' && previousAnnotationId.value > -1) {
                 router.push({

@@ -50,7 +50,6 @@ export default {
         corpora = corporaWrapper.corpora
       } else {
         const corporaWrapper = useMultipleCorpora()
-        console.log(corporaWrapper)
         corpora = corporaWrapper.corpora
       }
 

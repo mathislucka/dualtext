@@ -1,7 +1,9 @@
 <template>
-    <button class="pl-4 shadow text-black rounded-xl leading-4 test-sm bg-grey-200">
+    <button
+        class="shadow text-black rounded-xl leading-4 text-sm bg-grey-200"
+        :class="{ 'pl-4': usesKey }">
         <div class="flex">
-        <span class="pr-2 py-2">{{ label.key_code.toUpperCase() }}</span>
+        <span class="pr-2 py-2" v-if="usesKey === true">{{ label.key_code.toUpperCase() }}</span>
         <span
             @mouseenter="setLabelStyle('light')"
             @mouseleave="setLabelStyle('standard')"
@@ -32,7 +34,7 @@ export default {
     },
     computed: {
         labelInnerClass () {
-            return this.usesKey ? 'py-2 pr-4 pl-2 rounded-r-xl' : 'px-4 py-2 shadow text-black rounded-xl leading-4 centered cursor-pointer text-sm'
+            return this.usesKey ? 'py-2 pr-4 pl-2 rounded-r-xl' : 'px-4 py-2 rounded-xl'
         }
     },
     methods: {
