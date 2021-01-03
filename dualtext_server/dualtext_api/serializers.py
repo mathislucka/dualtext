@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label
 from dualtext_api.services import ProjectService
 
@@ -19,6 +20,9 @@ class DocumentSerializer(serializers.ModelSerializer):
         read_only_fields = ['corpus']
 
 class ProjectSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=255, validators=[
+        UniqueValidator(queryset=Project.objects.all())
+    ])
     class Meta:
         model = Project
         fields = ['id', 'name', 'allowed_groups', 'creator', 'corpora', 'task_set'] + DEFAULT_FIELDS
@@ -46,7 +50,13 @@ class TaskSerializer(serializers.ModelSerializer):
             'is_reviewed': {'required': False},
             'reviewer': {'required': False},
         }
-        read_only_fields = ['project']
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Task.objects.all(),
+                fields=['name', 'project']
+            )
+        ]
 
 class AnnotationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -78,10 +88,16 @@ class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
         fields = ['id', 'name', 'project', 'color', 'key_code'] + DEFAULT_FIELDS
-        read_only_fields = ['project']
         extra_kwargs = {
             'color': {'required': False},
         }
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Label.objects.all(),
+                fields=['name', 'project']
+            )
+        ]
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

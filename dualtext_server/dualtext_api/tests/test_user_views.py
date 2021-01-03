@@ -45,7 +45,7 @@ class TestCurrentUserStatisticsView(APITestCase):
         t5.save()
         t6 = Task(name='t6', project=self.project, annotator=self.superuser, reviewer=self.user, is_reviewed=True)
         t6.save()
-        t7 = Task(name='t6', project=self.project, annotator=self.superuser, reviewer=self.superuser, is_reviewed=True)
+        t7 = Task(name='t7', project=self.project, annotator=self.superuser, reviewer=self.superuser, is_reviewed=True)
         t7.save()
 
         a1 = Annotation(task=t1)

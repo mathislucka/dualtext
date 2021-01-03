@@ -25,11 +25,21 @@ class Project(AbstractBase):
     corpora = models.ManyToManyField(Corpus)
     allowed_groups = models.ManyToManyField(Group, related_name='%(class)s_allowed')
 
+    class Meta(AbstractBase.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='unique_project_name')
+        ]
+
 class Label(AbstractBase):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     color = models.JSONField()
     key_code = models.CharField(max_length=1, null=True)
+
+    class Meta(AbstractBase.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'project'], name='unique_label_name_in_project')
+        ]
 
 class Task(AbstractBase):
     name = models.CharField(max_length=255)
@@ -38,6 +48,11 @@ class Task(AbstractBase):
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_reviewer', null=True)
     is_annotated = models.BooleanField(blank=True, default=False)
     is_reviewed = models.BooleanField(blank=True, default=False)
+
+    class Meta(AbstractBase.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'project'], name='unique_task_name_in_project')
+        ]
 
 class Annotation(AbstractBase):
     documents = models.ManyToManyField(Document, blank=True)
@@ -57,6 +72,12 @@ class Feature(AbstractBase):
     description = models.TextField(null=True, blank=True, default='')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
     key = models.CharField(max_length=255)
+
+    class Meta(AbstractBase.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['key'], name='unique_feature_key'),
+            models.UniqueConstraint(fields=['name'], name='unique_feature_name'),
+        ]
 
 class FeatureValue(AbstractBase):
     feature = models.ForeignKey(Feature, on_delete=models.CASCADE)

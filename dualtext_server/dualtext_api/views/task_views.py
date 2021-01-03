@@ -23,9 +23,15 @@ class TaskListView(generics.ListCreateAPIView):
             queryset = queryset.filter(Q(annotator=user) | Q(reviewer=user))
         return queryset
 
-    def perform_create(self, serializer):
-        project = get_object_or_404(Project, id=self.kwargs['project_id'])
-        serializer.save(project=project)
+    def create(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, id=kwargs['project_id'])
+        data = request.data
+        data['project'] = project.id
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     """

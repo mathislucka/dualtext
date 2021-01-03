@@ -25,6 +25,17 @@ class TestProjectListView(APITestCase):
         self.assertEqual(Project.objects.get(id=2).name, 'Test Project')
         self.assertEqual(Project.objects.get(id=2).creator, self.superuser)
 
+    def test_unique_name(self):
+        """
+        Ensure that project names are unique.
+        """
+        data = {'name': 'Test Project'}
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.post(self.url, data, format='json')
+        response_2 = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_superuser_view(self):
         """
         Ensure a superuser can view all projects.

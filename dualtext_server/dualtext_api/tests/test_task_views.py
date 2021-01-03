@@ -25,6 +25,17 @@ class TestTaskListView(APITestCase):
         self.assertEqual(Task.objects.get(id=1).name, 'Test Task')
         self.assertEqual(Task.objects.get().project, self.project)
 
+    def test_unique_name_in_project(self):
+        """
+        Ensure that task names are unique within a project.
+        """
+        data = {'name': 'Test Task'}
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.post(self.url, data, format='json')
+        response_2 = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_superuser_view(self):
         """
         Ensure a superuser can view all tasks.

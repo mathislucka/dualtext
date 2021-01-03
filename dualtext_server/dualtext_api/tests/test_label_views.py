@@ -21,10 +21,22 @@ class TestLabelListView(APITestCase):
         """
         self.client.force_authenticate(user=self.superuser)
         response = self.client.post(self.url, self.data, format='json')
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Label.objects.count(), 1)
         self.assertEqual(Label.objects.get(id=1).name, 'TestLabel')
         self.assertEqual(Label.objects.get().project, self.project)
+    
+    def test_unique_name(self):
+        """
+        Ensure that label names are unique within a project.
+        """
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.post(self.url, self.data, format='json')
+        response_2 = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Label.objects.count(), 1)
     
     def test_automatic_color_allocation(self):
         """
