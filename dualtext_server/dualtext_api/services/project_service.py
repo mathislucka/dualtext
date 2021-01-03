@@ -5,6 +5,16 @@ from dualtext_api.models import Project, Annotation
 class ProjectService():
     def __init__(self, project_id):
         self.project = Project.objects.get(id=project_id)
+        
+        self.total_annotations = None
+        self.annotated_annotations = None
+        self.reviewed_annotations = None
+
+        self.total_tasks = None
+        self.annotated_tasks = None
+        self.reviewed_tasks = None
+        self.open_annotation_tasks = None
+        self.open_review_tasks = None
 
     def get_total_annotations(self):
         tasks = [task.id for task in self.get_total_tasks().all()]
