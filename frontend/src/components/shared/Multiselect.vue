@@ -35,6 +35,9 @@
 
 <script>
 import Icon from './Icon.vue'
+import { ref } from 'vue'
+import { useClickOutside } from './../../composables/useClickOutside.js'
+
 export default {
   name: 'Multiselect',
   components: {
@@ -59,7 +62,6 @@ export default {
   },
   data () {
       return {
-          isDropdownOpen: false,
           selectedItems: { ...this.selection },
           wrappedItems: {}
       }
@@ -85,12 +87,6 @@ export default {
       }
   },
   methods: {
-      closeOnClick (e) {
-          if (!this.$refs.rootEl.contains(e.target)) {
-              this.isDropdownOpen = false
-              document.body.removeEventListener('click', this.closeOnClick)
-          }
-      },
       hideWrappedElements () {
         const elements = []
         Object.keys(this.selectedItems).forEach(id => {
@@ -107,11 +103,12 @@ export default {
         })
       },
       toggleDropdown () {
-          if (this.isDropdownOpen) {
-              this.isDropdownOpen = false
-          } else if (!this.isDropdownOpen) {
+          if (!this.isDropdownOpen) {
               this.isDropdownOpen = true
-              document.body.addEventListener('click', this.closeOnClick)
+              this.registerClickEvent()
+          } else if (this.isDropdownOpen) {
+              this.isDropdownOpen = false
+              this.unregisterClickEvent()
           }
       },
       toggleSelection (id) {
@@ -127,6 +124,18 @@ export default {
       this.$nextTick(() => {
           this.hideWrappedElements()
       })
+  },
+  setup () {
+    const rootEl = ref(null)
+    const isDropdownOpen = ref(false)
+    const { registerClickEvent, unregisterClickEvent } = useClickOutside(rootEl, isDropdownOpen)
+
+    return {
+        isDropdownOpen,
+        rootEl,
+        registerClickEvent,
+        unregisterClickEvent
+    }
   }
 }
 </script>
