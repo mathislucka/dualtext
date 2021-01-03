@@ -22,8 +22,8 @@ class AnnotationListView(APIView):
             ps = ProjectService(task.project.id)
             desired_label = ps.get_desired_label()
             data = AnnotationSerializer(queryset, many=True).data
-            # for annotation in data:
-            #     annotation['desired_label'] = desired_label
+            for annotation in data:
+                 annotation['desired_label'] = desired_label
             return Response(data)
         return Response('You are not permitted to access this resource.', status.HTTP_403_FORBIDDEN)
 
