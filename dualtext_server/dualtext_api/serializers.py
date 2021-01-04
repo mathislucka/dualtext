@@ -7,6 +7,9 @@ from dualtext_api.services import ProjectService
 DEFAULT_FIELDS = ['created_at', 'modified_at']
 
 class CorpusSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=255, validators=[
+        UniqueValidator(queryset=Corpus.objects.all())
+    ])
     class Meta:
         model = Corpus
         fields = ['id', 'name', 'corpus_meta', 'document_set'] + DEFAULT_FIELDS

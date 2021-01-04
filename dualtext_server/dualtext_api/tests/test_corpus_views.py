@@ -24,6 +24,17 @@ class TestCorpusListView(APITestCase):
         self.assertEqual(Corpus.objects.get(id=response.data['id']).name, 'Test Corpus')
         self.assertEqual(Corpus.objects.get(id=response.data['id']).corpus_meta, {'info': 'corpus info'})
 
+    def test_unique_name(self):
+        """
+        Ensure that corpus names are unique.
+        """
+        data = {'name': 'Test Corpus', 'corpus_meta': { 'info': 'corpus info'}}
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.post(self.url, data, format='json')
+        response_2 = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_superuser_view(self):
         """
         Ensure a superuser can view all corpora.

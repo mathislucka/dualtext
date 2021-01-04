@@ -15,6 +15,11 @@ class Corpus(AbstractBase):
     corpus_meta = models.JSONField()
     allowed_groups = models.ManyToManyField(Group)
 
+    class Meta(AbstractBase.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='unique_corpus_name')
+        ]
+
 class Document(AbstractBase):
     content = models.TextField(blank=True, default='')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
