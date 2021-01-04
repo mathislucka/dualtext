@@ -44,8 +44,8 @@ class Label(AbstractBase):
 class Task(AbstractBase):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    annotator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_annotator', null=True)
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_reviewer', null=True)
+    annotator = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_annotator', null=True)
+    reviewer = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_reviewer', null=True)
     is_annotated = models.BooleanField(blank=True, default=False)
     is_reviewed = models.BooleanField(blank=True, default=False)
 
