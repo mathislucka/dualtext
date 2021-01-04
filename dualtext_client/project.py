@@ -4,6 +4,7 @@ from corpus import Corpus
 from document import Document
 from label import Label
 from task import Task
+from feature import Feature
 
 class Project(ApiBase):
     """
@@ -17,6 +18,9 @@ class Project(ApiBase):
     def create_from_scratch(self, data, task_size):
         corpus = Corpus(self.session)
         created_corpus = corpus.create(data['corpus'])
+        features = data.get('features', None)
+        if features is not None:
+            self.create_corpus_features(created_corpus['id'], features)
         project_data = data['project']
         project_data['corpora'] = [ created_corpus['id'] ]
         project = self.create(project_data)
@@ -46,4 +50,11 @@ class Project(ApiBase):
             doc_ids = self.create_annotation_documents(annotation['documents'], corpus_id)
             print(doc_ids)
             annotation_instance.create({'documents': doc_ids})
+    
+    def create_corpus_features(self, corpus_id, features):
+        feature_instance = Feature(self.session, corpus_id)
+        for feature in features:
+            feature['corpus'] = corpus_id
+            feature_instance.create(feature)
+
 

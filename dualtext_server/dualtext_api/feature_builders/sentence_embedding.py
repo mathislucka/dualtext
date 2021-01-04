@@ -11,8 +11,7 @@ class SentenceEmbedding():
             
         sentences = [document.content for document in documents.all()]
         ids = [document.id for document in documents.all()]
-        # TODO building document embeddings in one go possibly crashes -> make this batching dynamic
-        sentences = self.split_list(sentences, 4)
+        sentences = self.split_list(sentences, 250)
 
         to_store = []
         for lst in sentences:
@@ -25,9 +24,7 @@ class SentenceEmbedding():
         embeddings = self.model.encode([query])
         return embeddings[0]
     
-    def split_list(self, lst, parts):
-        length = len(lst)
-        return [ lst[i*length // parts: (i+1)*length // parts] 
-                for i in range(parts) ]
+    def split_list(self, lst, chunk_size):
+        return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
 
 

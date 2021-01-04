@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label
+from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
 from dualtext_api.services import ProjectService
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
@@ -106,3 +106,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
+class FeatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feature
+        fields = ['id', 'name', 'corpus', 'description', 'key'] + DEFAULT_FIELDS
+        extra_kwargs = {
+            'description': {'required': False},
+        }

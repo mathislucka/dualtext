@@ -1,6 +1,7 @@
 {
-	"project": { "name": "created from json" },
-	"corpus": { "name": "corpus from json", "corpus_meta": { "source": "created from the cli" }},
+	"project": { "name": "created from json12" },
+    "corpus": { "name": "corpus from json12", "corpus_meta": { "source": "created from the cli" }},
+    "features": [{ "name": "sentence embedding", "key": "sentence_embedding_two" }],
 	"annotations": [
 		{
 			"documents": [ "doc1", "doc2" ]

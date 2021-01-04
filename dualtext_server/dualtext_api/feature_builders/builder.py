@@ -3,7 +3,7 @@ from ..models import Corpus, Document, FeatureValue, Feature
 
 class Builder():
     def __init__(self):
-        self.features = {'sentence_embedding': SentenceEmbedding()}
+        self.features = {'sentence_embedding': SentenceEmbedding(), 'sentence_embedding_two': SentenceEmbedding()}
 
     def build_document_features(self, documents, feature_key):
         print('starting to build {} for {} documents...'.format(feature_key, len(documents.all())))
