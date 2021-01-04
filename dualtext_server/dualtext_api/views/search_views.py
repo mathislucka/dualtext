@@ -12,8 +12,9 @@ class SearchView(generics.ListAPIView):
         corpora = query_params.getlist('corpus', None)
         methods = query_params.getlist('method', None)
         query = query_params.get('query', None)
+        project = query_params.get('project', None)
         if corpora and methods and query:
             corpora = [int(c) for c in corpora]
-            s = Search(query, corpora, methods)
+            s = Search(query, corpora, methods, project)
             return s.run()
         return []

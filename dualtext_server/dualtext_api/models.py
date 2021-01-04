@@ -29,6 +29,7 @@ class Project(AbstractBase):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_creator', null=True)
     corpora = models.ManyToManyField(Corpus)
     allowed_groups = models.ManyToManyField(Group, related_name='%(class)s_allowed')
+    annotation_document_duplicates = models.BooleanField(blank=True, default=True)
 
     class Meta(AbstractBase.Meta):
         constraints = [

@@ -1,6 +1,7 @@
 from django.db.models import Q
 from operator import itemgetter
-from dualtext_api.models import Project, Annotation
+from dualtext_api.models import Project, Annotation, Label
+import math
 
 class ProjectService():
     def __init__(self, project_id):
@@ -146,11 +147,18 @@ class ProjectService():
         }
 
     def get_desired_label(self):
-        labelStatistics = self.get_label_statistics()['absolute']
-        sortedStatistics = [(k, v) for k, v in labelStatistics.items()]
-        sortedStatistics.sort(key=itemgetter(1))
-        labelName = None
-        if len(sortedStatistics) > 0:
-            labelName = sortedStatistics[0][0]
-        return labelName
+        label_statistics = self.get_label_statistics()['absolute']
+        sorted_statistics = [(k, v) for k, v in label_statistics.items()]
+        sorted_statistics.sort(key=itemgetter(1))
+        labels = None
+        if len(sorted_statistics) > 0:
+            label_count = Label.objects.filter(project=self.project).count()
+            print(label_count)
+            LOWER_THRESHOLD = 40
+            label_num = math.floor(label_count/100 * LOWER_THRESHOLD)
+            print(label_num)
+            label_names = [ name for name, val in sorted_statistics[0:label_num]]
+            print(label_names)
+            labels = Label.objects.filter(name__in=label_names, project=self.project).all()
+        return labels
         

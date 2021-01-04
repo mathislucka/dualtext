@@ -66,7 +66,11 @@ export default {
       })
 
       const currentFilters = computed({
-          get: () => ({ method: Object.values(filters.value.method), corpus: Object.keys(filters.value.corpus || transformedCorpora.value ) }),
+          get: () => ({
+              method: Object.values(filters.value.method),
+              corpus: Object.keys(filters.value.corpus || transformedCorpora.value ),
+              ...projectId ? { project: projectId.value } : {}
+            }),
           set: (val) => {
               filters.value = { ...filters.value, ...val }
           }

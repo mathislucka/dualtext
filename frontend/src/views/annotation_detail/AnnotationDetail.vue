@@ -3,7 +3,7 @@
         <multi-column :columns="columnNumber">
             <card class="overflow-auto" :use-header="false">
                 <template v-slot:content>
-                    <review-confirmation v-if="isReview" :annotation="annotation" />
+                    <desired-label v-if="!isReview" :annotation="annotation" />
                     <annotation-documents
                         :annotation="annotation"
                         :annotation-idx="annotationIdx" />
@@ -43,7 +43,7 @@ import PageHeader from './../../components/shared/PageHeader.vue'
 import SearchResultList from './../../components/shared/SearchResultList.vue'
 import MultiColumn from './../../components/layout/MultiColumn.vue'
 import Card from './../../components/layout/Card.vue'
-import ReviewConfirmation from './ReviewConfirmation.vue'
+import DesiredLabel from './DesiredLabel.vue'
 
 export default {
     name: 'AnnotationDetail',
@@ -55,7 +55,7 @@ export default {
         SearchResultList,
         MultiColumn,
         Card,
-        ReviewConfirmation
+        DesiredLabel
     },
     setup (props, context) {
         const route = useRoute()

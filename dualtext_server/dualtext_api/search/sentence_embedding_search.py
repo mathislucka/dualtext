@@ -4,11 +4,10 @@ import pickle
 from ..models import Document, FeatureValue
 from dualtext_api.feature_builders.sentence_embedding import SentenceEmbedding
 class SentenceEmbeddingSearch():
-    def search(self, corpora, query):
+    def search(self, documents, query):
         sent_embed = SentenceEmbedding()
         embedded_query = sent_embed.process_query(query)
-        documents = Document.objects.filter(corpus__id__in=corpora)
-        features_values = FeatureValue.objects.filter(Q(document__in=documents) & Q(feature__key='sentence_embedding'))
+        features_values = FeatureValue.objects.filter(Q(document__id__in=documents) & Q(feature__key='sentence_embedding'))
         results = []
         for fv in features_values:
             doc_id = fv.document_id

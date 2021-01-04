@@ -8,7 +8,7 @@
             @mouseenter="setLabelStyle('light')"
             @mouseleave="setLabelStyle('standard')"
             :class="labelInnerClass"
-            :style="labelStyle">{{ label.name }}</span>
+            :style="usedLabelStyle">{{ label.name }}</span>
         </div>
     </button>
 </template>
@@ -25,6 +25,11 @@ export default {
             type: Boolean,
             required: false,
             default: true
+        },
+        usesLightColor: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     data () {
@@ -35,6 +40,9 @@ export default {
     computed: {
         labelInnerClass () {
             return this.usesKey ? 'py-2 pr-4 pl-2 rounded-r-xl' : 'px-4 py-2 rounded-xl'
+        },
+        usedLabelStyle () {
+            return this.usesLightColor ? { backgroundColor: this.label.color.light } : this.labelStyle
         }
     },
     methods: {
