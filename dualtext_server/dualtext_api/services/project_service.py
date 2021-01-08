@@ -1,6 +1,6 @@
 from django.db.models import Q
 from operator import itemgetter
-from dualtext_api.models import Project, Annotation, Label
+from dualtext_api.models import Project, Annotation, Label, Task
 import math
 
 class ProjectService():
@@ -18,16 +18,30 @@ class ProjectService():
         self.open_review_tasks = None
 
     def get_total_annotations(self):
-        tasks = [task.id for task in self.get_total_tasks().all()]
-        return Annotation.objects.filter(task__id__in=tasks)
+        if self.total_annotations is not None:
+            return self.total_annotations
+        else:
+            tasks = self.get_total_tasks()
+            self.total_annotations = Annotation.objects.filter(task__in=tasks.all())
+            return self.total_annotations
 
     def get_annotated_annotations(self):
-        tasks = [task.id for task in self.get_total_tasks().all()]
-        return Annotation.objects.filter(Q(task__in=tasks) & Q(task__is_annotated=True))
+        if self.annotated_annotations is not None:
+            return self.annotated_annotations
+        else:
+            tasks = self.get_total_tasks()
+            annotations = self.get_total_annotations().filter(Q(task__is_finished=True) & Q(task__action__in=[Annotation.ANNOTATE, Annotation.DUPLICATE]))
+            self.annotated_annotations = annotations
+            return self.annotated_annotations
 
     def get_reviewed_annotations(self):
-        tasks = [task.id for task in self.get_total_tasks().all()]
-        return Annotation.objects.filter(Q(task__in=tasks) & Q(task__is_reviewed=True))
+        if self.reviewed_annotations is not None:
+            return self.reviewed_annotations
+        else:
+            tasks = self.get_total_tasks()
+            annotations = self.get_total_annotations().filter(Q(task__is_finished=True) & Q(task__action=Task.REVIEW))
+            self.reviewed_annotations = annotations
+            return self.reviewed_annotations
 
     def get_annotation_statistics(self):
         total = self.get_total_annotations().count()
@@ -50,22 +64,42 @@ class ProjectService():
         }
 
     def get_annotated_tasks(self):
-        return self.project.task_set.filter(is_annotated=True)
+        if self.annotated_tasks is not None:
+            return self.annotated_tasks
+        else:
+            self.annotated_tasks = self.get_total_tasks().filter(Q(is_finished=True) & Q(action__in=[Task.ANNOTATE, Task.DUPLICATE]))
+            return self.annotated_tasks
 
     def get_reviewed_tasks(self):
-        return self.project.task_set.filter(is_reviewed=True)
+        if self.reviewed_tasks is not None:
+            return self.reviewed_tasks
+        else:
+            self.reviewed_tasks = self.get_total_tasks().filter(Q(is_finished=True) & Q(action=Task.REVIEW))
+            return self.reviewed_tasks
 
     def get_total_tasks(self):
-        return self.project.task_set
+        if self.total_tasks is not None:
+            return self.total_tasks
+        else:
+            self.total_tasks = self.project.task_set
+            return self.total_tasks
     
     def get_open_annotation_tasks(self):
-        return self.project.task_set.filter(Q(is_annotated=False) & Q(annotator=None))
+        if self.open_annotation_tasks is not None:
+            return self.open_annotation_tasks
+        else:
+            self.open_annotation_tasks = self.get_total_tasks().filter(Q(is_finished=False) & Q(action__in=[Task.ANNOTATE, Task.DUPLICATE]) & Q(annotator=None))
+            return self.open_annotation_tasks
     
     def get_open_review_tasks(self):
-        return self.project.task_set.filter(Q(is_annotated=True) & Q(is_reviewed=False) & Q(reviewer=None))
+        if self.open_review_tasks is not None:
+            return self.open_review_tasks
+        else:
+            self.open_review_tasks = self.get_total_tasks().filter(Q(is_finished=False) & Q(action=Task.REVIEW) & Q(annotator=None))
+            return self.open_review_tasks
     
     def claim_annotation_task(self, user):
-        task = self.get_open_annotation_tasks().first()
+        task = self.get_open_annotation_tasks().filter(~Q(copied_from__annotator=user)).first()
         if task is not None:
             task.annotator = user
             task.save()
@@ -74,9 +108,9 @@ class ProjectService():
             return None
     
     def claim_review_task(self, user):
-        task = self.get_open_review_tasks().first()
+        task = self.get_open_review_tasks().filter(~Q(copied_from__annotator=user)).first()
         if task is not None:
-            task.reviewer = user
+            task.annotator = user
             task.save()
             return task
         else:
@@ -105,12 +139,22 @@ class ProjectService():
         labels = self.project.label_set.all()
         tasks = self.get_total_tasks().all()
         label_counts = {}
+        review_annotations = self.get_total_annotations().filter(action=Annotation.REVIEW)
+        annotation_annotations = self.get_total_annotations().filter(Q(action=Annotation.ANNOTATE) & ~Q(annotation__in=review_annotations))
+        label_counts = {}
 
-        for task in tasks:
-            for label in labels:
-                cnt = self.get_task_label_count(task, label)
-                prev_count = label_counts.get(cnt[0], 0)
-                label_counts[cnt[0]] = prev_count + cnt[1]
+        for label in labels:
+            label_counts[label.name] = 0
+        
+        for annotation in review_annotations:
+            annotation_labels = annotation.labels.all()
+            for label in annotation_labels:
+                label_counts[label.name] += 1
+        
+        for annotation in annotation_annotations:
+            annotation_labels = annotation.labels.all()
+            for label in annotation_labels:
+                label_counts[label.name] += 1
 
         total_labels = sum(label_counts.values())
         relative_label_counts = {}
@@ -127,18 +171,6 @@ class ProjectService():
             'total': total_labels
         }
 
-    def get_task_label_count(self, task, label):
-        annotations = task.annotation_set.all()
-        label_count = 0
-        for annotation in annotations:
-            labels = annotation.annotator_labels.all()
-            reviewer = annotation.reviewer_labels.all()
-            anno_count = len([l for l in labels if label.id == l.id and len(reviewer) == 0])
-            rev_count = len([l for l in reviewer if l.id == label.id])
-            label_count = label_count + anno_count + rev_count
-
-        return (label.name, label_count)
-
     def get_project_statistics(self):
         return {
             'annotations': self.get_annotation_statistics(),
@@ -153,12 +185,9 @@ class ProjectService():
         labels = None
         if len(sorted_statistics) > 0:
             label_count = Label.objects.filter(project=self.project).count()
-            print(label_count)
             LOWER_THRESHOLD = 40
             label_num = math.floor(label_count/100 * LOWER_THRESHOLD)
-            print(label_num)
             label_names = [ name for name, val in sorted_statistics[0:label_num]]
-            print(label_names)
             labels = Label.objects.filter(name__in=label_names, project=self.project).all()
         return labels
         

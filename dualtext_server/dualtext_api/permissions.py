@@ -64,18 +64,18 @@ class TaskPermission(BasePermission):
         # allow access to all tasks for admins
         if request.user and request.user.is_superuser == True:
             return True
-        # allow access to assigned annotators or reviewers
+        # allow access to assigned annotators
         else:
-            return bool(request.user == obj.annotator or request.user == obj.reviewer)
+            return bool(request.user == obj.annotator)
 
 class AnnotationPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         # allow access to all annotations for admins
         if request.user and request.user.is_superuser == True:
             return True
-        # allow access to assigned annotators or reviewers
+        # allow access to assigned annotators
         else:
-            return bool(request.user == obj.task.annotator or request.user == obj.task.reviewer)
+            return bool(request.user == obj.task.annotator)
 
 class DocumentPermission(BasePermission):
     def has_object_permission(self, request, view, obj):

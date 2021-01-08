@@ -12,9 +12,20 @@ class Builder():
         stale_feature_values = FeatureValue.objects.filter(Q(document__in=documents) & Q(feature__key=feature_key)).delete()
         print('removed {} stale feature values'.format(stale_feature_values[0]))
 
-        feature_instance = self.features[feature_key]
-        feature_values = feature_instance.process_documents(documents)
-
+        feature_instance = self.features.get(feature_key, None)
+        if feature_instance is not None:
+            feature_values = feature_instance.create_feature(documents)
+            self.save_features(feature_values, feature_key)
+            msg = 'Successfully build {} for {} documents.'.format(feature_key, len(documents.all()))
+            print(msg)
+    
+    def update_document_features(self, documents, feature_key):
+        feature_instance = self.features.get(feature_key, None)
+        if feature_instance is not None:
+            feature_values = feature_instance.update_feature(documents)
+            self.save_features(feature_values, feature_key)
+    
+    def save_features(self, feature_values, feature_key):
         feature = Feature.objects.get(key=feature_key)
         new_feature_values = []
         for val in feature_values:
@@ -25,5 +36,4 @@ class Builder():
             new_feature_values = new_feature_values + [fv]
 
         FeatureValue.objects.bulk_create(new_feature_values)
-        msg = 'Successfully build {} for {} documents.'.format(feature_key, len(documents.all()))
-        print(msg)
+

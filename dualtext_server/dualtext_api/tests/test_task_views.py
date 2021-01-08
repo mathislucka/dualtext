@@ -17,7 +17,7 @@ class TestTaskListView(APITestCase):
         """
         Ensure a new task can be created by a superuser.
         """
-        data = {'name': 'Test Task', 'annotator': self.user.id, 'reviewer': self.superuser.id}
+        data = {'name': 'Test Task', 'annotator': self.user.id}
         self.client.force_authenticate(user=self.superuser)
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -53,18 +53,15 @@ class TestTaskListView(APITestCase):
 
     def test_list(self):
         """
-        A user should see all tasks assigned to them as annotator or reviewer
+        A user should see all tasks assigned to them as annotator.
         """
         t1 = Task(name="new task", project=self.project, annotator=self.user)
         t1.save()
-        t2 = Task(name='second task', project=self.project, reviewer=self.user)
-        t2.save()
 
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], t1.name)
-        self.assertEqual(response.data[1]['name'], t2.name)
 
     def test_list_project_only(self):
         """
@@ -74,7 +71,7 @@ class TestTaskListView(APITestCase):
         p2.save()
         t1 = Task(name="new task", project=self.project, annotator=self.user)
         t1.save()
-        t2 = Task(name='second task', project=p2, reviewer=self.user)
+        t2 = Task(name='second task', project=p2, annotator=self.user)
         t2.save()
 
         self.client.force_authenticate(user=self.user)
@@ -121,13 +118,12 @@ class TestClaimTaskView(APITestCase):
 
         t1 = Task(name="first task", project=self.project)
         t1.save()
-        t2 = Task(name="claimed task", project=self.project, annotator=self.user, is_annotated=True)
+        t2 = Task(name="claimed task", project=self.project, annotator=self.user, action=Task.REVIEW, copied_from=t1)
         t2.save()
 
         url = reverse('task_claimable', args=[self.project.id])
         self.client.force_authenticate(user=self.user)
         response = self.client.get(url, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['open_annotations'], 1)
         self.assertEqual(response.data['open_reviews'], 1)
@@ -159,7 +155,7 @@ class TestClaimTaskView(APITestCase):
         self.user.groups.add(self.group)
         self.user.save()
 
-        t1 = Task(name="first task", project=self.project, is_annotated=True)
+        t1 = Task(name="first task", project=self.project, action=Task.REVIEW)
         t1.save()
 
         url = reverse('task_claim', args=[self.project.id, 'review'])

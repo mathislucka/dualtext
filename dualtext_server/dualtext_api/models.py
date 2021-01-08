@@ -29,6 +29,7 @@ class Project(AbstractBase):
     corpora = models.ManyToManyField(Corpus)
     allowed_groups = models.ManyToManyField(Group, related_name='%(class)s_allowed')
     annotation_document_duplicates = models.BooleanField(blank=True, default=True)
+    use_reviews = models.BooleanField(blank=True, default=True)
 
     class Meta(AbstractBase.Meta):
         constraints = [
@@ -47,12 +48,20 @@ class Label(AbstractBase):
         ]
 
 class Task(AbstractBase):
+    ANNOTATE = 'annotate'
+    REVIEW = 'review'
+    DUPLICATE = 'duplicate'
+    ACTION_CHOICES = (
+        (ANNOTATE, 'annotate'),
+        (REVIEW, 'review'),
+        (DUPLICATE, 'duplicate'),
+    )
     name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     annotator = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_annotator', null=True)
-    reviewer = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_reviewer', null=True)
-    is_annotated = models.BooleanField(blank=True, default=False)
-    is_reviewed = models.BooleanField(blank=True, default=False)
+    is_finished = models.BooleanField(blank=True, default=False)
+    copied_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES, blank=True, default=ANNOTATE)
 
     class Meta(AbstractBase.Meta):
         constraints = [
@@ -60,11 +69,20 @@ class Task(AbstractBase):
         ]
 
 class Annotation(AbstractBase):
+    ANNOTATE = 'annotate'
+    REVIEW = 'review'
+    DUPLICATE = 'duplicate'
+    ACTION_CHOICES = (
+        (ANNOTATE, 'annotate'),
+        (REVIEW, 'review'),
+        (DUPLICATE, 'duplicate'),
+    )
     documents = models.ManyToManyField(Document, blank=True)
-    annotator_labels = models.ManyToManyField(Label, related_name='%(class)s_annotator', blank=True)
-    reviewer_labels = models.ManyToManyField(Label, related_name='%(class)s_reviewer', blank=True)
+    labels = models.ManyToManyField(Label, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    is_reviewed = models.BooleanField(blank=True, default=False)
+    is_finished = models.BooleanField(blank=True, default=False)
+    copied_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES, blank=True, default=ANNOTATE)
 
 class Prediction(AbstractBase):
     annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)

@@ -21,11 +21,15 @@ function initDefaultStoreMethods (state) {
             return response
         },
     
-        async fetchResourceList (path, params = {}) {
+        async fetchResourceList (path, params = {}, strategy) {
             state.isLoading = true
             const response = await Api.fetch(path, params)
             const { items, order } = normalizeResponse(response)
-            state.items = items
+            if (strategy === 'append') {
+                state.items = { ...state.items, ...items }
+            } else {
+                state.items = items
+            }
             state.order = order
             state.isLoading = false
             handleCache(state, 'list')

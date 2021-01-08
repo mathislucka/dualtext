@@ -120,21 +120,21 @@ class TestProjectStatisticsView(APITestCase):
         l3 = Label(name='foobar', project=self.project, color={"standard": "color"})
         l3.save()
 
-        t1 = Task(name='t1', project=self.project, annotator=self.user, reviewer=self.superuser)
+        t1 = Task(name='t1', project=self.project, annotator=self.user)
         t1.save()
-        t2 = Task(name='t2', project=self.project, annotator=self.user, reviewer=self.superuser)
+        t2 = Task(name='t2', project=self.project, annotator=self.user)
         t2.save()
 
         a1 = Annotation(task=t1)
         a1.save()
-        a1.annotator_labels.add(l1)
-        a1.annotator_labels.add(l2)
+        a1.labels.add(l1)
+        a1.labels.add(l2)
         a1.save()
 
         a2 = Annotation(task=t2)
         a2.save()
-        a2.annotator_labels.add(l1)
-        a2.annotator_labels.add(l3)
+        a2.labels.add(l1)
+        a2.labels.add(l3)
         a2.save()
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
@@ -145,7 +145,7 @@ class TestProjectStatisticsView(APITestCase):
 
     def test_reviewer_labels_override_annotator(self):
         """
-        Ensure that reviewer labels are counted if both an annotator and a reviewer label are set on an annotation.
+        Ensure that reviewer labels are counted if there is a review task.
         """
         l1 = Label(name='foo', project=self.project, color={"standard": "color"})
         l1.save()
@@ -154,48 +154,48 @@ class TestProjectStatisticsView(APITestCase):
         l3 = Label(name='foobar', project=self.project, color={"standard": "color"})
         l3.save()
 
-        t1 = Task(name='t1', project=self.project, annotator=self.user, reviewer=self.superuser)
+        t1 = Task(name='t1', project=self.project, annotator=self.user)
         t1.save()
-        t2 = Task(name='t2', project=self.project, annotator=self.user, reviewer=self.superuser)
+        t2 = Task(name='t2', project=self.project, annotator=self.user, action=Task.REVIEW, copied_from=t1)
         t2.save()
 
         a1 = Annotation(task=t1)
         a1.save()
-        a1.annotator_labels.add(l1)
-        a1.reviewer_labels.add(l3)
-        a1.reviewer_labels.add(l2)
+        a1.labels.add(l1)
+        a1.labels.add(l3)
+        a1.labels.add(l2)
         a1.save()
 
-        a2 = Annotation(task=t2)
+        a2 = Annotation(task=t2, copied_from=a1, action=Annotation.REVIEW)
         a2.save()
-        a2.annotator_labels.add(l2)
-        a2.annotator_labels.add(l3)
+        a2.labels.add(l2)
+        a2.labels.add(l3)
         a2.save()
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
 
-        self.assertEqual(response.data['labels']['absolute']['foobar'], 2)
+        self.assertEqual(response.data['labels']['absolute']['foobar'], 1)
         self.assertEqual(response.data['labels']['relative']['foo'], 0)
-        self.assertEqual(response.data['labels']['total'], 4)
+        self.assertEqual(response.data['labels']['total'], 2)
 
     def test_task_counts(self):
         """
         Ensure that statistics contain the total count of tasks as well as absolute and percentage values for
         annotated and reviewed tasks.
         """
-        t1 = Task(name='t1', project=self.project, annotator=self.user, reviewer=self.superuser, is_annotated=True)
+        t1 = Task(name='t1', project=self.project, annotator=self.user, is_finished=True)
         t1.save()
-        t2 = Task(name='t2', project=self.project, annotator=self.user, reviewer=self.superuser, is_annotated=True, is_reviewed=True)
+        t2 = Task(name='t2', project=self.project, annotator=self.user, action=Task.REVIEW, is_finished=True, copied_from=t1)
         t2.save()
-        t3 = Task(name='t3', project=self.project, annotator=self.user, reviewer=self.superuser)
+        t3 = Task(name='t3', project=self.project, annotator=self.user)
         t3.save()
         
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
 
         self.assertEqual(response.data['tasks']['total'], 3)
-        self.assertEqual(response.data['tasks']['annotated_absolute'], 2)
-        self.assertEqual(response.data['tasks']['annotated_relative'], 0.67)
+        self.assertEqual(response.data['tasks']['annotated_absolute'], 1)
+        self.assertEqual(response.data['tasks']['annotated_relative'], 0.33)
         self.assertEqual(response.data['tasks']['reviewed_absolute'], 1)
         self.assertEqual(response.data['tasks']['reviewed_relative'], 0.33)
     
@@ -204,20 +204,20 @@ class TestProjectStatisticsView(APITestCase):
         Ensure that statistics contain the total count of annotations as well as absolute and percentage values for
         annotated and reviewed annotations.
         """
-        t1 = Task(name='t1', project=self.project, annotator=self.user, reviewer=self.superuser, is_annotated=True)
+        t1 = Task(name='t1', project=self.project, annotator=self.user, is_finished=True)
         t1.save()
-        t2 = Task(name='t2', project=self.project, annotator=self.user, reviewer=self.superuser, is_reviewed=True)
+        t2 = Task(name='t2', project=self.project, annotator=self.user, action=Task.REVIEW, is_finished=True, copied_from=t1)
         t2.save()
-        t3 = Task(name='t3', project=self.project, annotator=self.user, reviewer=self.superuser)
+        t3 = Task(name='t3', project=self.project, annotator=self.user)
         t3.save()
 
         a1 = Annotation(task=t1)
         a1.save()
-        a2 = Annotation(task=t2)
+        a2 = Annotation(task=t2, action=Annotation.REVIEW, copied_from=a1)
         a2.save()
-        a3 = Annotation(task=t2)
+        a3 = Annotation(task=t2, action=Annotation.REVIEW, copied_from=a1)
         a3.save()
-        a4 = Annotation(task=t2)
+        a4 = Annotation(task=t2, action=Annotation.REVIEW, copied_from=a1)
         a4.save()
         a5 = Annotation(task=t3)
         a5.save()

@@ -19,7 +19,7 @@ class AnnotationListView(APIView):
             queryset = Annotation.objects.filter(task=task)
             user = request.user
             if not user.is_superuser:
-                queryset = queryset.filter(Q(task__annotator=user) | Q(task__reviewer=user))
+                queryset = queryset.filter(task__annotator=user)
             ps = ProjectService(task.project.id)
             desired_label = ps.get_desired_label()
             data = AnnotationSerializer(queryset, many=True).data

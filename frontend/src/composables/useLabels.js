@@ -7,61 +7,49 @@ function fetchProjectLabels (projectId) {
     projectId && Label.actions.fetchLabelList(`/project/${projectId}/label`)
 }
 
-function setReviewerLabels (annotation) {
-    const reviewLabelPatch = { id: annotation.value.id, reviewer_labels: annotation.value.annotator_labels }
+function setLabelsFromOrigin (annotation) {
+    const origin = Annotation.items.value[annotation.value.copied_from]
+    const reviewLabelPatch = { id: annotation.value.id, labels: origin.labels }
     Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, reviewLabelPatch)
 }
 
 function getAnnotatorLabels (annotation) {
-    const ids = annotation.value.annotator_labels || []
-    return ids.map(id => Label.items.value[id] || null).filter(label => label)
-}
-
-function getReviewerLabels (annotation) {
-    const ids = annotation.value.reviewer_labels || []
+    const ids = annotation.value.labels || []
     return ids.map(id => Label.items.value[id] || null).filter(label => label)
 }
 
 function useLabels (project, annotation, isReview = ref(false)) {
     function removeLabel (labelId) {
         let labelPatch = { id: annotation.value.id }
-        if (isReview.value === true) {
-            labelPatch.reviewer_labels = annotation.value.reviewer_labels.filter(label => label !== labelId)
-        } else {
-            labelPatch.annotator_labels = annotation.value.annotator_labels.filter(label => label !== labelId)
-        }
+        labelPatch.labels = annotation.value.labels.filter(label => label !== labelId)
         Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
     }
 
     function addLabel (labelId) {
         let labelPatch = { id: annotation.value.id }
-        if (isReview.value === true) {
-            labelPatch.reviewer_labels = [ ...annotation.value.reviewer_labels || [], labelId ]
-        } else {
-            labelPatch.annotator_labels = [ ...annotation.value.annotator_labels || [], labelId ]
-        }
+        labelPatch.labels = [ ...annotation.value.labels || [], labelId ]
         Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
     }
-
-    const annotatorLabels = computed(() => getAnnotatorLabels(annotation))
-
-    const reviewerLabels = computed(() => getReviewerLabels(annotation))
+    const labelsToReview = computed(() => {
+        const reviewAnnotation = Annotation.items.value[annotation.value.copied_from]
+        return reviewAnnotation && reviewAnnotation.labels.map(id => Label.items.value[id] || null).filter(label => label)
+    })
+    
+    const labels = computed(() => getAnnotatorLabels(annotation) || [])
 
     const availableLabels = computed(() => {
         return Object.values(Label.items.value)
     })
 
-    const selectedLabels = computed(() => isReview.value === true ? reviewerLabels.value : annotatorLabels.value)
-
-    const labelCallback = prepareLabelHotkeys(availableLabels, addLabel, removeLabel, selectedLabels)
+    const labelCallback = prepareLabelHotkeys(availableLabels, addLabel, removeLabel, labels)
     const unregister = useGlobalEvents('keypress', labelCallback)
 
     watch(project, () => {
         fetchProjectLabels(project.value.id)
     })
 
-    const confirmAnnotatorLabels = () => {
-        setReviewerLabels(annotation)
+    const confirmLabelsToReview = () => {
+        setLabelsFromOrigin(annotation)
     }
 
     onMounted(() => {
@@ -70,11 +58,11 @@ function useLabels (project, annotation, isReview = ref(false)) {
 
     return {
         addLabel,
-        annotatorLabels,
+        labels,
         availableLabels,
-        confirmAnnotatorLabels,
+        confirmLabelsToReview,
         removeLabel,
-        reviewerLabels
+        labelsToReview
     }
 }
 

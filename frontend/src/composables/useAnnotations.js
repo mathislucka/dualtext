@@ -2,11 +2,13 @@ import { onMounted, watch, computed } from 'vue'
 import Annotation from './../store/Annotation.js'
 
 function fetchAnnotations (taskId) {
-    return Annotation.actions.fetchAnnotationList(`/task/${taskId}/annotation/`)
+    return Annotation.actions.fetchAnnotationList(`/task/${taskId}/annotation/`, {}, 'append').then((response) => {
+        response.forEach(annotation => annotation.copied_from && Annotation.actions.fetchAnnotation(`/annotation/${annotation.copied_from}`))
+    })
 }
 
 const useAnnotations = (taskId, annotationId) => {
-    const annotations = computed(() => Object.values(Annotation.items.value))
+    const annotations = computed(() => Object.values(Annotation.items.value).filter(anno => anno.task === taskId.value))
     const annotation = computed(() => Annotation.items.value[annotationId.value] || {})
     const annotationIdx = computed(() => annotations.value.findIndex(anno => anno.id === annotationId.value))
     const totalAnnotations = computed(() => annotations.value.length)
@@ -59,13 +61,12 @@ const useAnnotations = (taskId, annotationId) => {
 }
 
 function useAnnotationDecider (projectId, taskId, router, isReview) {
-    const labelKey = isReview.value === true ? 'reviewer_labels' : 'annotator_labels'
     const routeName = isReview.value === true ? 'review_detail' : 'annotation_detail'
     onMounted(() => {
         if (taskId && taskId > -1) {
             fetchAnnotations(taskId).then(() => {
-                const annotations = Object.values(Annotation.items.value)
-                const nextOpenAnnotation = annotations.find(anno => anno[labelKey].length === 0) || annotations[annotations.length - 1]
+                const annotations = Object.values(Annotation.items.value).filter(anno => anno.task === parseInt(taskId))
+                const nextOpenAnnotation = annotations.find(anno => anno.labels.length === 0) || annotations[annotations.length - 1]
                 if (nextOpenAnnotation && nextOpenAnnotation.id) {
                     router.push({ name: routeName, params: { projectId: projectId, taskId: taskId, annotationId: nextOpenAnnotation.id }})
                 } else {

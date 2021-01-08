@@ -3,7 +3,7 @@
         <label-box
             class="mb-2"
             v-if="isReview"
-            :labels="annotatorLabels"
+            :labels="labelsToReview"
             :heading="'Annotator Labels'"
             :bg-color="'blue'" />
         <div
@@ -11,18 +11,18 @@
             class="flex justify-end">
             <button
                 class="text-white px-2 py-1 hover:bg-blue-700 mb-4 bg-blue-500 shadow rounded"
-                @click="confirmAnnotatorLabels">Confirm Labels (Space)</button>
+                @click="confirmLabelsToReview">Confirm Labels (Space)</button>
         </div>
         <label-box
             :heading="'Selected Labels'"
             @label-removed="removeLabel"
             class="mb-8"
-            :labels='selectedLabels'
+            :labels="selectedLabels"
             :event="'label-removed'" />
         <label-box
             @label-added="addLabel"
             :heading="'Available Labels'"
-            :labels='availableLabels'
+            :labels="availableLabels"
             :bg-color="'blue'"
             :event="'label-added'" />
     </div>
@@ -58,33 +58,34 @@ export default {
 
         const {
             addLabel,
-            annotatorLabels,
+            labels,
             availableLabels,
-            confirmAnnotatorLabels,
+            confirmLabelsToReview,
             removeLabel,
-            reviewerLabels
+            labelsToReview
         } = useLabels(project, annotation, isReview)
 
-        const selectedLabels = computed(() => isReview.value === true ? reviewerLabels.value : annotatorLabels.value)
-
-        const confirmationCallback = (e) => {
-            if (e.code === 'Space') {
-                confirmAnnotatorLabels()
+        if (isReview.value === true) {
+            const confirmationCallback = (e) => {
+                if (e.code === 'Space') {
+                    confirmLabelsToReview()
+                }
             }
+            useGlobalEvents('keypress', confirmationCallback)
         }
 
-        useGlobalEvents('keypress', confirmationCallback)
-        
+        const selectedLabels = computed(() => labels.value)
+
         return {
             addLabel,
-            annotatorLabels,
-            confirmAnnotatorLabels,
             selectedLabels,
+            confirmLabelsToReview,
             availableLabels: computed(() => {
                 const selectedIds = selectedLabels.value.map(label => label && label.id)
                 return availableLabels.value.filter(label => !selectedIds.includes(label && label.id))
             }),
-            removeLabel
+            removeLabel,
+            labelsToReview
         }
     }
 }

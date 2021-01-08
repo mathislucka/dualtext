@@ -25,35 +25,39 @@ class UserService():
         if self.user_tasks is not None:
             return self.user_tasks
         else:
-            self.user_tasks = Task.objects.filter(Q(annotator=self.user) | Q(reviewer=self.user))
+            self.user_tasks = Task.objects.filter(annotator=self.user)
             return self.user_tasks
 
     def get_open_annotation_tasks(self):
         if self.open_annotation_tasks is not None:
             return self.open_annotation_tasks
         else:
-            self.open_annotation_tasks = self.get_user_tasks().filter(Q(annotator=self.user) & Q(is_annotated=False))
+            self.open_annotation_tasks = self.get_user_tasks().filter(
+                Q(action__in=[Task.ANNOTATE, Task.DUPLICATE]) & Q(is_finished=False)
+            )
             return self.open_annotation_tasks
 
     def get_open_review_tasks(self):
         if self.open_review_tasks is not None:
             return self.open_review_tasks
         else:
-            self.open_review_tasks = self.get_user_tasks().filter(Q(reviewer=self.user) & Q(is_reviewed=False))
+            self.open_review_tasks = self.get_user_tasks().filter(Q(action=Task.REVIEW) & Q(is_finished=False))
             return self.open_review_tasks
 
     def get_closed_annotation_tasks(self):
         if self.closed_annotation_tasks is not None:
             return self.closed_annotation_tasks
         else:
-            self.closed_annotation_tasks = self.get_user_tasks().filter(Q(annotator=self.user) & Q(is_annotated=True))
+            self.closed_annotation_tasks = self.get_user_tasks().filter(
+                Q(action__in=[Task.ANNOTATE, Task.DUPLICATE]) & Q(is_finished=True)
+            )
             return self.closed_annotation_tasks
 
     def get_closed_review_tasks(self):
         if self.closed_review_tasks is not None:
             return self.closed_review_tasks
         else:
-            self.closed_review_tasks = self.get_user_tasks().filter(Q(reviewer=self.user) & Q(is_reviewed=True))
+            self.closed_review_tasks = self.get_user_tasks().filter(Q(action=Task.REVIEW) & Q(is_finished=True))
             return self.closed_review_tasks
 
     def get_closed_annotations(self):

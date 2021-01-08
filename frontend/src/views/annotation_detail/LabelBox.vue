@@ -19,12 +19,12 @@
 import AnnotationLabel from './AnnotationLabel.vue'
 
 export default {
-    name: 'SelectedLabels',
+    name: 'LabelBox',
     components: { AnnotationLabel },
     emits: [ 'label-removed', 'label-added' ],
     props: {
         labels: {
-            type: Object,
+            //type: Array, there is possibly a bug here which has labels as undefined although it can never be undefined
             required: true
         },
         event: {
@@ -56,6 +56,9 @@ export default {
             return this.bgColor === 'grey' ? 'bg-grey-100' : 'bg-blue-100'
         }
 
+    },
+    mounted () {
+        console.log(this.labels)
     }
 }
 </script>

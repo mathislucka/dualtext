@@ -54,9 +54,9 @@ class TestAnnotationListView(APITestCase):
 
     def test_view_only_allowed(self):
         """
-        Ensure users can only view annotations that are children of tasks where the user is assigned as annotator or reviewer.
+        Ensure users can only view annotations that are children of tasks where the user is assigned as annotator.
         """
-        t2 = Task(annotator=self.superuser, reviewer=self.user, project=self.project, name='Reviewer Task')
+        t2 = Task(annotator=self.user, project=self.project, name='Assigned Task')
         t2.save()
         t3 = Task(annotator=self.superuser, project=self.project, name='Not assigned task')
         t3.save()
@@ -88,7 +88,7 @@ class TestAnnotationListView(APITestCase):
         self.assertEqual(response_task.annotator, self.user)
         
         self.assertEqual(len(response_2.data), 1)
-        self.assertEqual(response_2_task.reviewer, self.user)
+        self.assertEqual(response_2_task.annotator, self.user)
 
         self.assertEqual(len(response_3.data), 0)
 
@@ -129,24 +129,16 @@ class TestAnnotationDetailView(APITestCase):
 
         self.url = reverse('annotation_detail', args=[self.annotation.id])
     
-    def test_reviewer_annotator_view(self):
+    def test_annotator_view(self):
         """
-        Ensure that reviewers and annotators of a task can view an annotation.
+        Ensure that annotators of a task can view an annotation.
         """
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
         response_task_id = response.data['task']
+        
         self.assertEqual(response_task_id, self.task.id)
         self.assertEqual(Task.objects.get(id=response_task_id).annotator, self.user)
-
-        self.task.annotator = self.superuser
-        self.task.reviewer = self.user
-        self.task.save()
-
-        response_2 = self.client.get(self.url, format='json')
-        response_2_task_id = response_2.data['task']
-        self.assertEqual(response_2_task_id, self.task.id)
-        self.assertEqual(Task.objects.get(id=response_2_task_id).reviewer, self.user)
 
     def test_superuser_view(self):
         """
@@ -157,25 +149,17 @@ class TestAnnotationDetailView(APITestCase):
         self.assertEqual(response.data['id'], self.annotation.id)
         self.assertEqual(response.data['task'], self.task.id)
     
-    def test_reviewer_annotator_edit(self):
+    def test_annotator_edit(self):
         """
-        Ensure that reviewers and annotators can edit an annotation.
+        Ensure that annotators can edit an annotation.
         """
         label = Label(name="annotator", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
         label.save()
 
         self.client.force_authenticate(user=self.user)
-        response = self.client.patch(self.url, {'annotator_labels': [label.id]}, format='json')
+        response = self.client.patch(self.url, {'labels': [label.id]}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Annotation.objects.get(id=response.data['id']).annotator_labels.all()[0], label)
-
-        self.task.annotator = self.superuser
-        self.task.reviewer = self.user
-        self.task.save()
-
-        response_2 = self.client.patch(self.url, {'reviewer_labels': [label.id]}, format='json')
-        self.assertEqual(response_2.status_code, status.HTTP_200_OK)
-        self.assertEqual(Annotation.objects.get(id=response_2.data['id']).reviewer_labels.all()[0], label)
+        self.assertEqual(Annotation.objects.get(id=response.data['id']).labels.all()[0], label)
 
     def test_superuser_edit(self):
         """
@@ -185,28 +169,26 @@ class TestAnnotationDetailView(APITestCase):
         label.save()
 
         self.client.force_authenticate(user=self.superuser)
-        response = self.client.patch(self.url, {'annotator_labels': [label.id]}, format='json')
+        response = self.client.patch(self.url, {'labels': [label.id]}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Annotation.objects.get(id=response.data['id']).annotator_labels.all()[0], label)
+        self.assertEqual(Annotation.objects.get(id=response.data['id']).labels.all()[0], label)
 
-    def test_deny_non_reviewer_annotator_view(self):
+    def test_deny_non_annotator_view(self):
         """
         Ensure that users who are neither annotator nor reviewer can't see an annotation.
         """
         self.task.annotator = self.superuser
-        self.task.reviewer = self.superuser
         self.task.save()
 
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_deny_non_reviewer_annotator_edit(self):
+    def test_deny_non_annotator_edit(self):
         """
         Ensure that users who are neither annotator nor reviewer can't edit an annotation.
         """
         self.task.annotator = self.superuser
-        self.task.reviewer = self.superuser
         self.task.save()
 
         self.client.force_authenticate(user=self.user)

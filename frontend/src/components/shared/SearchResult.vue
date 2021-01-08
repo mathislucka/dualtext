@@ -31,12 +31,13 @@ export default {
     },
     setup (props) {
         const annotationId = inject('annotationId', null)
+        const taskId = inject('taskId', null)
 
         const addDocument = (docId) => {
             const annotation = Annotation.items.value[annotationId.value]
             if (annotation && annotation.documents) {
                 const documents = annotation.documents.length === 2 ? [ annotation.documents[0], docId ] : [ ...annotation.documents, docId ]
-                Annotation.actions.updateAnnotation(`/annotation/${annotation.id}`, { documents, id: annotation.id })
+                Annotation.actions.updateAnnotation(`/annotation/${annotation.id}`, { documents, id: annotation.id }, {}, taskId.value)
             }
         }
 

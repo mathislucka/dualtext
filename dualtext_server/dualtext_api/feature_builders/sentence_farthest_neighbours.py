@@ -27,7 +27,6 @@ class SentenceFarthestNeighbours():
         for doc_id, emb in doc_embeddings:
             for sec_doc_id, sec_emb in doc_tracker:
                 score = util.pytorch_cos_sim(emb, sec_emb).squeeze().tolist()
-                print(score)
                 if score < self.SIMILARITY_THRESHOLD:
                     far_neighbors[doc_id]['neighbours'].append(sec_doc_id)
                     far_neighbors[sec_doc_id]['neighbours'].append(doc_id)
@@ -62,7 +61,6 @@ class SentenceFarthestNeighbours():
 
         created_feature_values = []
         for doc_id in far_neighbors:
-            print(far_neighbors[doc_id])
             content = pickle.dumps(far_neighbors[doc_id], protocol=None, fix_imports=True, buffer_callback=None)
             created_feature_values.append((doc_id, content))
         return created_feature_values

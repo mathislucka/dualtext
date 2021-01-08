@@ -37,12 +37,12 @@ function getTask (taskId) {
 function useOpenTasks (userId, projectId) {
     const openAnnotationTasks = computed(() => {
         return Object.values(Task.items.value)
-            .filter(task => task.annotator === userId.value && task.is_annotated === false)
+            .filter(task => task.annotator === userId.value && task.is_finished === false && task.action === 'annotate')
     })
 
     const openReviewTasks = computed(() => {
         return Object.values(Task.items.value)
-            .filter(task => task.reviewer === userId.value && task.is_reviewed === false)
+            .filter(task => task.annotator === userId.value && task.is_finished === false && task.action === 'review')
     })
 
     watch(projectId, () => {
@@ -62,12 +62,12 @@ function useOpenTasks (userId, projectId) {
 function useClosedTasks (userId, projectId) {
     const closedAnnotationTasks = computed(() => {
         return Object.values(Task.items.value)
-            .filter(task => task.annotator === userId.value && task.is_annotated === true)
+            .filter(task => task.annotator === userId.value && task.is_finished === true && task.action === 'annotate')
     })
 
     const closedReviewTasks = computed(() => {
         return Object.values(Task.items.value)
-            .filter(task => task.reviewer === userId.value && task.is_reviewed === true)
+            .filter(task => task.annotator === userId.value && task.is_finished === true && task.action === 'review')
     })
 
     watch(projectId, () => {
@@ -102,7 +102,7 @@ function useTaskClaiming(projectId) {
     }
 
     const unclaimReviewTask = (taskId) => {
-        Task.actions.updateTask(`/task/${taskId}`, { id: taskId, reviewer: null }).then(() => fetchClaimableTasks())
+        Task.actions.updateTask(`/task/${taskId}`, { id: taskId, annotator: null }).then(() => fetchClaimableTasks())
     }
 
     onMounted(fetchClaimableTasks)

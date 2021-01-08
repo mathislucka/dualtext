@@ -43,15 +43,13 @@ class TaskSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'annotator',
-            'reviewer',
-            'is_annotated',
-            'is_reviewed',
+            'is_finished',
+            'action',
             'project'
         ] + DEFAULT_FIELDS
         extra_kwargs = {
-            'is_annotated': {'required': False},
-            'is_reviewed': {'required': False},
-            'reviewer': {'required': False},
+            'is_finished': {'required': False},
+            'action': {'required': False},
         }
 
         validators = [
@@ -67,20 +65,18 @@ class AnnotationSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'documents',
-            'annotator_labels',
-            'reviewer_labels',
+            'labels',
             'task',
             'prediction_set',
-            'is_reviewed'
+            'action',
+            'copied_from'
         ] + DEFAULT_FIELDS
         extra_kwargs = {
-            'reviewer_labels': {'required': False},
-            'annotator_labels': {'required': False},
+            'labels': {'required': False},
             'prediction_set': {'required': False},
             'documents': {'required': False},
-            'is_reviewed': {'required': False},
         }
-        read_only_fields = ['task']
+        read_only_fields = ['task', 'action', 'copied_from']
 
 class PredictionSerializer(serializers.ModelSerializer):
     class Meta:

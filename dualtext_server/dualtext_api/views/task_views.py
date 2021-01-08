@@ -20,7 +20,7 @@ class TaskListView(generics.ListCreateAPIView):
         queryset = Task.objects.filter(project=self.kwargs['project_id'])
         user = self.request.user
         if not user.is_superuser:
-            queryset = queryset.filter(Q(annotator=user) | Q(reviewer=user))
+            queryset = queryset.filter(annotator=user)
         return queryset
 
     def create(self, request, *args, **kwargs):

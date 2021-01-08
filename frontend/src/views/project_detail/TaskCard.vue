@@ -21,6 +21,7 @@
                                     :to="{ name: routeName, params: { projectId, taskId: task.id } }">
                                     {{ task.name }}
                                 </router-link>
+                                <input type="checkbox" class="mr-2" @input="markTaskAsDone(task.id, $event)"/>
                                 <button
                                     type="button"
                                     class="flex text-xs text-blue-500 hover:text-blue-700"
@@ -56,6 +57,7 @@ import { useOpenTasks, useClosedTasks, useTaskClaiming } from './../../composabl
 import { useUser } from './../../composables/useUser.js'
 import Card from './../../components/layout/Card.vue'
 import Icon from './../../components/shared/Icon.vue'
+import Task from './../../store/Task.js'
 import { computed, inject, toRefs } from 'vue'
 
 export default {
@@ -103,11 +105,19 @@ export default {
         const routeName = taskType.value === 'annotation' ? 'annotation_decider' : 'review_decider'
 
         const heading = computed(() => taskType.value === 'annotation' ? 'Annotation Tasks' : 'Review Tasks')
+
+        const markTaskAsDone = (taskId, e) => {
+            console.log(e)
+            if (e.target.checked === true) {
+                Task.actions.updateTask(`/task/${taskId}`, { id: taskId, is_finished: true })
+            }
+        }
         return {
             claimable,
             claimTask,
             closedTasks,
             heading,
+            markTaskAsDone,
             openTasks,
             projectId,
             routeName,

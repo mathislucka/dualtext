@@ -21,7 +21,6 @@ class TestLabelListView(APITestCase):
         """
         self.client.force_authenticate(user=self.superuser)
         response = self.client.post(self.url, self.data, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Label.objects.count(), 1)
         self.assertEqual(Label.objects.get(id=1).name, 'TestLabel')

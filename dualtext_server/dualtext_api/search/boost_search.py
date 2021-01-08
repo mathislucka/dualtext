@@ -43,7 +43,6 @@ class BoostSearch():
         print("search time: {:.2f} ms".format(search_time * 1000))
         for hit in response["hits"]["hits"]:
             if hit['_score'] > 1.8:
-                print(hit['_score'])
                 results.append((hit['_source']['doc_id'], hit['_score'], 'sentence_embedding'))
 
         return results

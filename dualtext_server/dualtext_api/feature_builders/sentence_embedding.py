@@ -10,31 +10,38 @@ class SentenceEmbedding():
     def __init__(self):
         self.model = model
         self.client = Elasticsearch()
+        self.INDEX_NAME = 'sentence_embeddings'
     
-    def process_documents(self, documents):
-            
+    def create_feature(self, documents):
+        embeddings = self.generate_embeddings(documents)
+        self.index_data(embeddings)
+        return self.prepare_for_storage(embeddings)
+
+    
+    def update_feature(self, documents):
+        embeddings = self.generate_embeddings(documents)
+        self.update_es_index(embeddings)
+        return self.prepare_for_storage(embeddings)
+
+    def generate_embeddings(self, documents):
         sentences = [document.content for document in documents.all()]
         ids = [document.id for document in documents.all()]
         sentences = self.split_list(sentences, 250)
 
-        to_store = []
-        # for lst in sentences:
-        #     embeddings = self.model.encode(lst, convert_to_tensor=True)
-        #     to_store.extend([pickle.dumps(ndarray, protocol=None, fix_imports=True, buffer_callback=None) for ndarray in embeddings])
+        generated = []
         for lst in sentences:
             embeddings = self.model.encode(lst, convert_to_tensor=True)
-            to_store.extend(embeddings)
+            generated.extend(embeddings)
         
-        matched_embeddings = zip(ids, to_store)
-        self.index_data('embeddings', matched_embeddings)
-        store_rly = []
+        return zip(ids, generated)
+    
+    def prepare_for_storage(self, embeddings):
+        to_store = []
         for doc_id, emb in matched_embeddings:
-            print(emb.shape)
             dump = pickle.dumps(emb, protocol=None, fix_imports=True, buffer_callback=None)
-            store_rly.append((doc_id, dump))
+            to_store.append((doc_id, dump))
+        return to_store
 
-        
-        return store_rly
 
     def process_query(self, query):
         embeddings = self.model.encode([query])
@@ -43,9 +50,9 @@ class SentenceEmbedding():
     def split_list(self, lst, chunk_size):
         return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
     
-    def index_data(self, index_name, data):
+    def build_es_index(self, data):
         print("Creating the 'posts' index.")
-        self.client.indices.delete(index=index_name, ignore=[404])
+        self.client.indices.delete(index=self.INDEX_NAME, ignore=[404])
         source = {
             "settings": {
                 "number_of_shards": 2,
@@ -67,19 +74,21 @@ class SentenceEmbedding():
                 }
             }
         }
-        self.client.indices.create(index=index_name, body=json.dumps(source))
-        
+        self.client.indices.create(index=self.INDEX_NAME, body=json.dumps(source))
+        self.update_es_index(data)
+    
+    def update_es_index(self, data):
         requests = []
         for doc_id, vector in data:
             request = {}
             request["doc_id"] = doc_id
             request["_op_type"] = "index"
-            request["_index"] = index_name
+            request["_index"] = self.INDEX_NAME
             request["doc_vector"] = vector.tolist()
             requests.append(request)
         bulk(self.client, requests)
 
-        self.client.indices.refresh(index=index_name)
+        self.client.indices.refresh(index=self.INDEX_NAME)
         print("Done indexing.")
 
 
