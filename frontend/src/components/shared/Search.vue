@@ -17,7 +17,8 @@
 
 <script>
 import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
-import { ref } from 'vue'
+import { useSearch } from './../../composables/useSearch.js'
+import { ref, watch } from 'vue'
 
 export default {
   name: 'Search',
@@ -42,22 +43,29 @@ export default {
           }
       }
   },
-  setup () {
-      const search = ref(null)
-        const hasFocus = ref(false)
-      const focusSearch = (e) => {
-          if (e.key === '/') {
+  setup (props, context) {
+    const search = ref(null)
+    const hasFocus = ref(false)
+    const focusSearch = (e) => {
+        if (e.key === '/') {
             e.preventDefault()
             search.value && search.value.focus()
             hasFocus.value = true
-          }
-      }
-      useGlobalEvents('keypress', focusSearch)
+        }
+    }
+    useGlobalEvents('keypress', focusSearch)
 
-      return {
-          search,
-          hasFocus
-      }
+    const { query } = useSearch()
+
+    watch(query, () => {
+        context.emit('update:query', query.value)
+        search.value && search.value.focus()
+    })
+
+    return {
+        search,
+        hasFocus
+    }
   }
 }
 </script>

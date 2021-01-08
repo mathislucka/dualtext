@@ -12,6 +12,8 @@
 <script>
 import { toRefs, ref, computed, inject } from 'vue'
 import { useDocuments } from './../../composables/useDocuments.js'
+import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
+import Search from './../../store/Search.js'
 import Document from './Document.vue'
 import Annotation from './../../store/Annotation.js'
 export default {
@@ -35,6 +37,16 @@ export default {
             currentDocuments,
             removeDocument
         } = useDocuments(annotation, annotationIdx)
+
+        const addDocumentToSearch = (e) => {
+            if (e.key === '+' && currentDocuments.value.length > 0) {
+                Search.actions.setSearchQuery(currentDocuments.value[0].content)
+            }
+        }
+
+        useGlobalEvents('keypress', addDocumentToSearch)
+
+
 
         return {
             documents: computed(() => {

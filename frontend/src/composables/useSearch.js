@@ -1,12 +1,16 @@
-import { computed } from 'vue'
+import { ref, watch } from 'vue'
 import Search from './../store/Search.js'
 function useSearch () {
-    function fetchSearchResults (corpora, methods, query) {
-        Search.fetchSearchResults('/search/', { corpus: corpora, methods: methods, query: query })
-    }
+    const query = ref('')
+    watch(Search.searchQuery, () => {
+        if (Search.searchQuery.value) {
+            query.value = Search.searchQuery.value
+        }
+    })
 
     return {
-        fetchSearchResults,
-        searchResults: computed(() => Search.results)
+        query
     }
 }
+
+export { useSearch }
