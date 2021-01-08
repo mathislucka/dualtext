@@ -1,13 +1,15 @@
 from .sentence_embedding import SentenceEmbedding
+from django.db.models import Q
+from .sentence_farthest_neighbours import SentenceFarthestNeighbours
 from ..models import Corpus, Document, FeatureValue, Feature
 
 class Builder():
     def __init__(self):
-        self.features = {'sentence_embedding': SentenceEmbedding(), 'sentence_embedding_two': SentenceEmbedding()}
+        self.features = {'sentence_embedding': SentenceEmbedding(), 'sentence_farthest_neighbours': SentenceFarthestNeighbours()}
 
     def build_document_features(self, documents, feature_key):
         print('starting to build {} for {} documents...'.format(feature_key, len(documents.all())))
-        stale_feature_values = FeatureValue.objects.filter(document__in=documents).delete()
+        stale_feature_values = FeatureValue.objects.filter(Q(document__in=documents) & Q(feature__key=feature_key)).delete()
         print('removed {} stale feature values'.format(stale_feature_values[0]))
 
         feature_instance = self.features[feature_key]
