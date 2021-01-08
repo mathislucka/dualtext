@@ -49,7 +49,7 @@ const routes = [
         name: 'review_decider',
         component: AnnotationDecider,
         beforeEnter: (to, from, next) => {
-            if (from.name === 'annotation_detail') {
+            if (from.name === 'review_detail') {
                 next({ name: 'project_detail', params: { projectId: to.params.projectId }})
             } else {
                 next()

@@ -13,6 +13,7 @@ export default {
         const { taskId, projectId } = route.params
         const isReview = computed(() => route.name === 'review_decider')
         const router = useRouter()
+        console.log(taskId, projectId)
         if (taskId && projectId) {
             useAnnotationDecider(projectId, taskId, router, isReview)
         }

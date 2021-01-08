@@ -14,11 +14,15 @@ function useTask (taskId) {
     })
     
     watch(taskId, () => {
-        fetchTask(taskId.value)
+        if (taskId.value && taskId.value > -1) {
+            fetchTask(taskId.value)
+        }
     })
     
     onMounted(() => {
-        fetchTask(taskId.value)
+        if (taskId.value && taskId.value > -1) {
+            fetchTask(taskId.value)
+        }
     })
 
     return {
