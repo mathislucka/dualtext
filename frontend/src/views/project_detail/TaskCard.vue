@@ -10,43 +10,47 @@
             </div>
         </template>
         <template v-slot:content>
-            <div class="flex w-full">
-                <div class="w-1/2">
-                    <h3 class="text-lg font-semibold text-grey-600">Open</h3>
-                    <ul>
-                        <template v-for="task in openTasks" :key="task.id + 'open'">
-                            <li class="mb-2 flex">
-                                <router-link
-                                    class="underline font-semibold text-blue-500 hover:text-blue-700 mr-4"
-                                    :to="{ name: routeName, params: { projectId, taskId: task.id } }">
-                                    {{ task.name }}
-                                </router-link>
-                                <input type="checkbox" class="mr-2" @input="markTaskAsDone(task.id, $event)"/>
-                                <button
-                                    type="button"
-                                    class="flex text-xs text-blue-500 hover:text-blue-700"
-                                    title="unclaim"
-                                    @click="unclaimTask(task.id)">
-                                    <icon :icon="'user-x'" :height="16" :width="16" class="mt-1" />
-                                </button>
-                            </li>
+            <div class="w-full">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-grey-500 py-2">
+                                name
+                            </th>
+                            <th class="text-left text-grey-500 py-2">
+                                done
+                            </th>
+                            <th class="text-left text-grey-500 py-2">
+                                unclaim
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-for="task in tasks" :key="task.id + 'open'">
+                            <tr class="border-b border-grey-300">
+                                <td class="py-2">
+                                    <router-link
+                                        class="underline font-semibold text-blue-500 hover:text-blue-700 mr-4"
+                                        :to="{ name: routeName, params: { projectId, taskId: task.id } }">
+                                        {{ task.name }}
+                                    </router-link>
+                                </td>
+                                <td class="py-2">
+                                    <input type="checkbox" class="mr-2" :checked="task.is_finished" @input="toggleTaskStatus(task)"/>
+                                </td>
+                                <td class="py-2">
+                                    <button
+                                        type="button"
+                                        class="flex text-xs text-blue-500 hover:text-blue-700"
+                                        title="unclaim"
+                                        @click="unclaimTask(task.id)">
+                                        <icon :icon="'user-x'" :height="16" :width="16" class="mt-1" />
+                                    </button>
+                                </td>
+                            </tr>
                         </template>
-                    </ul>
-                </div>
-                <div class="w-1/2">
-                    <h3 class="text-lg font-semibold text-grey-600">Closed</h3>
-                    <ul>
-                        <template v-for="task in closedTasks" :key="task.id + 'closed'">
-                            <li class="mb-2">
-                                <router-link
-                                    class="underline font-semibold text-blue-500 hover:text-blue-700"
-                                    :to="{ name: routeName, params: { projectId, taskId: task.id } }">
-                                    {{ task.name }}
-                                </router-link>
-                            </li>
-                        </template>
-                    </ul>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </template>
     </card>
@@ -106,19 +110,17 @@ export default {
 
         const heading = computed(() => taskType.value === 'annotation' ? 'Annotation Tasks' : 'Review Tasks')
 
-        const markTaskAsDone = (taskId, e) => {
-            console.log(e)
-            if (e.target.checked === true) {
-                Task.actions.updateTask(`/task/${taskId}`, { id: taskId, is_finished: true })
-            }
+        const toggleTaskStatus = (task) => {
+            Task.actions.updateTask(`/task/${task.id}`, { id: task.id, is_finished: !task.is_finished })
         }
+
+        const tasks = computed(() => openTasks.value.concat(closedTasks.value))
         return {
             claimable,
             claimTask,
-            closedTasks,
             heading,
-            markTaskAsDone,
-            openTasks,
+            toggleTaskStatus,
+            tasks,
             projectId,
             routeName,
             unclaimTask
