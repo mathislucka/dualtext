@@ -12,7 +12,7 @@ class Search():
         self.methods = methods
         self.available_methods = {
             'elastic': ElasticSearch,
-            'sentence_embedding': BoostSearch
+            'sentence_embedding': SentenceEmbeddingSearch
         }
         self.project_id = None
         if project_id:

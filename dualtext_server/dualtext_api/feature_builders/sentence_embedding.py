@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
+from dualtext_api.models import FeatureValue, Feature
 import pickle
 import json
 
@@ -14,8 +15,8 @@ class SentenceEmbedding():
     
     def create_feature(self, documents):
         embeddings = self.generate_embeddings(documents)
-        self.index_data(embeddings)
-        return self.prepare_for_storage(embeddings)
+        self.build_es_index(embeddings)
+        return self.save_feature(embeddings)
 
     
     def update_feature(self, documents):
@@ -33,15 +34,15 @@ class SentenceEmbedding():
             embeddings = self.model.encode(lst, convert_to_tensor=True)
             generated.extend(embeddings)
         
-        return zip(ids, generated)
+        return list(zip(ids, generated))
     
-    def prepare_for_storage(self, embeddings):
-        to_store = []
-        for doc_id, emb in matched_embeddings:
+    def save_feature(self, embeddings):
+        feature = Feature.objects.get(key='sentence_embedding')
+        for doc_id, emb in embeddings:
             dump = pickle.dumps(emb, protocol=None, fix_imports=True, buffer_callback=None)
-            to_store.append((doc_id, dump))
-        return to_store
-
+            feature_value = FeatureValue(value=dump, feature=feature)
+            feature_value.document_id = doc_id
+            feature_value.save()
 
     def process_query(self, query):
         embeddings = self.model.encode([query])
@@ -51,7 +52,7 @@ class SentenceEmbedding():
         return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
     
     def build_es_index(self, data):
-        print("Creating the 'posts' index.")
+        print("Creating the 'sentence_embeddings' index.")
         self.client.indices.delete(index=self.INDEX_NAME, ignore=[404])
         source = {
             "settings": {
@@ -75,9 +76,12 @@ class SentenceEmbedding():
             }
         }
         self.client.indices.create(index=self.INDEX_NAME, body=json.dumps(source))
-        self.update_es_index(data)
+        chunks = self.split_list(data, 1000)
+        for chunk in chunks:
+            self.update_es_index(chunk, call_refresh=False)
+        self.client.indices.refresh(index=self.INDEX_NAME)
     
-    def update_es_index(self, data):
+    def update_es_index(self, data, call_refresh=True):
         requests = []
         for doc_id, vector in data:
             request = {}
@@ -87,8 +91,8 @@ class SentenceEmbedding():
             request["doc_vector"] = vector.tolist()
             requests.append(request)
         bulk(self.client, requests)
-
-        self.client.indices.refresh(index=self.INDEX_NAME)
+        if call_refresh:
+            self.client.indices.refresh(index=self.INDEX_NAME)
         print("Done indexing.")
 
 

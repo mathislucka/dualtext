@@ -15,7 +15,7 @@ class Builder():
         feature_instance = self.features.get(feature_key, None)
         if feature_instance is not None:
             feature_values = feature_instance.create_feature(documents)
-            self.save_features(feature_values, feature_key)
+            #self.save_features(feature_values, feature_key)
             msg = 'Successfully build {} for {} documents.'.format(feature_key, len(documents.all()))
             print(msg)
     

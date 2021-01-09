@@ -5,6 +5,7 @@ from ..models import Document, FeatureValue
 from dualtext_api.feature_builders.sentence_embedding import SentenceEmbedding
 class SentenceEmbeddingSearch():
     def search(self, documents, query):
+        print('called')
         sent_embed = SentenceEmbedding()
         embedded_query = sent_embed.process_query(query)
         features_values = FeatureValue.objects.filter(Q(document__id__in=documents) & Q(feature__key='sentence_embedding'))

@@ -1,6 +1,7 @@
 from django.db.models import Q
 from operator import itemgetter
 from dualtext_api.models import Project, Annotation, Label, Task
+from sklearn.metrics import confusion_matrix
 import math
 
 class ProjectService():
@@ -175,7 +176,8 @@ class ProjectService():
         return {
             'annotations': self.get_annotation_statistics(),
             'labels': self.get_label_statistics(),
-            'tasks': self.get_task_statistics()
+            'tasks': self.get_task_statistics(),
+            'agreement': self.get_annotator_reviewer_agreement()
         }
 
     def get_desired_label(self):
@@ -190,4 +192,46 @@ class ProjectService():
             label_names = [ name for name, val in sorted_statistics[0:label_num]]
             labels = Label.objects.filter(name__in=label_names, project=self.project).all()
         return labels
+    
+    def get_annotator_reviewer_agreement(self):
+        reviewed_annotations = self.get_reviewed_annotations().all()
+        annotator_reviewer_matches = {}
+        for annotation in reviewed_annotations:
+            review_labels = [label.name for label in annotation.labels.all()]
+            annotation_labels = [label.name for label in annotation.copied_from.labels.all()]
+            for label in review_labels:
+                if annotator_reviewer_matches.get(label, None) is None:
+                    annotator_reviewer_matches[label] = {
+                        'annotator': [],
+                        'reviewer': []
+                    }
+                if label in annotation_labels:
+                    annotator_reviewer_matches[label]['annotator'].append(label)
+                    annotator_reviewer_matches[label]['reviewer'].append(label)
+                else:
+                    annotator_reviewer_matches[label]['annotator'].append('Not ' + label)
+                    annotator_reviewer_matches[label]['reviewer'].append(label)
+            for label in annotation_labels:
+                if label in review_labels:
+                    pass
+                else:
+                    if annotator_reviewer_matches.get(label, None) is None:
+                        annotator_reviewer_matches[label] = {
+                            'annotator': [],
+                            'reviewer': []
+                        }
+                    annotator_reviewer_matches[label]['annotator'].append(label)
+                    annotator_reviewer_matches[label]['reviewer'].append('Not ' + label)
+        confusion = {}
+        for label in annotator_reviewer_matches:
+            matrix = confusion_matrix(annotator_reviewer_matches[label]['annotator'], annotator_reviewer_matches[label]['annotator'])
+            confusion[label] = matrix
+        return confusion
+            
+
+
+
+
+
+
         
