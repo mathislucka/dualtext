@@ -1,0 +1,3 @@
+.link {
+    @apply underline font-semibold text-blue-500 hover:text-blue-700;
+}

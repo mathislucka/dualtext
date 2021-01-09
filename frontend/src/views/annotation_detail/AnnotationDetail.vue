@@ -24,7 +24,24 @@
             </card>
         </multi-column>
         <teleport to="#menu-content">
-            <span v-for="task in openAnnotationTasks" :key="task.id">{{ task.name }}</span>
+            <span class="font-semibold text-teal-500">Project</span>
+            <router-link :to="{ name: 'project_detail', params: { projectId: project.id }}" class="link">{{ project.name }}</router-link>
+            <span class="font-semibold text-teal-500 mt-4">Open Tasks</span>
+            <router-link
+                v-for="task in openAnnotationTasks"
+                :key="task.id"
+                class="link"
+                :to="{ name: 'annotation_decider', params: { projectId: project.id, taskId: task.id }}">
+                {{ task.name }}
+            </router-link>
+            <span class="font-semibold text-teal-500 mt-4">Open Reviews</span>
+            <router-link
+                v-for="task in openReviewTasks"
+                :key="task.id"
+                class="link"
+                :to="{ name: 'review_decider', params: { projectId: project.id, taskId: task.id }}">
+                {{ task.name }}
+            </router-link>
         </teleport>
 </template>
 
@@ -70,7 +87,7 @@ export default {
         provide('taskId', taskId)
         provide('isReview', isReview)
         
-        useSingleProject(projectId)
+        const { project } = useSingleProject(projectId)
         useTask(taskId)
 
         const { user } = useUser()
@@ -99,6 +116,7 @@ export default {
             totalAnnotations,
             openAnnotationTasks,
             openReviewTasks,
+            project
         }
     }
 }

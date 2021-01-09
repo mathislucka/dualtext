@@ -2,9 +2,7 @@ import { computed, onMounted, watch } from 'vue'
 import Task from './../store/Task.js'
 
 function fetchProjectTasks (projectId) {
-    if (!Task.isLoading.value) {
-        Task.actions.fetchTaskList(`/project/${projectId.value}/task/`)
-    }
+    Task.actions.fetchTaskList(`/project/${projectId.value}/task/`)
 }
 
 function useTask (taskId) {

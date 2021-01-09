@@ -194,7 +194,7 @@ class ProjectService():
         return labels
     
     def get_annotator_reviewer_agreement(self):
-        reviewed_annotations = self.get_reviewed_annotations().all()
+        reviewed_annotations = self.get_reviewed_annotations().filter()
         annotator_reviewer_matches = {}
         for annotation in reviewed_annotations:
             review_labels = [label.name for label in annotation.labels.all()]
