@@ -23,14 +23,14 @@ const useCorpora = (project = {}) => {
     }
 
     onMounted(()=> {
-        if (project.value.id) {
+        if (project.value && project.value.id) {
             fetchProjectCorpora()
         } else {
             fetchCorpora()
         }
     })
     watch(project, () => {
-        if (project.value.id) {
+        if (project.value && project.value.id) {
             fetchProjectCorpora()
         } else {
             fetchCorpora()
@@ -39,7 +39,7 @@ const useCorpora = (project = {}) => {
 
     const corpora = computed(() => {
         let out = Object.values(Corpus.items.value)
-        if (project.value.id) {
+        if (project.value && project.value.id) {
             out = out.filter(corpus => project.value.corpora && project.value.corpora.includes(corpus.id))
         }
         return out

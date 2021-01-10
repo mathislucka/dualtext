@@ -44,11 +44,15 @@ function useOpenTasks (userId, projectId) {
     })
 
     watch(projectId, () => {
-        fetchProjectTasks(projectId)
+        if (projectId.value && projectId.value > -1) {
+            fetchProjectTasks(projectId)
+        }
     })
 
     onMounted(() => {
-        fetchProjectTasks(projectId)
+        if (projectId.value && projectId.value > -1) {
+            fetchProjectTasks(projectId)
+        }
     })
 
     return {
@@ -69,11 +73,15 @@ function useClosedTasks (userId, projectId) {
     })
 
     watch(projectId, () => {
-        fetchProjectTasks(projectId)
+        if (projectId.value && projectId.value > -1) {
+            fetchProjectTasks(projectId)
+        }
     })
 
     onMounted(() => {
-        fetchProjectTasks(projectId)
+        if (projectId.value && projectId.value > -1) {
+            fetchProjectTasks(projectId)
+        }
     })
 
     return {
