@@ -2,8 +2,8 @@ import { computed, watch, onMounted, ref } from 'vue'
 import Document from './../store/Document.js'
 import Annotation from './../store/Annotation.js'
 
-function useDocuments (annotation, currentAnnotationIdx) {
-    const annotations = computed(() => Object.values(Annotation.items.value))
+function useDocuments (annotation, currentAnnotationIdx, taskId) {
+    const annotations = computed(() => Object.values(Annotation.items.value).filter(anno => anno.task === taskId.value))
     const areDocumentsLoading = ref(false)
     function getDocumentsForAnnotation (annotation) {
         const currentlyFetchingDocuments = []

@@ -2,15 +2,13 @@
     <header>
         <div class="flex">
             <main-menu class="w-20" />
-            <search class="w-full" v-model:query="query" @keydown.enter="runSearch" />
+            <search class="w-full" />
             <div class="text-5xl text-teal-500 flex items-center border-b border-teal-500 w-64">
                 <span class="ml-4">dualtext</span>
             </div>
         </div>
         <div class="flex">
-            <filters
-                @filters-changed="updateQueryParams"
-                class="w-full ml-20 mr-64" />
+            <filters class="w-full ml-20 mr-64" />
         </div>
     </header>
 </template>
@@ -28,32 +26,6 @@ export default {
         Filters,
         MainMenu,
         Search,
-    },
-    props: {
-    },
-    data () {
-        return {
-            query: '',
-            filters: {}
-        }
-    },
-    computed: {
-        currentQuery () {
-            return { ...this.filters, query: this.query }
-        }
-    },
-    methods: {
-        runSearch () {
-            SearchStore.actions.fetchSearchResult('/search/', this.currentQuery)
-            if (this.$route.name !== 'annotation_detail') {
-                this.$router.push({ name: 'explore_corpora' })
-            }
-        },
-        updateQueryParams (params) {
-            this.filters = params.value
-        }
-    },
-    setup (props) {
     }
 }
 </script>

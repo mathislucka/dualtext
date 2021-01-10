@@ -13,8 +13,9 @@ class BoostSearch():
     def search(self, documents, query):
         embedding_start = time.time()
         sent_embed = SentenceEmbedding()
-        embedded_query = sent_embed.process_query(query)
+        embedded_query = sent_embed.process_query(query).tolist()
         embedding_time = time.time() - embedding_start
+        print(embedded_query)
 
         script_query = {
             "script_score": {
@@ -28,7 +29,7 @@ class BoostSearch():
 
         search_start = time.time()
         response = self.client.search(
-            index='embeddings',
+            index=sent_embed.INDEX_NAME,
             body={
                 "size": 200,
                 "query": script_query,
@@ -42,7 +43,8 @@ class BoostSearch():
         print("embedding time: {:.2f} ms".format(embedding_time * 1000))
         print("search time: {:.2f} ms".format(search_time * 1000))
         for hit in response["hits"]["hits"]:
-            if hit['_score'] > 1.8:
-                results.append((hit['_source']['doc_id'], hit['_score'], 'sentence_embedding'))
+            print(hit['_score'])
+            #if hit['_score'] > 1.6:
+            results.append((hit['_source']['doc_id'], hit['_score'], 'sentence_embedding'))
 
         return results

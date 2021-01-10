@@ -6,7 +6,14 @@ import Dashboard from './../views/dashboard/Dashboard.vue'
 import ProjectDetail from './../views/project_detail/ProjectDetail.vue'
 import ExploreCorpora from './../views/explore_corpora/ExploreCorpora.vue'
 import Search from '../store/Search.js'
+import CorpusDetail from './../views/corpus_detail/CorpusDetail.vue'
 const routes = [
+    {
+        path: '/corpus/:corpusId',
+        name: 'corpus_detail',
+        component: CorpusDetail,
+        props: route => ({ corpusId: parseInt(route.params.corpusId) })
+    },
     {
         path: '/dashboard',
         name: 'dashboard',

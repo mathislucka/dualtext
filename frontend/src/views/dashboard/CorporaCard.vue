@@ -9,7 +9,7 @@
                     <li class="mb-2">
                         <router-link
                             class="underline font-semibold text-blue-500 hover:text-blue-700"
-                            :to="{ name: 'project_detail', params: { projectId: 1 } }">
+                            :to="{ name: 'corpus_detail', params: { corpusId: corpus.id } }">
                             {{ corpus.name }}
                         </router-link>
                     </li>
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { useMultipleCorpora } from './../../composables/useCorpora.js'
+import { useCorpora } from './../../composables/useCorpora.js'
 
 import Card from '../../components/layout/Card.vue'
 export default {
@@ -29,7 +29,7 @@ export default {
         Card
     },
     setup () {
-        const { corpora } = useMultipleCorpora()
+        const { corpora } = useCorpora()
 
         return {
             corpora

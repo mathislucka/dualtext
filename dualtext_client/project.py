@@ -48,7 +48,6 @@ class Project(ApiBase):
         annotation_instance = Annotation(self.session, task['id'])
         for annotation in task_chunk:
             doc_ids = self.create_annotation_documents(annotation['documents'], corpus_id)
-            print(doc_ids)
             annotation_instance.create({'documents': doc_ids})
     
     def create_corpus_features(self, corpus_id, features):

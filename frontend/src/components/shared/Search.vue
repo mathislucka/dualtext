@@ -6,10 +6,9 @@
             type="text"
             class="w-full :focus-outline-none outline-none h-full main-bg"
             placeholder="Press '/' to search corpora..."
-            :value="query"
             @keypress.stop="() => {}"
-            @keydown.stop="bubbleEnter($event)"
-            @input="$emit('update:query', $event.target.value)"
+            @keydown.stop="searchIfEnter($event)"
+            v-model="currentQuery"
             @focus="focusParent"
             @blur="unfocusParent">
     </div>
@@ -18,18 +17,10 @@
 <script>
 import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
 import { useSearch } from './../../composables/useSearch.js'
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 export default {
   name: 'Search',
-  emits: [ 'update:query', 'keydown' ],
-  props: {
-    query: {
-        type: String,
-        required: false,
-        default: ''
-    }
-  },
   methods: {
       focusParent () {
           this.hasFocus = true
@@ -37,9 +28,13 @@ export default {
       unfocusParent () {
           this.hasFocus = false
       },
-      bubbleEnter (e) {
+      searchIfEnter (e) {
           if (e.code === 'Enter') {
-              this.$emit('keydown', e)
+              e.preventDefault()
+              this.runSearch()
+            if (this.$route.name !== 'annotation_detail' && this.$route.name !== 'corpus_detail') {
+                this.$router.push({ name: 'explore_corpora' })
+            }
           }
       }
   },
@@ -47,7 +42,7 @@ export default {
     const search = ref(null)
     const hasFocus = ref(false)
     const focusSearch = (e) => {
-        if (e.key === '/') {
+        if (e.key === '/' || e.key === '+') {
             e.preventDefault()
             search.value && search.value.focus()
             hasFocus.value = true
@@ -55,16 +50,20 @@ export default {
     }
     useGlobalEvents('keypress', focusSearch)
 
-    const { query } = useSearch()
+    const { query, setQuery, runSearch } = useSearch()
 
-    watch(query, () => {
-        context.emit('update:query', query.value)
-        search.value && search.value.focus()
+    const currentQuery = computed({
+        get: () => query.value,
+        set: (val) => {
+            setQuery(val)
+        }
     })
 
     return {
         search,
-        hasFocus
+        hasFocus,
+        currentQuery,
+        runSearch
     }
   }
 }

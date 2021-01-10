@@ -23,11 +23,13 @@
 
 <script>
 import { inject, computed, watch, onMounted, ref } from 'vue'
-import { useCorpora, useMultipleCorpora } from '../../composables/useCorpora'
+import { useCorpora } from '../../composables/useCorpora'
 import Multiselect from './Multiselect.vue'
 import { useSingleProject } from '../../composables/useProjects'
+import Search from './../../store/Search.js'
+
 export default {
-  name: 'Search',
+  name: 'Filters',
   components: {
       Multiselect
   },
@@ -43,40 +45,32 @@ export default {
   },
   setup (props, context) {
       const projectId = inject('projectId', null)
-      let corpora
+      const corpusId = inject('corpusId', null)
+      let currentProject = ref({})
       if (projectId) {
         const { project } = useSingleProject(projectId)
-        const corporaWrapper = useCorpora(project)
-        corpora = corporaWrapper.corpora
-      } else {
-        const corporaWrapper = useMultipleCorpora()
-        corpora = corporaWrapper.corpora
+        currentProject.value = project
       }
 
+      const { corpora } = useCorpora(currentProject)
+
       const transformedCorpora = computed(() => {
-        return corpora.value.reduce((acc, corpus) => {
+        const transformed = corpora.value.reduce((acc, corpus) => {
             acc[corpus.id] = corpus.name
             return acc
         }, {})
+        return corpusId ? { [corpusId.value]: transformed[corpusId.value] } : transformed
       })
 
-      const filters = ref({
-          method: { '1': 'elastic', '2': 'sentence_embedding' },
-          corpus: null
+      watch(corpora, () => {
+          currentFilters.value = { corpus: corpora.value.map(c => c.id ) }
       })
 
       const currentFilters = computed({
-          get: () => ({
-              method: Object.values(filters.value.method),
-              corpus: Object.keys(filters.value.corpus || transformedCorpora.value ),
-              ...projectId ? { project: projectId.value } : {}
-            }),
+          get: () => Search.selectedFilters.value,
           set: (val) => {
-              filters.value = { ...filters.value, ...val }
+              Search.actions.setSelectedFilters({ ...Search.selectedFilters.value, ...val })
           }
-      })
-      watch(currentFilters, () => {
-          context.emit('filters-changed', currentFilters)
       })
 
       return {

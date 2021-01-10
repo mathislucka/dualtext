@@ -35,7 +35,6 @@ export default {
     setup () {
         onBeforeRouteUpdate((to, from) => {
             if (to.name === 'annotation_detail') {
-                console.log('called')
                 Search.actions.resetSearchResults()
             }
         })

@@ -36,7 +36,7 @@ export default {
         const {
             currentDocuments,
             removeDocument
-        } = useDocuments(annotation, annotationIdx)
+        } = useDocuments(annotation, annotationIdx, taskId)
 
         const addDocumentToSearch = (e) => {
             if (e.key === '+' && currentDocuments.value.length > 0) {

@@ -1,15 +1,9 @@
-import { ref, watch } from 'vue'
 import Search from './../store/Search.js'
 function useSearch () {
-    const query = ref('')
-    watch(Search.searchQuery, () => {
-        if (Search.searchQuery.value) {
-            query.value = Search.searchQuery.value
-        }
-    })
-
     return {
-        query
+        query: Search.searchQuery,
+        setQuery: Search.actions.setSearchQuery,
+        runSearch: Search.actions.runSearch
     }
 }
 

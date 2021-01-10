@@ -12,7 +12,8 @@ class TaskService():
     
     def copy_task(self, task_id, action=Task.REVIEW):
         task = Task.objects.get(id=task_id)
-        name = task.name + action
+        copies = task.task_set.all()
+        name = task.name + action + str(len(copies))
         task_copy = Task(name=name, project=task.project, copied_from=task, action=action)
         task_copy.save()
         self.copy_task_annotations(task, task_copy, action)
