@@ -74,6 +74,13 @@ class TestCorpusListView(APITestCase):
         response = self.client.post(self.url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_deny_not_authenticated(self):
+        """
+        Ensure only authenticated users can see corpora.
+        """
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 class TestCorpusDetailView(APITestCase):
     def setUp(self):
         standards = run_standard_setup()

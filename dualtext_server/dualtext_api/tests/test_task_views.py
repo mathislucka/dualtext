@@ -99,6 +99,13 @@ class TestTaskListView(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(len(response.data), 0)
 
+    def test_deny_not_authenticated(self):
+        """
+        Ensure only authenticated users can see tasks.
+        """
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 class TestClaimTaskView(APITestCase):
     def setUp(self):
         standards = run_standard_setup()

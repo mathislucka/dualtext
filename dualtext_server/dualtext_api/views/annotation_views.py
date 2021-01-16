@@ -27,7 +27,7 @@ class AnnotationListView(APIView):
                 for annotation in data:
                     annotation['desired_label'] = LabelSerializer(desired_label[random.randrange(0, len(desired_label))]).data
             return Response(data)
-        return Response('You are not permitted to access this resource.', status.HTTP_403_FORBIDDEN)
+        return Response('You must be logged in to request this resource.', status.HTTP_401_UNAUTHORIZED)
 
 
     def post(self, request, task_id):

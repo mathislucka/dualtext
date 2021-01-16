@@ -17,7 +17,7 @@
 <script>
 import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
 import { useSearch } from './../../composables/useSearch.js'
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 
 export default {
   name: 'Search',
@@ -32,13 +32,14 @@ export default {
           if (e.code === 'Enter') {
               e.preventDefault()
               this.runSearch()
-            if (this.$route.name !== 'annotation_detail' && this.$route.name !== 'corpus_detail') {
+            if (!this.shouldStayOnSearch) {
                 this.$router.push({ name: 'explore_corpora' })
             }
           }
       }
   },
   setup (props, context) {
+    const shouldStayOnSearch = inject('shouldStayOnSearch', null)
     const search = ref(null)
     const hasFocus = ref(false)
     const focusSearch = (e) => {
@@ -63,7 +64,8 @@ export default {
         search,
         hasFocus,
         currentQuery,
-        runSearch
+        runSearch,
+        shouldStayOnSearch
     }
   }
 }

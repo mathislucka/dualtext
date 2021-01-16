@@ -28,11 +28,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     ])
     class Meta:
         model = Project
-        fields = ['id', 'name', 'allowed_groups', 'creator', 'corpora', 'task_set'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'allowed_groups', 'creator', 'corpora', 'task_set', 'annotation_mode'] + DEFAULT_FIELDS
         extra_kwargs = {
             'allowed_groups': {'required': False},
             'corpora': {'required': False},
             'task_set': {'required': False},
+            'annotation_mode': {'required': False},
         }
         read_only_fields = ['creator']
 

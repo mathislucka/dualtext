@@ -30,7 +30,7 @@
                             <tr class="border-b border-grey-300">
                                 <td class="py-2">
                                     <router-link
-                                        class="underline font-semibold text-blue-500 hover:text-blue-700 mr-4"
+                                        class="link mr-4"
                                         :to="{ name: routeName, params: { projectId, taskId: task.id } }">
                                         {{ task.name }}
                                     </router-link>

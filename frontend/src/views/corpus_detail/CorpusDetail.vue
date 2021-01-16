@@ -36,6 +36,7 @@ export default {
     setup (props) {
         const { corpusId } = toRefs(props)
         provide('corpusId', corpusId)
+        provide('shouldStayOnSearch', true)
     }
 }
 </script>

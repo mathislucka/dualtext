@@ -54,7 +54,7 @@ class AuthenticatedReadAdminCreate(BasePermission):
     def has_permission(self, request, view):
         # allow reads for authenticated users
         if request.method in SAFE_METHODS:
-            return bool(request.user)
+            return bool(request.user.is_authenticated)
         # restrict creation to admin users
         else:
             return bool(request.user and request.user.is_superuser == True)

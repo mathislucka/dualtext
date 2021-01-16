@@ -17,7 +17,7 @@
                         :total-annotations="totalAnnotations" />
                 </template>
             </card>
-            <card class="overflow-auto" v-if="isReview === false" :use-header="false">
+            <card class="overflow-auto" v-if="showSearch" :use-header="false">
                 <template v-slot:content>
                     <search-result-list :is-annotation-view="true" />
                 </template>
@@ -104,7 +104,10 @@ export default {
             annotationIdx,
         } = useAnnotations(taskId, annotationId)
 
-        const columnNumber = computed(() => isReview.value ? 1 : 2)
+        const columnNumber = computed(() => isReview.value || project.value.annotation_mode === 'classification' ? 1 : 2)
+        const shouldStayOnSearch = computed(() => !isReview.value && project.value.annotation_mode === 'dualtext')
+        provide('shouldStayOnSearch', shouldStayOnSearch)
+        const showSearch = computed(() => isReview.value === false && project.value.annotation_mode === 'dualtext')
 
         return {
             annotation,
@@ -116,7 +119,8 @@ export default {
             totalAnnotations,
             openAnnotationTasks,
             openReviewTasks,
-            project
+            project,
+            showSearch
         }
     }
 }

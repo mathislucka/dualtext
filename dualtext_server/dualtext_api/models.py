@@ -24,12 +24,19 @@ class Document(AbstractBase):
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
 
 class Project(AbstractBase):
+    DUALTEXT = 'dualtext'
+    CLASSIFICATION = 'classification'
+    MODE_CHOICES = (
+        (DUALTEXT, 'dualtext'),
+        (CLASSIFICATION, 'classification'),
+    )
     name = models.CharField(max_length=255)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_creator', null=True)
     corpora = models.ManyToManyField(Corpus)
     allowed_groups = models.ManyToManyField(Group, related_name='%(class)s_allowed')
     annotation_document_duplicates = models.BooleanField(blank=True, default=True)
     use_reviews = models.BooleanField(blank=True, default=True)
+    annotation_mode = models.CharField(max_length=15, choices=MODE_CHOICES, blank=True, default=DUALTEXT)
 
     class Meta(AbstractBase.Meta):
         constraints = [
