@@ -1,59 +1,43 @@
 from sentence_transformers import SentenceTransformer
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from dualtext_api.models import FeatureValue, Feature
-import pickle
+from .abstract_feature import AbstractFeature
 import json
 
 model = SentenceTransformer('T-Systems-onsite/cross-en-de-roberta-sentence-transformer')
 
-class SentenceEmbedding():
+class SentenceEmbedding(AbstractFeature):
     def __init__(self):
         self.model = model
         self.client = Elasticsearch()
         self.INDEX_NAME = 'sentence_embeddings'
     
-    def create_feature(self, documents):
-        embeddings = self.generate_embeddings(documents)
-        #return self.save_feature(embeddings)
+    def create_features(self, documents):
+        self.generate_and_reindex_embeddings(documents)
 
-    
-    def update_feature(self, documents):
-        embeddings = self.generate_embeddings(documents)
-        self.update_es_index(embeddings)
-        return self.prepare_for_storage(embeddings)
+    def update_feature(self, document):
+        embeddings = self.encode_sentences([document])
+        indexable = [(document.id, embeddings[0])]
+        self.update_es_index(indexable)
 
-    def generate_embeddings(self, documents):
+    def generate_and_reindex_embeddings(self, documents):
         sentences = [document.content for document in documents.all()]
         ids = [document.id for document in documents.all()]
         sentences = self.split_list(sentences, 500)
         split_ids = self.split_list(ids, 500)
         self.recreate_es_index()
 
-        # embeddings = self.model.encode([sentences[0][0]])
-        # ids = [ids[0]]
-        # for emb in embeddings:
-        #     print(emb.shape)
-
         for idx, lst in enumerate(sentences):
-            embeddings = self.model.encode(lst, convert_to_tensor=True)
-            storable = list(zip(split_ids[idx], embeddings))
-            self.update_es_index(storable)
-            #self.save_feature(storable)
-    
-    def save_feature(self, embeddings):
-        feature = Feature.objects.get(key='sentence_embedding')
-        values_to_save = []
-        for doc_id, emb in embeddings:
-            dump = pickle.dumps(emb, protocol=None, fix_imports=True, buffer_callback=None)
-            feature_value = FeatureValue(value=dump, feature=feature)
-            feature_value.document_id = doc_id
-            values_to_save.append(feature_value)
-        FeatureValue.objects.bulk_create(values_to_save)
-            
+            embeddings = self.encode_sentences(lst)
+            indexable = list(zip(split_ids[idx], embeddings))
+            self.update_es_index(indexable, call_refresh=False)
+        self.refresh_index()
+
+    def encode_sentences(self, sentences):
+        return self.model.encode(sentences, convert_to_tensor=True)
 
     def process_query(self, query):
-        embeddings = self.model.encode([query], convert_to_tensor=True)
+        embeddings = self.encode_sentences([query])
         return embeddings[0]
     
     def split_list(self, lst, chunk_size):
@@ -84,35 +68,10 @@ class SentenceEmbedding():
             }
         }
         self.client.indices.create(index=self.INDEX_NAME, body=json.dumps(source))
-    
-    def build_es_index(self, data):
-        print("Creating the 'sentence_embeddings' index.")
-        self.client.indices.delete(index=self.INDEX_NAME, ignore=[404])
-        source = {
-            "settings": {
-                "number_of_shards": 2,
-                "number_of_replicas": 1
-            },
-            "mappings": {
-                "dynamic": "true",
-                "_source": {
-                    "enabled": "true"
-                },
-                "properties": {
-                    "doc_id": {
-                        "type": "keyword"
-                    },
-                    "doc_vector": {
-                        "type": "dense_vector",
-                        "dims": 768
-                    }
-                }
-            }
-        }
-        self.client.indices.create(index=self.INDEX_NAME, body=json.dumps(source))
-        self.update_es_index(data)
-        #self.client.indices.refresh(index=self.INDEX_NAME)
-    
+
+    def refresh_index(self):
+        self.client.indices.refresh(index=self.INDEX_NAME)
+
     def update_es_index(self, data, call_refresh=True):
         requests = []
         for doc_id, vector in data:
@@ -124,7 +83,5 @@ class SentenceEmbedding():
             requests.append(request)
         bulk(self.client, requests)
         if call_refresh:
-            self.client.indices.refresh(index=self.INDEX_NAME)
-        print("Done indexing.")
-
-
+            self.refresh_index()
+        print("Indexed {} documents.".format(len(data)))

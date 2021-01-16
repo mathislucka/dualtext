@@ -30,8 +30,7 @@ def generate_document_features_on_document_creation(sender, **kwargs):
         builder = Builder()
         corpus = document.corpus
         features = corpus.feature_set.all()
-        document_queryset = Document.objects.filter(id=document.id)
+        document_update = Document.objects.get(id=document.id)
 
         for feature in features:
-            builder.update_document_features(document_queryset, feature.key)
-    
+            builder.update_document_features(document_update, feature.key)

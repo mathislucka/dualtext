@@ -80,7 +80,7 @@ class TestSearchView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
-        def test_superuser_elasticsearch_results(self):
+    def test_superuser_elasticsearch_results(self):
         """
         Ensure that superusers have access to all corpora through search.
         """
