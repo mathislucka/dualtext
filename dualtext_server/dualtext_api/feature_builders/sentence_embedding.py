@@ -19,6 +19,11 @@ class SentenceEmbedding(AbstractFeature):
         embeddings = self.encode_sentences([document])
         indexable = [(document.id, embeddings[0])]
         self.update_es_index(indexable)
+    
+    def remove_features(self, documents):
+        documents = [doc.id for doc in documents]
+        self.client.indices.delete_by_query(index=self.INDEX_NAME, body={"query": {"terms": {"doc_id": documents}}})
+        self.refresh_index()
 
     def generate_and_reindex_embeddings(self, documents):
         sentences = [document.content for document in documents.all()]

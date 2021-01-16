@@ -77,6 +77,118 @@ class TestProjectListView(APITestCase):
         response = self.client.post(self.url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_deny_not_authenticated(self):
+        """
+        Ensure only authenticated users can see projects.
+        """
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+class TestProjectDetailView(APITestCase):
+    def setUp(self):
+        standards = run_standard_setup()
+        self.user = standards['user']
+        self.superuser = standards['superuser']
+        self.group = standards['group']
+        self.project = standards['project']
+        self.url = reverse('project_detail', args=[self.project.id])
+
+    def test_allowed_view(self):
+        """
+        Ensure projects can be viewed by project members.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.project.allowed_groups.add(self.group)
+        self.project.save()
+
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.project.id)
+    
+    def test_deny_access_non_members(self):
+        """
+        Ensure users who are not project members can't view a project.
+        """
+        self.client.force_authenticate(user=self.user)
+        self.project.allowed_groups.remove(self.group)
+        self.project.save()
+
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    
+    def test_superuser_view(self):
+        """
+        Ensure a project can be viewed by a superuser.
+        """
+        self.client.force_authenticate(user=self.superuser)
+        self.project.allowed_groups.remove(self.group)
+        self.project.save()
+
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.project.id)
+
+    def test_superuser_edit(self):
+        """
+        Ensure a superuser can update a project.
+        """
+        self.client.force_authenticate(user=self.superuser)
+        data = {'name': 'A new name'}
+
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], 'A new name')
+
+    def test_deny_non_superuser_edit(self):
+        """
+        Ensure only superusers can update a project.
+        """
+        self.client.force_authenticate(user=self.user)
+        data = {'name': 'A new name'}
+
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_superuser_delete(self):
+        """
+        Ensure that superusers can delete a project.
+        """
+        t = Task(project=self.project, name="task to delete")
+        t.save()
+
+        a = Annotation(task=t)
+        a.save()
+
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.delete(self.url, format='json')
+        try:
+            project = Project.objects.get(id=self.project.id)
+        except Project.DoesNotExist:
+            project = None
+
+        try:
+            task = Task.objects.get(id=t.id)
+        except Task.DoesNotExist:
+            task = None
+
+        try:
+            annotation = Annotation.objects.get(id=a.id)
+        except Annotation.DoesNotExist:
+            annotation = None
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(project, None)
+        self.assertEqual(task, None)
+        self.assertEqual(annotation, None)
+
+    def test_deny_non_superuser_delete(self):
+        """
+        Ensure that users who are not superusers can't delete a project.
+        """
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 class TestProjectStatisticsView(APITestCase):
     def setUp(self):
         standards = run_standard_setup()

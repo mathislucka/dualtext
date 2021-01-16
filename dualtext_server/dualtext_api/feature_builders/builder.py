@@ -21,3 +21,8 @@ class Builder():
         feature_instance = self.features.get(feature_key, None)
         if feature_instance is not None:
             feature_instance.update_feature(document)
+    
+    def remove_document_features(self, documents, feature_key):
+        feature_instance = self.features.get(feature_key, None)
+        if feature_instance is not None:
+            feature_instance.remove_features(documents)

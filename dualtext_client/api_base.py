@@ -21,6 +21,10 @@ class ApiBase():
     def update(self, payload):
         response = self.session.patch(self.single_resource_path.format(payload['id']), json=payload)
         return self.process_response(response)
+    
+    def delete(self, resource_id):
+        response = self.session.delete(self.single_resource_path.format(resource_id))
+        return self.process_response(response)
 
     def process_response(self, response):
         response.raise_for_status()

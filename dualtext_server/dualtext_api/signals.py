@@ -1,6 +1,6 @@
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
-from .models import Task, Document
+from .models import Task, Document, Corpus
 from dualtext_api.feature_builders.builder import Builder
 from dualtext_api.services import TaskService
 
@@ -34,3 +34,13 @@ def generate_document_features_on_document_creation(sender, **kwargs):
 
         for feature in features:
             builder.update_document_features(document_update, feature.key)
+
+@receiver(pre_delete, sender=Corpus)
+def delete_document_features_on_corpus_deletion(sender, **kwargs):
+    corpus = kwargs['instance']
+    builder = Builder()
+    documents = corpus.document_set.all()
+    features = corpus.feature_set.all()
+
+    for feature in features:
+        builder.remove_document_features(documents, feature.key)

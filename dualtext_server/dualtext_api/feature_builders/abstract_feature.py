@@ -21,6 +21,15 @@ class AbstractFeature(ABC):
         pass
 
     @abstractmethod
+    def remove_features(self, documents):
+        """
+        This method receives a list of documents. It should remove the feature values of these documents.
+        If necessary the deletion of the feature value from the DB is handled here.
+        Any external feature representation (e.g. ElasticSearch index) should be removed too.
+        """
+        pass
+
+    @abstractmethod
     def process_query(self, query):
         """
         This method is needed if the feature is used in search and a query
