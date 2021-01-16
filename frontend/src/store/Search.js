@@ -8,9 +8,7 @@ let state = reactive({
     isLoading: false,
     requests: [],
     searchQuery: null,
-    selectedFilters: {
-        method: [ 'elastic', 'sentence_embedding' ]
-    },
+    selectedFilters: {},
     availableMethods: []
 })
 

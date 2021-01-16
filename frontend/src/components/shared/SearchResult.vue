@@ -2,7 +2,13 @@
     <div class="flex flex-col">
         <div class="flex flex-row justify-start content-end">
             <button v-if="isAnnotationView" @click="addDocument(result.id)"><icon :icon="'plus'" class="text-grey-300 hover:text-grey-700 mr-1" :height="16" :width="16" /></button>
-            <div class="relative w-full"><span class="text-sm text-grey-500 text-center">method: {{ result.method }}</span></div>
+            <div class="relative mr-2"><span class="text-sm text-grey-500 text-center">method: {{ result.method }}</span></div>
+            <button
+                v-if="index <= 9 && isAnnotationView"
+                class="shadow-sm rounded bg-grey-100 text-center text-xs py-1 px-2"
+                @click="addDocument(result.id)">
+                {{ index }}
+            </button>
         </div>
         <span>{{ result.content }}</span>
     </div>
@@ -27,6 +33,11 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        index: {
+            type: Number,
+            required: false,
+            default: 0
         }
     },
     setup (props) {

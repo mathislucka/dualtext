@@ -113,6 +113,7 @@ export default {
           }
       },
       toggleSelection (id) {
+          console.log('id ist', id)
           if (this.selectedItems[id]) {
               delete this.selectedItems[id]
           } else if (!this.selectedItems[id]) {

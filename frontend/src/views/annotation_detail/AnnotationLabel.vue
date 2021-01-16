@@ -3,7 +3,7 @@
         class="shadow text-black rounded-xl leading-4 text-sm bg-grey-200"
         :class="{ 'pl-4': usesKey }">
         <div class="flex">
-        <span class="pr-2 py-2" v-if="usesKey === true">{{ label.key_code.toUpperCase() }}</span>
+        <span class="pr-2 py-2" v-if="usesKey === true">{{ keyCode }}</span>
         <span
             @mouseenter="setLabelStyle('light')"
             @mouseleave="setLabelStyle('standard')"
@@ -43,6 +43,11 @@ export default {
         },
         usedLabelStyle () {
             return this.usesLightColor ? { backgroundColor: this.label.color.light } : this.labelStyle
+        },
+        keyCode () {
+            return this.label.key_code.toUpperCase() === this.label.key_code
+                ? `Shift + ${this.label.key_code}`
+                : this.label.key_code.toUpperCase()
         }
     },
     methods: {

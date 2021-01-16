@@ -35,6 +35,7 @@ export default {
   },
   methods: {
       updateFilters (selection, type) {
+          console.log(selection)
           if (type === 'corpora') {
               this.currentFilters = { corpus: Object.keys(selection) }
           }
@@ -99,12 +100,11 @@ export default {
       })
 
       watch(corpora, () => {
-          currentFilters.value = { corpus: corpora.value.map(c => c.id ) }
+          currentFilters.value = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)) }
       })
 
       watch(Search.availableMethods, () => {
-          console.log(currentFilters.value)
-          if (currentFilters.value.method.length === 0) {
+          if (currentFilters.value.method && currentFilters.value.method.length === 0) {
               currentFilters.value = { method: Search.availableMethods.value }
           }
       })
@@ -124,8 +124,11 @@ export default {
       const selectedMethods = computed(() => {
           let transformed
           if (currentFilters.value.method && currentFilters.value.method.length) {
-            transformed = currentFilters.value.method.reduce((acc, curr, idx) => {
-              acc[idx] = curr
+            transformed = currentFilters.value.method.reduce((acc, curr) => {
+              const originalMethodId = Object.entries(transformedMethods.value).find(([key, value]) => value === curr)
+              if (originalMethodId) {
+                  acc[originalMethodId[0]] = curr
+              }
               return acc
             }, {})
           } else {

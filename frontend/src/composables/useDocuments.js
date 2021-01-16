@@ -61,4 +61,12 @@ function useDocuments (annotation, currentAnnotationIdx, taskId) {
     }
 }
 
-export { useDocuments }
+function addDocument (docId, annotationId) {
+    const annotation = Annotation.items.value[annotationId.value]
+    if (annotation && annotation.documents) {
+        const documents = annotation.documents.length === 2 ? [ annotation.documents[0], docId ] : [ ...annotation.documents, docId ]
+        Annotation.actions.updateAnnotation(`/annotation/${annotation.id}`, { documents, id: annotation.id })
+    }
+}
+
+export { addDocument, useDocuments }

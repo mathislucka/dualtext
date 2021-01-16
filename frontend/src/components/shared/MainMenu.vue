@@ -7,7 +7,7 @@
         </button>
         <nav
             class="absolute top-0 left-0 w-0 bg-white z-10 shadow-lg height-nearly-full mb-4 transition-all duration-500 p-4"
-            :class="{ 'w-64': isOpen, '-ml-20': !isOpen }">
+            :class="{ 'w-64': isOpen, '-ml-28': !isOpen }">
             <div class="flex flex-col items-start relative">
                 <button
                     @click="toggleMenu"

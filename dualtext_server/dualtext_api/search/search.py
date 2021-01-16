@@ -17,7 +17,7 @@ class Search():
     def run(self):
         results = []
         documents = self.get_documents()
-        for method in self.get_available_methods():
+        for method in self.methods:
             s = self.get_available_methods()[method]()
             s = s.search(documents, self.query)
             results.extend(s)
