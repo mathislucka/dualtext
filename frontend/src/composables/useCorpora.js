@@ -1,7 +1,7 @@
-import { onMounted, watch, computed } from 'vue'
+import { onMounted, watch, computed, ref } from 'vue'
 import Corpus from './../store/Corpus.js'
 
-const useCorpora = (project = {}) => {
+const useCorpora = (project = ref({})) => {
     const fetchCorpora = () => {
         const isCached = Corpus.requests.value.find(request => request.type === 'list')
 

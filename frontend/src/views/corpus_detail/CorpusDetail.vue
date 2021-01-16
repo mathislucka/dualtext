@@ -16,7 +16,7 @@ import MultiColumn from './../../components/layout/MultiColumn.vue'
 import CorpusMetaCard from './CorpusMetaCard.vue'
 import SearchResultList from './../../components/shared/SearchResultList.vue'
 import Card from './../../components/layout/Card.vue'
-import { provide, toRefs } from 'vue'
+import { provide, toRefs, computed } from 'vue'
 
 export default {
     name: 'CorpusDetail',
@@ -35,7 +35,8 @@ export default {
     },
     setup (props) {
         const { corpusId } = toRefs(props)
-        provide('corpusId', corpusId)
+        const corporaIds = computed(() => [corpusId])
+        provide('corporaIds', corporaIds)
         provide('shouldStayOnSearch', true)
     }
 }

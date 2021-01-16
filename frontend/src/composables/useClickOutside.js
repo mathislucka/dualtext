@@ -8,7 +8,7 @@ function useClickOutside (templateRef, hasClickedInside) {
     }
 
     function toggleOutsideClick (e) {
-        if (!templateRef.value.contains(e.target)) {
+        if (templateRef.value && !templateRef.value.contains(e.target)) {
             hasClickedInside.value = false
             unregisterClickEvent()
         }

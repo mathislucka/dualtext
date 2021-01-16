@@ -90,3 +90,31 @@ class TestSearchView(APITestCase):
         response = self.client.get(self.url + '?query=document&corpus=1&method=elastic', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['content'], self.document.content)
+
+class TestSearchMethodsView(APITestCase):
+    def setUp(self):
+        standards = run_standard_setup()
+        self.user = standards['user']
+        self.superuser = standards['superuser']
+        self.group = standards['group']
+
+        self.url = reverse('search_methods')
+    
+    def test_view_methods(self):
+        """
+        Ensure that the available search methods are returned.
+        """
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print(response.data)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0], 'elastic')
+        self.assertEqual(response.data[1], 'sentence_embedding')
+
+    def test_deny_not_authenticated(self):
+        """
+        Ensure the search can only be used by authenticated users.
+        """
+        response = self.client.get(self.url + '?query=document&corpus=1&method=elastic', format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

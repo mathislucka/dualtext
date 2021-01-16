@@ -88,6 +88,10 @@ export default {
         provide('isReview', isReview)
         
         const { project } = useSingleProject(projectId)
+
+        const corporaIds = computed(() => project.value.corpora || [])
+        provide('corporaIds', corporaIds)
+
         useTask(taskId)
 
         const { user } = useUser()

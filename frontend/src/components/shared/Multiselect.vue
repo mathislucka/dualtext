@@ -73,6 +73,7 @@ export default {
   },
   watch: {
       selection () {
+          console.log('setting selection', this.selection)
           this.selectedItems = { ...this.selection }
       },
       selectedItems: {

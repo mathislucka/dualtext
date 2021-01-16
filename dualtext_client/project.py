@@ -49,7 +49,7 @@ class Project(ApiBase):
         for annotation in task_chunk:
             doc_ids = self.create_annotation_documents(annotation['documents'], corpus_id)
             annotation_instance.create({'documents': doc_ids})
-    
+
     def create_corpus_features(self, corpus_id, features):
         feature_instance = Feature(self.session, corpus_id)
         for feature in features:

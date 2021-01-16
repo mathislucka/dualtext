@@ -17,7 +17,7 @@ import MultiColumn from './../../components/layout/MultiColumn.vue'
 import { provide, toRefs } from 'vue'
 
 export default {
-    name: 'ProjectDetail',
+    name: 'ExploreCorpora',
     components: {
         SearchResultList,
         Card,

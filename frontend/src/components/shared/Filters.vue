@@ -3,7 +3,7 @@
         <div class="flex items-center w-1/2 mr-4">
             <span class="mr-2 text-xs">Methods:</span>
             <multiselect
-                :selection="methods"
+                :selection="selectedMethods"
                 :items="methods"
                 @selection-changed="updateFilters($event, 'methods')"
                 class="w-full"
@@ -12,7 +12,7 @@
         <div class="flex items-center w-1/2">
             <span class="mr-2 text-xs">Corpora:</span>
             <multiselect
-                :selection="corpora"
+                :selection="selectedCorpora"
                 :items="corpora"
                 @selection-changed="updateFilters($event, 'corpora')"
                 class="w-full"
@@ -45,25 +45,68 @@ export default {
   },
   setup (props, context) {
       const projectId = inject('projectId', null)
-      const corpusId = inject('corpusId', null)
+      const corporaIds = inject('corporaIds', null)
       let currentProject = ref({})
       if (projectId) {
         const { project } = useSingleProject(projectId)
         currentProject.value = project
       }
-
-      const { corpora } = useCorpora(currentProject)
-
-      const transformedCorpora = computed(() => {
-        const transformed = corpora.value.reduce((acc, corpus) => {
+    const { corpora } = useCorpora(currentProject)
+    if (Search.availableMethods.value.length === 0) {
+        onMounted(Search.actions.fetchSearchMethods)
+    }
+    
+    const transformedCorpora = computed(() => {
+        let transformed = corpora.value.reduce((acc, corpus) => {
             acc[corpus.id] = corpus.name
             return acc
         }, {})
-        return corpusId ? { [corpusId.value]: transformed[corpusId.value] } : transformed
+
+        if (corporaIds) {
+            transformed = corporaIds.value.reduce((acc, corpusId) => {
+                const corpus = transformed[corpusId]
+                if (corpus) {
+                    acc[corpusId] = corpus
+                }
+                return acc
+            }, {})
+        }
+        return transformed
+    })
+      const selectedCorpora = computed(() => {
+        let transformed
+        if (currentFilters.value.corpus && currentFilters.value.corpus.length) {
+            transformed = currentFilters.value.corpus.reduce((acc, curr) => {
+                const corpus = corpora.value.find(corpus => corpus.id === parseInt(curr))
+                if (corpus) {
+                    acc[curr] = corpus.name
+                }
+                return acc
+            }, {})
+        } else {
+            transformed = transformedCorpora.value
+        }
+        if (corporaIds) {
+            transformed = corporaIds.value.reduce((acc, corpusId) => {
+                const corpus = transformed[corpusId]
+                if (corpus) {
+                    acc[corpusId] = corpus
+                }
+                return acc
+            }, {})
+        }
+        return transformed
       })
 
       watch(corpora, () => {
           currentFilters.value = { corpus: corpora.value.map(c => c.id ) }
+      })
+
+      watch(Search.availableMethods, () => {
+          console.log(currentFilters.value)
+          if (currentFilters.value.method.length === 0) {
+              currentFilters.value = { method: Search.availableMethods.value }
+          }
       })
 
       const currentFilters = computed({
@@ -72,11 +115,31 @@ export default {
               Search.actions.setSelectedFilters({ ...Search.selectedFilters.value, ...val })
           }
       })
+    const transformedMethods = computed(() => {
+        return Search.availableMethods.value.reduce((acc, curr, idx) => {
+            acc[idx] = curr
+            return acc
+        }, {})
+    })
+      const selectedMethods = computed(() => {
+          let transformed
+          if (currentFilters.value.method && currentFilters.value.method.length) {
+            transformed = currentFilters.value.method.reduce((acc, curr, idx) => {
+              acc[idx] = curr
+              return acc
+            }, {})
+          } else {
+            transformed = transformedMethods.value
+          }
+          return transformed
+      })
 
       return {
           currentFilters,
           corpora: transformedCorpora,
-          methods: { '1': 'elastic', '2': 'sentence_embedding' }
+          methods: transformedMethods,
+          selectedCorpora,
+          selectedMethods
       }
   }
 }

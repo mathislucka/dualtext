@@ -28,3 +28,12 @@ class SearchView(APIView):
             return Response(results)
         else:
             return Response('You need to be logged in.', status.HTTP_401_UNAUTHORIZED)
+
+class SearchMethodsView(APIView):
+    permission = AuthenticatedReadAdminCreate()
+    def get(self, request):
+        if self.permission.has_permission(request, self):
+            methods = [key for key in Search.get_available_methods().keys()]
+            return Response(methods)
+        else:
+            return Response('You need to be logged in.', status.HTTP_401_UNAUTHORIZED)

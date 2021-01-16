@@ -12,7 +12,8 @@ import ProjectProgressCard from './ProjectProgressCard.vue'
 import TaskCard from './TaskCard.vue'
 import PageHeader from './../../components/shared/PageHeader.vue'
 import MultiColumn from './../../components/layout/MultiColumn.vue'
-import { provide, toRefs } from 'vue'
+import { useSingleProject } from './../../composables/useProjects.js'
+import { provide, toRefs, computed } from 'vue'
 
 export default {
     name: 'ProjectDetail',
@@ -30,11 +31,11 @@ export default {
     },
     setup (props) {
         const { projectId } = toRefs(props)
-        const projectProvider = provide('projectId', projectId)
+        provide('projectId', projectId)
+        const { project } = useSingleProject(projectId)
+        const corporaIds = computed(() => project.value.corpora || [])
+        provide('corporaIds', corporaIds)
 
-        return {
-            projectProvider
-        }
     }
 }
 </script>

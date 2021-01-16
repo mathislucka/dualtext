@@ -9,19 +9,16 @@ class Search():
         self.query = query
         self.corpora = corpora
         self.methods = methods
-        self.available_methods = {
-            'elastic': ElasticSearch,
-            'sentence_embedding': SentenceEmbeddingSearch
-        }
         self.project_id = None
+
         if project_id:
             self.project_id = int(project_id)
 
     def run(self):
         results = []
         documents = self.get_documents()
-        for method in self.methods:
-            s = self.available_methods[method]()
+        for method in self.get_available_methods():
+            s = self.get_available_methods()[method]()
             s = s.search(documents, self.query)
             results.extend(s)
         return self.postprocess_results(results)
@@ -56,6 +53,13 @@ class Search():
             document_queryset = Document.objects.filter(corpus__id__in=self.corpora)
 
         return list(document_queryset.values_list('id', flat=True))
+
+    @staticmethod
+    def get_available_methods():
+        return {
+            'elastic': ElasticSearch,
+            'sentence_embedding': SentenceEmbeddingSearch
+        }
 
 
 
