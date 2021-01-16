@@ -2,7 +2,6 @@ from django.db.models import Case, When, Q
 from ..models import Document, Project
 from .es_search import ElasticSearch
 from .sentence_embedding_search import SentenceEmbeddingSearch
-from .boost_search import BoostSearch
 from dualtext_api.services import ProjectService
 
 class Search():
@@ -12,7 +11,7 @@ class Search():
         self.methods = methods
         self.available_methods = {
             'elastic': ElasticSearch,
-            'sentence_embedding': BoostSearch
+            'sentence_embedding': SentenceEmbeddingSearch
         }
         self.project_id = None
         if project_id:

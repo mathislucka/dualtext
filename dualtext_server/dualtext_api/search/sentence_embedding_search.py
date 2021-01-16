@@ -1,19 +1,47 @@
-from django.db.models import Q
-from sentence_transformers import util
-import pickle
-from ..models import Document, FeatureValue
+from .abstract_search import AbstractSearch
 from dualtext_api.feature_builders.sentence_embedding import SentenceEmbedding
-class SentenceEmbeddingSearch():
+from elasticsearch import Elasticsearch
+import time
+
+class SentenceEmbeddingSearch(AbstractSearch):
+    def __init__(self):
+        self.SIMILARITY_THRESHOLD = 1.2
+        self.client = Elasticsearch()
+
     def search(self, documents, query):
-        print('called')
+        embedding_start = time.time()
         sent_embed = SentenceEmbedding()
-        embedded_query = sent_embed.process_query(query)
-        features_values = FeatureValue.objects.filter(Q(document__id__in=documents) & Q(feature__key='sentence_embedding'))
+        embedded_query = sent_embed.process_query(query).tolist()
+        embedding_time = time.time() - embedding_start
+
+        script_query = {
+            "script_score": {
+                "query": {"terms": { "doc_id": documents }},
+                "script": {
+                    "source": "cosineSimilarity(params.query_vector, 'doc_vector') + 1.0",
+                    "params": {"query_vector": embedded_query}
+                }
+            }
+        }
+
+        search_start = time.time()
+        response = self.client.search(
+            index=sent_embed.INDEX_NAME,
+            body={
+                "size": 200,
+                "query": script_query,
+                "_source": {"includes": ["doc_id"]}
+            }
+        )
+        search_time = time.time() - search_start
         results = []
-        for fv in features_values:
-            doc_id = fv.document_id
-            embedding = pickle.loads(fv.value, fix_imports=True, encoding="ASCII", errors="strict", buffers=None)
-            score = util.pytorch_cos_sim(embedded_query, embedding).squeeze().tolist()
-            results.append((doc_id, score, 'sentence_embedding'))
-        results = sorted(results, key=lambda tup: tup[1], reverse=True)
+        print()
+        print("{} total hits.".format(response["hits"]["total"]["value"]))
+        print("embedding time: {:.2f} ms".format(embedding_time * 1000))
+        print("search time: {:.2f} ms".format(search_time * 1000))
+        for hit in response["hits"]["hits"]:
+            print(hit['_score'])
+            if hit['_score'] > self.SIMILARITY_THRESHOLD:
+                results.append((hit['_source']['doc_id'], hit['_score'], 'sentence_embedding'))
+
         return results

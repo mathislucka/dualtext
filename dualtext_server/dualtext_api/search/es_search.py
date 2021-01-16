@@ -1,7 +1,8 @@
 from elasticsearch_dsl import Q
 from ..documents import DocumentDocument
+from .abstract_search import AbstractSearch
 
-class ElasticSearch():
+class ElasticSearch(AbstractSearch):
     def search(self, documents, query):
         if query == '':
             return []
