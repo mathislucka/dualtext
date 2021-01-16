@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
+from .validators import validate_alphabetic
 
 class AbstractBase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -47,11 +48,12 @@ class Label(AbstractBase):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     color = models.JSONField()
-    key_code = models.CharField(max_length=1, null=True)
+    key_code = models.CharField(max_length=1, null=True, validators=[validate_alphabetic])
 
     class Meta(AbstractBase.Meta):
         constraints = [
-            models.UniqueConstraint(fields=['name', 'project'], name='unique_label_name_in_project')
+            models.UniqueConstraint(fields=['name', 'project'], name='unique_label_name_in_project'),
+            models.UniqueConstraint(fields=['key_code', 'project'], name='unique_key_code_in_project'),
         ]
 
 class Task(AbstractBase):

@@ -13,7 +13,7 @@ class TestLabelListView(APITestCase):
         self.user = standards['user']
         self.superuser = standards['superuser']
         self.url = reverse('label_list', args=[self.project.id])
-        self.data = {'name': 'TestLabel'}
+        self.data = {'name': 'TestLabel', 'key_code': 'a'}
     
     def test_creation(self):
         """
@@ -21,6 +21,7 @@ class TestLabelListView(APITestCase):
         """
         self.client.force_authenticate(user=self.superuser)
         response = self.client.post(self.url, self.data, format='json')
+        print(response)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Label.objects.count(), 1)
         self.assertEqual(Label.objects.get(id=1).name, 'TestLabel')
@@ -36,7 +37,30 @@ class TestLabelListView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Label.objects.count(), 1)
-    
+
+    def test_unique_key_code(self):
+        """
+        Ensure that key codes are unique within a project.
+        """
+        self.client.force_authenticate(user=self.superuser)
+        response = self.client.post(self.url, self.data, format='json')
+        data = self.data
+        data['name'] = 'new'
+        response_2 = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_key_code_a_to_z(self):
+        """
+        Ensure that key codes are outside of the a-zA-Z range are rejected.
+        """
+        data = self.data
+        data['key_code'] = 2
+        self.client.force_authenticate(user=self.superuser)
+
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_automatic_color_allocation(self):
         """
         Ensure a new label automatically gets a color on creation.

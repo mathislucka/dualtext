@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
 from dualtext_api.services import ProjectService
+from .validators import validate_alphabetic
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
 
@@ -96,8 +97,14 @@ class LabelSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Label.objects.all(),
                 fields=['name', 'project']
-            )
+            ),
+            UniqueTogetherValidator(
+                queryset=Label.objects.all(),
+                fields=['key_code', 'project']
+            ),
         ]
+    def validate_key_code(self, value):
+        return validate_alphabetic(value)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
