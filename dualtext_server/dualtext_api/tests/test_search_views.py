@@ -79,3 +79,14 @@ class TestSearchView(APITestCase):
         response = self.client.get(self.url + '?query=document&corpus=1&method=elastic&project={}'.format(p.id), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
+
+        def test_superuser_elasticsearch_results(self):
+        """
+        Ensure that superusers have access to all corpora through search.
+        """
+        self.client.force_authenticate(user=self.superuser)
+        self.corpus.allowed_groups.remove(self.group)
+        self.corpus.save()
+        response = self.client.get(self.url + '?query=document&corpus=1&method=elastic', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['content'], self.document.content)

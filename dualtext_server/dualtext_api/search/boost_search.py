@@ -11,6 +11,7 @@ class BoostSearch():
         self.client = Elasticsearch()
 
     def search(self, documents, query):
+        print(documents)
         embedding_start = time.time()
         sent_embed = SentenceEmbedding()
         embedded_query = sent_embed.process_query(query).tolist()

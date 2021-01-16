@@ -51,6 +51,7 @@ class Search():
         if project and project.annotation_document_duplicates == False:
             ps = ProjectService(self.project_id)
             annotations = ps.get_total_annotations().values_list('id', flat=True)
+            print(self.corpora)
             document_queryset = Document.objects.filter(Q(corpus__id__in=self.corpora) & ~Q(annotation__id__in=annotations))
         else:
             document_queryset = Document.objects.filter(corpus__id__in=self.corpora)
