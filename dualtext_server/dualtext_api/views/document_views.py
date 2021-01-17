@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from dualtext_api.models import Corpus, Document
 from dualtext_api.serializers import DocumentSerializer
 from dualtext_api.permissions import DocumentPermission, AuthenticatedReadAdminCreate
@@ -31,3 +33,21 @@ class DocumentDetailView(generics.RetrieveAPIView):
     serializer_class = DocumentSerializer
     permission_classes = [DocumentPermission]
     lookup_url_kwarg = 'document_id'
+
+class DocumentBatchView(APIView):
+    """
+    Creating up to 200 documents in a single batch.
+    """
+    SIZE_LIMIT = 200
+    def post(self, request, corpus_id):
+        serializer = DocumentSerializer
+        permission = MembersReadAdminEdit()
+        if permission.has_permission(request, self):
+            data = request.data
+            if len(data) <= self.SIZE_LIMIT:
+                corpus = get_object_or_404(Corpus, id=corpus_id)
+                serialized = serializer(data=request.data, many=True)
+                serialized.is_valid(raise_exception=True)
+                serialized.save(corpus=corpus)
+            return Response(serialized.data, status=status.HTTP_201_CREATED)
+    

@@ -1,7 +1,7 @@
 from django.db.models import Case, When, Q
 from ..models import Document, Project
-from .es_search import ElasticSearch
 from .sentence_embedding_search import SentenceEmbeddingSearch
+from .es_search import ElasticSearch
 from dualtext_api.services import ProjectService
 
 class Search():
@@ -58,7 +58,7 @@ class Search():
     def get_available_methods():
         return {
             'elastic': ElasticSearch,
-            'sentence_embedding': SentenceEmbeddingSearch
+            'sentence_embedding': SentenceEmbeddingSearch,
         }
 
 

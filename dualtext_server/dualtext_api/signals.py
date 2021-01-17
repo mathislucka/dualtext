@@ -33,7 +33,7 @@ def generate_document_features_on_document_creation(sender, **kwargs):
         document_update = Document.objects.get(id=document.id)
 
         for feature in features:
-            builder.update_document_features(document_update, feature.key)
+            builder.update_document_features([document_update], feature.key)
 
 @receiver(pre_delete, sender=Corpus)
 def delete_document_features_on_corpus_deletion(sender, **kwargs):

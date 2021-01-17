@@ -12,9 +12,9 @@ class AbstractFeature(ABC):
         """
         pass
     @abstractmethod
-    def update_feature(self, document):
+    def update_feature(self, documents):
         """
-        This method receives a single document. It should update the single document's feature value.
+        This method receives a list of documents. It should update the feature value of all documents.
         If necessary the saving of the updated feature value to the DB is handled here.
         Any external feature representation (e.g. ElasticSearch index) should be updated too.
         """
