@@ -11,7 +11,8 @@
     ],
     "annotations": [
         {
-            "documents": [ "<document_content>", "<document_content>" ]
+            "documents": [ "<document_content>", "<document_content>" ],
+            "labels": [ "<label-name>" ]
         },
         {
             "documents": [ "<document_content>", "<document_content>" ]

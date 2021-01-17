@@ -8,3 +8,4 @@ class Document(ApiBase):
         super().__init__(session)
         self.single_resource_path = self.base_url + '/document/{}'
         self.list_resources_path = self.base_url + '/corpus/{}/document/'.format(corpus_id)
+        self.schema = 'document.schema.json'

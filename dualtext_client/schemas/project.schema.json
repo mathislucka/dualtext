@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Project",
+    "description": "An annotation project in the dualtext application.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The unique name of a project.",
+            "type": "string"
+        },
+        "corpora": {
+            "description": "IDs of the corpora that should be annotated within this project. This is required.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "allowed_groups": {
+            "description": "A list of groups allowed to access this project.",
+            "type": "array"
+        },
+        "annotation_document_duplicates": {
+            "description": "Determines if the same document can be used in multiple annotations.",
+            "type": "boolean"
+        },
+        "annotation_mode": {
+            "description": "Determines which mode or style of annotation to use (either dualtext or classification).",
+            "type": "string"
+        },
+        "use_reviews": {
+            "description": "Determines whether a review task should be auto-generated upon completion of a task.",
+            "type": "boolean"
+        }
+    },
+    "required": [ "name" ]
+}

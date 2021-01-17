@@ -21,7 +21,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = ['id', 'content', 'corpus', 'method'] + DEFAULT_FIELDS
-        read_only_fields = ['corpus']
+        read_only_fields = ['corpus', 'method']
 
 class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=255, validators=[
@@ -114,7 +114,8 @@ class UserSerializer(serializers.ModelSerializer):
 class FeatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feature
-        fields = ['id', 'name', 'corpus', 'description', 'key'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'corpora', 'description', 'key'] + DEFAULT_FIELDS
         extra_kwargs = {
             'description': {'required': False},
+            'corpora': {'required': False},
         }

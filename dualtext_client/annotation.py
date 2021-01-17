@@ -8,3 +8,4 @@ class Annotation(ApiBase):
         super().__init__(session)
         self.single_resource_path = self.base_url + '/annotation/{}'
         self.list_resources_path = self.base_url + '/task/{}/annotation/'.format(task_id)
+        self.schema = 'annotation.schema.json'

@@ -11,7 +11,7 @@ class Session():
         response = self.session.post('http://localhost:8000/api/v1/login/', json={'username': username, 'password': password})
         token = response.json()['token']
         self.set_token(token)
-        return token
+        return self.session
     
     def set_token(self, token):
         self.session.headers.update({'Authorization': 'Token {}'.format(token)})

@@ -102,7 +102,7 @@ class Prediction(AbstractBase):
 class Feature(AbstractBase):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True, default='')
-    corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
+    corpora = models.ManyToManyField(Corpus, blank=True)
     key = models.CharField(max_length=255)
 
     class Meta(AbstractBase.Meta):

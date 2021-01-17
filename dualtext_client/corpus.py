@@ -8,3 +8,4 @@ class Corpus(ApiBase):
         super().__init__(session)
         self.single_resource_path = self.base_url + '/corpus/{}'
         self.list_resources_path = self.base_url + '/corpus/'
+        self.schema = 'corpus.schema.json'

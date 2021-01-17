@@ -8,3 +8,4 @@ class Task(ApiBase):
         super().__init__(session)
         self.single_resource_path = self.base_url + '/task/{}'
         self.list_resources_path = self.base_url + '/project/{}/task/'.format(project_id)
+        self.schema = 'task.schema.json'

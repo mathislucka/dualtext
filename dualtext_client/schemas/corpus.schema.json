@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Corpus",
+    "description": "A corpus holding a collection of documents.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The unique name of a corpus.",
+            "type": "string"
+        },
+        "corpus_meta": {
+            "description": "A JSON field containing meta information on the corpus.",
+            "type": ["array", "object", "string"]
+        },
+        "allowed_groups": {
+            "description": "A list of groups allowed to access this corpus.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "document_set": {
+            "description": "The set of documents belonging to this corpus.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        }
+    },
+    "required": [ "name", "corpus_meta" ]
+}

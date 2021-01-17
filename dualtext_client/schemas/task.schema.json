@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Task",
+    "description": "A task holding multiple annotations. Used to structure a project into assignable units of work.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The unique name of a task.",
+            "type": "string"
+        },
+        "annotator": {
+            "description": "The user assigned to this task.",
+            "type": "integer"
+        },
+        "project": {
+            "description": "The project that this task belongs to.",
+            "type": "integer"
+        },
+        "copied_from": {
+            "description": "Indicating which task this task was copied from (if any).",
+            "type": "integer"
+        },
+        "action": {
+            "description": "The annotation mode for this task (one of annotate, review or duplicate).",
+            "type": "string"
+        },
+        "is_finished": {
+            "description": "Indicates wether this task was fully completed.",
+            "type": "boolean"
+        }
+    },
+    "required": [ "name" ]
+}

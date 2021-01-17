@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Annotation",
+    "description": "An annotation connecting one or more documents to one or more labels.",
+    "type": "object",
+    "properties": {
+        "labels": {
+            "description": "A list of assigned labels.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "documents": {
+            "description": "A list of assigned documents.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "task": {
+            "description": "The task (unit of work) that this annotation belongs to.",
+            "type": "integer"
+        },
+        "copied_from": {
+            "description": "Indicating which annotation this annotation was copied from (if any).",
+            "type": "integer"
+        },
+        "action": {
+            "description": "The annotation mode for this annotation (one of annotate, review or duplicate)",
+            "type": "string"
+        }
+    }
+}

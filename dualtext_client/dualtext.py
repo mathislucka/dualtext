@@ -32,6 +32,6 @@ def make_project(ctx, project_data):
     p = Project(s)
     with project_data:
         data = json.loads(project_data.read())
-    proj = p.create_from_scratch(data, 1)
+    proj = p.create_from_scratch(data, task_size=100)
     print('Finished creating the project. Project id is {}'.format(proj['id']))
 

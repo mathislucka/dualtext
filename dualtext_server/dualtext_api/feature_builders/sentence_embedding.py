@@ -16,7 +16,7 @@ class SentenceEmbedding(AbstractFeature):
         self.generate_and_reindex_embeddings(documents)
 
     def update_feature(self, document):
-        embeddings = self.encode_sentences([document])
+        embeddings = self.encode_sentences([document.content])
         indexable = [(document.id, embeddings[0])]
         self.update_es_index(indexable)
     

@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Label",
+    "description": "A label used to make annotations.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The name of a label. It must be unique within a project.",
+            "type": "string"
+        },
+        "key_code": {
+            "description": "A single character in the range of a-zA-Z that is used as a hotkey to select this label.",
+            "type": "string"
+        }
+    },
+    "required": [ "name", "key_code" ]
+}

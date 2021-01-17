@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ProjectFromScratch",
+    "description": "Creating a project and everything else that is needed in one pass.",
+    "type": "object",
+    "properties": {
+        "project": {
+            "description": "The project that should be created.",
+            "type": "object",
+            "$ref": "project.schema.json"
+        },
+        "corpus": {
+            "description": "A corpus that should be created with the project.",
+            "type": "object",
+            "$ref": "corpus.schema.json"
+        },
+        "labels": {
+            "description": "Labels that should be created.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "label.schema.json"
+            }
+        },
+        "features": {
+            "description": "A list of features that should be generated for this corpus.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "annotations": {
+            "description": "A list of annotations that should be created",
+            "type": "array",
+            "items": {
+                "description": "An annotation item to be created",
+                "type": "object",
+                "properties": {
+                    "documents": {
+                        "description": "A list of documents that should be connected to this annotation.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "labels": {
+                        "description": "A list of label names that should be assigned to this annotation.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [ "project", "corpus", "annotations" ]
+}
