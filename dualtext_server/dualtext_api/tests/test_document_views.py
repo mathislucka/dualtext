@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from dualtext_api.models import Document, Corpus
+from dualtext_api.models import Document, Corpus, Feature
 from .helpers import run_standard_setup
 
 class TestDocumentListView(APITestCase):
@@ -118,18 +118,25 @@ class TestDocumentDetailView(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-class TestDocumentBatchCreateView(APITestCase):
+class TestDocumentBatchView(APITestCase):
     def setUp(self):
         standards = run_standard_setup()
         self.user = standards['user']
         self.superuser = standards['superuser']
         self.group = standards['group']
-        
         corpus = Corpus(name='New Corpus', corpus_meta={})
         corpus.save()
         self.corpus = corpus
+        feature = Feature(description="elasticsearch", key="elastic", name="elastic")
+        feature.save()
+        feature.corpora.add(corpus)
+        feature.save()
+        f2 = Feature(description="sentence_embeddings", key="sentence_embedding", name="sentences")
+        f2.save()
+        f2.corpora.add(corpus)
+        f2.save()
 
-        self.url = reverse('document_batch_create', args=[self.corpus.id])
+        self.url = reverse('document_batch', args=[self.corpus.id])
 
     def test_superuser_create(self):
         """
@@ -145,6 +152,7 @@ class TestDocumentBatchCreateView(APITestCase):
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(response.data), 20)
+        self.assertEqual(len(Document.objects.all()), 20)
 
     def test_batch_limited(self):
         """

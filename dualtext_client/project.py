@@ -32,39 +32,54 @@ class Project(ApiBase):
         labels = data.get('labels', None)
         if labels is not None:
             labels = self.create_labels(labels, project['id'])
+        documents = data.get('documents', None)
+        created_documents = None
+        if documents is not None:
+            created_documents = self.create_documents(documents, created_corpus['id'])
 
         tasks = self.split_list(data['annotations'], task_size)
-
         for idx, task_chunk in enumerate(tasks):
-            self.create_project_task(task_chunk, project['id'], idx, created_corpus['id'], labels)
+            annotations = self.create_project_task(task_chunk, project['id'], idx, created_corpus['id'], labels, created_documents)
+        
         return project
 
-    def create_annotation_documents(self, documents, corpus_id):
-        doc = Document(self.session, corpus_id)
-        document_ids = []
-        for document in documents:
-            created_document = doc.create({'content': document})
-            document_ids.append(created_document['id'])
-        return document_ids
+    def create_documents(self, documents, corpus_id):
+        document_instance = Document(self.session, corpus_id)
+        document_chunks = self.split_list(documents, 200)
+        created_documents = {}
+        for chunk in document_chunks:
+            documents_to_create = []
+            identifiers = []
+            for doc in chunk:
+                identifiers.append(doc.get('annotation_identifier', None))
+                documents_to_create.append({'content': doc['content']})
+            docs = document_instance.batch_create(documents_to_create)
+            for idx, doc in enumerate(docs):
+                _id = identifiers[idx]
+                if _id is not None:
+                    related_documents = created_documents.get(_id, [])
+                    related_documents.append(doc['id'])
+                    created_documents[_id] = related_documents
+        return created_documents
 
     def split_list(self, lst, chunk_size):
         return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
 
-    def create_project_task(self, task_chunk, project_id, task_idx, corpus_id, labels):
+    def create_project_task(self, task_chunk, project_id, task_idx, corpus_id, labels, documents):
         task_instance = Task(self.session, project_id)
         task = task_instance.create({'name': 'P{}T{}'.format(project_id, task_idx)})
-        self.create_annotations(task_chunk, labels, task['id'], corpus_id)
+        return self.create_annotations(task_chunk, labels, task['id'], corpus_id, documents)
 
-    def create_annotations(self, annotations, labels, task_id, corpus_id):
+    def create_annotations(self, annotations, labels, task_id, corpus_id, documents):
+        print(documents)
         annotation_instance = Annotation(self.session, task_id)
         for annotation in annotations:
             payload = {}
-
-            documents = annotation.get('documents', None)
             if documents is not None:
-                doc_ids = self.create_annotation_documents(annotation['documents'], corpus_id)
-                payload['documents'] = doc_ids
-            
+                anno_documents = documents.get(annotation['identifier'], None)
+                if anno_documents is not None:
+                    payload['documents'] = anno_documents
+
             anno_labels = annotation.get('labels', None)
             if anno_labels is not None:
                 label_ids = []
@@ -72,7 +87,7 @@ class Project(ApiBase):
                     label_ids.append(labels[label])
                 payload['labels'] = label_ids
 
-            annotation_instance.create(payload)
+            anno = annotation_instance.create(payload)
 
     def add_corpus_features(self, corpus_id, features):
         feature_instance = Feature(self.session)

@@ -16,7 +16,8 @@ class Elastic(AbstractFeature):
     
     def remove_features(self, documents):
         documents = [doc.id for doc in documents]
-        self.client.indices.delete_by_query(index=self.INDEX_NAME, body={"query": {"terms": {"doc_id": documents}}})
+        print(documents)
+        self.client.delete_by_query(index=self.INDEX_NAME, body={"query": {"terms": {"doc_id": documents}}})
         self.refresh_index()
 
     def reindex_documents(self, documents):
@@ -34,7 +35,7 @@ class Elastic(AbstractFeature):
         return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
     
     def recreate_es_index(self):
-        print("Creating the 'sentence_embeddings' index.")
+        print("Creating the 'elastic' index.")
         self.client.indices.delete(index=self.INDEX_NAME, ignore=[404])
         source = {
             "settings": {
@@ -61,8 +62,14 @@ class Elastic(AbstractFeature):
     def refresh_index(self):
         self.client.indices.refresh(index=self.INDEX_NAME)
 
-    def update_es_index(self, data, call_refresh=True):
+    def update_index(self, data, call_refresh=True):
+        exists = self.client.indices.exists([self.INDEX_NAME])
+        if exists == False:
+            self.recreate_es_index()
         requests = []
+        print(data)
+        if len(data) > 0:
+            self.remove_features(data)
         for doc in data:
             request = {}
             request["doc_id"] = doc.id

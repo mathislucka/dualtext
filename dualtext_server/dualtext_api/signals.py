@@ -2,6 +2,7 @@ from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
 from .models import Task, Document, Corpus
 from dualtext_api.feature_builders.builder import Builder
+from .features import FeatureRunner
 from dualtext_api.services import TaskService
 
 @receiver(pre_save, sender=Task)
@@ -27,13 +28,10 @@ def generate_review_on_task_completion(sender, instance, **kwargs):
 def generate_document_features_on_document_creation(sender, **kwargs):
     if kwargs['created'] == True:
         document = kwargs['instance']
-        builder = Builder()
+        feature_runner = FeatureRunner()
         corpus = document.corpus
-        features = corpus.feature_set.all()
         document_update = Document.objects.get(id=document.id)
-
-        for feature in features:
-            builder.update_document_features([document_update], feature.key)
+        feature_runner.update_features([document_update], corpus.id)
 
 @receiver(pre_delete, sender=Corpus)
 def delete_document_features_on_corpus_deletion(sender, **kwargs):

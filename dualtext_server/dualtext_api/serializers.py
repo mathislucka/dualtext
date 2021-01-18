@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
 from dualtext_api.services import ProjectService
 from .validators import validate_alphabetic
+from .features import FeatureRunner
+from datetime import datetime
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
 
@@ -16,12 +19,33 @@ class CorpusSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'corpus_meta', 'document_set'] + DEFAULT_FIELDS
         extra_kwargs = { 'document_set': {'required': False}}
 
+class DocumentListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        documents = [Document(**item) for item in validated_data]
+        now = datetime.now()
+        Document.objects.bulk_create(documents)
+        feature_runner = FeatureRunner()
+        # This might be almost save to get an id from documents created in bulk_create
+        # It is not impossible for another document to have been created by another process
+        # since now was calculated but it's extremely unlikely that it has the same content.
+        # Postgres apparently provides ids on bulk_create so this might be resolved later.
+        contents = [doc.content for doc in documents]
+        documents = Document.objects.filter(Q(created_at__gte=now) & Q(content__in=contents))
+        if len(documents) > 0:
+            corpus_id = documents[0].corpus.id
+            feature_runner.update_features(documents, corpus_id)
+        return documents
+
 class DocumentSerializer(serializers.ModelSerializer):
     method = serializers.CharField(read_only=True)
     class Meta:
+        list_serializer_class = DocumentListSerializer
         model = Document
-        fields = ['id', 'content', 'corpus', 'method'] + DEFAULT_FIELDS
+        fields = ['id', 'content', 'corpus', 'method', 'annotation_set'] + DEFAULT_FIELDS
         read_only_fields = ['corpus', 'method']
+        extra_kwargs = {
+            'annotation_set': {'required': False},
+        }
 
 class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=255, validators=[

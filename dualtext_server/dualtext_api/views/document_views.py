@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from dualtext_api.models import Corpus, Document
 from dualtext_api.serializers import DocumentSerializer
-from dualtext_api.permissions import DocumentPermission, AuthenticatedReadAdminCreate
+from dualtext_api.permissions import DocumentPermission, AuthenticatedReadAdminCreate, MembersReadAdminEdit
 
 class DocumentListView(generics.ListCreateAPIView):
     """
@@ -49,5 +49,7 @@ class DocumentBatchView(APIView):
                 serialized = serializer(data=request.data, many=True)
                 serialized.is_valid(raise_exception=True)
                 serialized.save(corpus=corpus)
-            return Response(serialized.data, status=status.HTTP_201_CREATED)
+                return Response(serialized.data, status=status.HTTP_201_CREATED)
+            return Response('Batch creation is limited to {} documents'.format(self.SIZE_LIMIT), status=status.HTTP_400_BAD_REQUEST)
+        return Response('You are not permitted to access this resource.', status=status.HTTP_403_FORBIDDEN)
     

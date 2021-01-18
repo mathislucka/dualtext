@@ -6,7 +6,7 @@ class FeatureRunner():
         self.builder = Builder()
 
     def get_feature_function(self, feature_key):
-        available_features = ['sentence_embedding']
+        available_features = ['sentence_embedding', 'elastic']
         if feature_key in available_features:
             return getattr(self, feature_key)
         return None
@@ -18,3 +18,9 @@ class FeatureRunner():
         if len(features.all()) > 0:
             documents = Document.objects.filter(corpus=corpus)
             self.builder.build_document_features(documents, feature_key)
+
+    def update_features(self, documents, corpus_id):
+        corpus = Corpus.objects.get(id=corpus_id)
+        features = corpus.feature_set.all()
+        for feature in features:
+            self.builder.update_document_features(documents, feature.key)

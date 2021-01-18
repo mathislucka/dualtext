@@ -36,12 +36,9 @@
                 "description": "An annotation item to be created",
                 "type": "object",
                 "properties": {
-                    "documents": {
-                        "description": "A list of documents that should be connected to this annotation.",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
+                    "identifier": {
+                        "description": "A unique identifier used for assigning documents to this annotation.",
+                        "type": "integer"
                     },
                     "labels": {
                         "description": "A list of label names that should be assigned to this annotation.",
@@ -49,6 +46,23 @@
                         "items": {
                             "type": "string"
                         }
+                    }
+                }
+            }
+        },
+        "documents": {
+            "description": "A list of documents that should be created",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "description": "The content of a document.",
+                        "type": "string"
+                    },
+                    "annotation_identifier": {
+                        "description": "The annotation that this document should be assigned to.",
+                        "type": "integer"
                     }
                 }
             }
