@@ -27,6 +27,7 @@ import { useCorpora } from '../../composables/useCorpora'
 import Multiselect from './Multiselect.vue'
 import { useSingleProject } from '../../composables/useProjects'
 import Search from './../../store/Search.js'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 export default {
   name: 'Filters',
@@ -35,7 +36,6 @@ export default {
   },
   methods: {
       updateFilters (selection, type) {
-          console.log(selection)
           if (type === 'corpora') {
               this.currentFilters = { corpus: Object.keys(selection) }
           }
@@ -45,17 +45,16 @@ export default {
       }
   },
   setup (props, context) {
-      const projectId = inject('projectId', null)
-      const corporaIds = inject('corporaIds', null)
-      let currentProject = ref({})
-      if (projectId) {
+    const route = useRoute()
+    const projectId = inject('projectId', null)
+    const corporaIds = inject('corporaIds', null)
+    let currentProject = ref({})
+    if (projectId) {
         const { project } = useSingleProject(projectId)
         currentProject.value = project
-      }
-    const { corpora } = useCorpora(currentProject)
-    if (Search.availableMethods.value.length === 0) {
-        onMounted(Search.actions.fetchSearchMethods)
     }
+    const { corpora } = useCorpora(currentProject)
+    onMounted(Search.actions.fetchSearchMethods)
     
     const transformedCorpora = computed(() => {
         let transformed = corpora.value.reduce((acc, corpus) => {
@@ -74,7 +73,7 @@ export default {
         }
         return transformed
     })
-      const selectedCorpora = computed(() => {
+    const selectedCorpora = computed(() => {
         let transformed
         if (currentFilters.value.corpus && currentFilters.value.corpus.length) {
             transformed = currentFilters.value.corpus.reduce((acc, curr) => {
@@ -97,53 +96,68 @@ export default {
             }, {})
         }
         return transformed
-      })
+    })
 
-      watch(corpora, () => {
-          currentFilters.value = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)) }
-      })
+    watch(corpora, () => {
+        if (currentFilters.value.corpus && currentFilters.value.corpus.length === 0) {
+            currentFilters.value = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)) }
+        }
+    })
 
-      watch(Search.availableMethods, () => {
-          if (currentFilters.value.method && currentFilters.value.method.length === 0) {
-              currentFilters.value = { method: Search.availableMethods.value }
-          }
-      })
+    watch(Search.availableMethods, () => {
+        if (currentFilters.value.method && currentFilters.value.method.length === 0) {
+            currentFilters.value = { method: Search.availableMethods.value }
+        }
+    })
 
-      const currentFilters = computed({
-          get: () => Search.selectedFilters.value,
-          set: (val) => {
-              Search.actions.setSelectedFilters({ ...Search.selectedFilters.value, ...val })
-          }
-      })
+    const currentFilters = computed({
+        get: () => Search.selectedFilters.value,
+        set: (val) => {
+            Search.actions.setSelectedFilters({ ...Search.selectedFilters.value, ...val })
+        }
+    })
+
+    onMounted(() => {
+        if (!route.query || Object.keys(route.query).length === 0) {
+            currentFilters.value = {
+                method: Search.availableMethods.value,
+                corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)),
+                ...projectId ? { project: projectId.value } : {},
+            }
+        }
+    })
+
+
     const transformedMethods = computed(() => {
         return Search.availableMethods.value.reduce((acc, curr, idx) => {
             acc[idx] = curr
             return acc
         }, {})
     })
-      const selectedMethods = computed(() => {
-          let transformed
-          if (currentFilters.value.method && currentFilters.value.method.length) {
-            transformed = currentFilters.value.method.reduce((acc, curr) => {
-              const originalMethodId = Object.entries(transformedMethods.value).find(([key, value]) => value === curr)
-              if (originalMethodId) {
-                  acc[originalMethodId[0]] = curr
-              }
-              return acc
-            }, {})
-          } else {
-            transformed = transformedMethods.value
-          }
-          return transformed
-      })
 
-      return {
-          currentFilters,
-          corpora: transformedCorpora,
-          methods: transformedMethods,
-          selectedCorpora,
-          selectedMethods
-      }
+    const selectedMethods = computed(() => {
+        let transformed
+        if (currentFilters.value.method && currentFilters.value.method.length) {
+            transformed = currentFilters.value.method.reduce((acc, curr) => {
+                const originalMethodId = Object.entries(transformedMethods.value).find(([key, value]) => value === curr)
+                if (originalMethodId) {
+                    acc[originalMethodId[0]] = curr
+                }
+                return acc
+            }, {})
+        } else {
+            transformed = transformedMethods.value
+        }
+        return transformed
+    })
+
+    return {
+        currentFilters,
+        corpora: transformedCorpora,
+        methods: transformedMethods,
+        selectedCorpora,
+        selectedMethods
+    }
   }
 }
 </script>

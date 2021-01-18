@@ -14,7 +14,7 @@ import SearchResultList from './../../components/shared/SearchResultList.vue'
 import Card from './../../components/layout/Card.vue'
 import PageHeader from './../../components/shared/PageHeader.vue'
 import MultiColumn from './../../components/layout/MultiColumn.vue'
-import { provide, toRefs } from 'vue'
+import { provide, ref } from 'vue'
 
 export default {
     name: 'ExploreCorpora',
@@ -23,6 +23,9 @@ export default {
         Card,
         PageHeader,
         MultiColumn
+    },
+    setup () {
+        provide('shouldStayOnSearch', ref(true))
     }
 }
 </script>

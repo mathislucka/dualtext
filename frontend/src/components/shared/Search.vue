@@ -17,7 +17,9 @@
 <script>
 import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
 import { useSearch } from './../../composables/useSearch.js'
-import { ref, computed, inject } from 'vue'
+import Search from './../../store/Search.js'
+import { ref, computed, inject, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'Search',
@@ -30,15 +32,17 @@ export default {
       },
       searchIfEnter (e) {
           if (e.code === 'Enter') {
-              e.preventDefault()
-              this.runSearch()
             if (!this.shouldStayOnSearch) {
-                this.$router.push({ name: 'explore_corpora' })
+                this.$router.push({ name: 'explore_corpora', query: { ...this.currentFilters, query: this.currentQuery }})
+            } else {
+                this.runSearch()
+                this.$router.push({ name: this.route.name, params: this.route.params, query: { ...this.currentFilters, query: this.currentQuery }})
             }
           }
       }
   },
   setup (props, context) {
+    const route = useRoute()
     const shouldStayOnSearch = inject('shouldStayOnSearch', null)
     const search = ref(null)
     const hasFocus = ref(false)
@@ -59,13 +63,42 @@ export default {
             setQuery(val)
         }
     })
+    const currentFilters = Search.selectedFilters
+
+    onMounted(() => {
+        if (route.query && Object.keys(route.query).length > 0) {
+            const normalizedQuery = Object.entries(route.query).reduce((acc, [key, val]) => {
+                if (key !== 'query') {
+                    acc[key] = Array.isArray(val) ? val : [val]
+                } else {
+                    acc[key] = val
+                }
+                return acc
+            },{})
+            const {
+                method,
+                corpus,
+                project,
+                query
+            } = normalizedQuery
+            query && setQuery(query)
+            Search.actions.setSelectedFilters({
+                ...method ? { method: method } : {},
+                ...corpus ? { corpus: corpus } : {},
+                ...project ? { project: project } : {}
+            })
+            runSearch()
+        }
+    })
 
     return {
         search,
         hasFocus,
         currentQuery,
         runSearch,
-        shouldStayOnSearch
+        shouldStayOnSearch,
+        currentFilters,
+        route
     }
   }
 }
