@@ -12,7 +12,7 @@ class TestTaskListView(APITestCase):
         self.user = standards['user']
         self.superuser = standards['superuser']
         self.url = reverse('task_list', args=[self.project.id])
-    
+
     def test_creation(self):
         """
         Ensure a new task can be created by a superuser.
@@ -87,7 +87,7 @@ class TestTaskListView(APITestCase):
 
         response = self.client.post(self.url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    
+
     def test_only_assigned(self):
         """
         Users should only see tasks assigned to themselves.
@@ -148,7 +148,7 @@ class TestTaskDetailView(APITestCase):
         url = reverse('task_detail', args=[t.id])
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    
+
     def test_autogenerate_review_task(self):
         """
         Ensure a review task is created when a task is marked as finished.
@@ -172,7 +172,7 @@ class TestClaimTaskView(APITestCase):
         self.group = standards['group']
         self.user = standards['user']
         self.superuser = standards['superuser']
-    
+
     def test_claimable_tasks(self):
         """
         Ensure that the number of unclaimed annotation tasks and unclaimed review tasks is returned.
@@ -193,7 +193,7 @@ class TestClaimTaskView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['open_annotations'], 1)
         self.assertEqual(response.data['open_reviews'], 1)
-    
+
     def test_annotation_task_claiming(self):
         """
         Ensure that the first task without an annotator is claimed.
@@ -211,7 +211,7 @@ class TestClaimTaskView(APITestCase):
         response = self.client.patch(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], t1.id)
-    
+
     def test_review_task_claiming(self):
         """
         Ensure that the first annotated task without a reviewer is claimed.
