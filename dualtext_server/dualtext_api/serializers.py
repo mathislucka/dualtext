@@ -14,10 +14,16 @@ class CorpusSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=255, validators=[
         UniqueValidator(queryset=Corpus.objects.all())
     ])
+    document_count = serializers.SerializerMethodField('count_documents')
+
+    def count_documents(self, obj):
+        return obj.document__count
+
     class Meta:
         model = Corpus
-        fields = ['id', 'name', 'corpus_meta', 'document_set'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'corpus_meta', 'document_count'] + DEFAULT_FIELDS
         extra_kwargs = { 'document_set': {'required': False}}
+        read_only_fields = ['document_count']
 
 class DocumentListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
@@ -41,11 +47,8 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         list_serializer_class = DocumentListSerializer
         model = Document
-        fields = ['id', 'content', 'corpus', 'method', 'annotation_set'] + DEFAULT_FIELDS
+        fields = ['id', 'content', 'corpus', 'method'] + DEFAULT_FIELDS
         read_only_fields = ['corpus', 'method']
-        extra_kwargs = {
-            'annotation_set': {'required': False},
-        }
 
 class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=255, validators=[
@@ -53,11 +56,10 @@ class ProjectSerializer(serializers.ModelSerializer):
     ])
     class Meta:
         model = Project
-        fields = ['id', 'name', 'allowed_groups', 'creator', 'corpora', 'task_set', 'annotation_mode'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'allowed_groups', 'creator', 'corpora', 'annotation_mode'] + DEFAULT_FIELDS
         extra_kwargs = {
             'allowed_groups': {'required': False},
             'corpora': {'required': False},
-            'task_set': {'required': False},
             'annotation_mode': {'required': False},
         }
         read_only_fields = ['creator']
@@ -93,13 +95,11 @@ class AnnotationSerializer(serializers.ModelSerializer):
             'documents',
             'labels',
             'task',
-            'prediction_set',
             'action',
             'copied_from'
         ] + DEFAULT_FIELDS
         extra_kwargs = {
             'labels': {'required': False},
-            'prediction_set': {'required': False},
             'documents': {'required': False},
         }
         read_only_fields = ['task', 'action', 'copied_from']

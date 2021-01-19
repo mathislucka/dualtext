@@ -6,7 +6,7 @@
         <template v-slot:content>
             <div class="w-full flex flex-col">
                 <pre class="bg-grey-100 p-4 mb-4">{{ JSON.stringify(corpus.corpus_meta, null, 4) }}</pre>
-                <span class="font-semibold">This corpus contains {{ corpus.document_set && corpus.document_set.length }} documents.</span>
+                <span class="font-semibold">This corpus contains {{ corpus.document_count }} documents.</span>
             </div>
         </template>
     </card>

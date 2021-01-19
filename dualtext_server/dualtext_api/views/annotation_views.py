@@ -16,11 +16,11 @@ class AnnotationListView(APIView):
         permission = AuthenticatedReadAdminCreate
         if AuthenticatedReadAdminCreate().has_permission(request, self):
             task = get_object_or_404(Task, id=task_id)
-            queryset = Annotation.objects.filter(task=task)
+            queryset = Annotation.objects.filter(task=task).select_related('task').prefetch_related('documents', 'labels')
             user = request.user
             if not user.is_superuser:
                 queryset = queryset.filter(task__annotator=user)
-            ps = ProjectService(task.project.id)
+            ps = ProjectService(task.project_id)
             desired_label = ps.get_desired_label()
             data = AnnotationSerializer(queryset, many=True).data
             if desired_label:

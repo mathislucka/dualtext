@@ -8,7 +8,6 @@ from dualtext_api.permissions import MembersReadAdminEdit, AuthenticatedReadAdmi
 from dualtext_api.services import ProjectService
 
 class ProjectListView(generics.ListCreateAPIView):
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [AuthenticatedReadAdminCreate]
 
@@ -17,7 +16,8 @@ class ProjectListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Project.objects.all()
+        queryset = Project.objects.all().prefetch_related('corpora', 'allowed_groups')
+        print(queryset.explain())
         if not user.is_superuser:
             user_groups = user.groups.all()
             queryset = queryset.filter(allowed_groups__in=user_groups)

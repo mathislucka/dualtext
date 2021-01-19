@@ -138,10 +138,9 @@ class ProjectService():
 
     def get_label_statistics(self):
         labels = self.project.label_set.all()
-        tasks = self.get_total_tasks().all()
         label_counts = {}
-        review_annotations = self.get_total_annotations().filter(action=Annotation.REVIEW)
-        annotation_annotations = self.get_total_annotations().filter(Q(action=Annotation.ANNOTATE) & ~Q(annotation__in=review_annotations))
+        review_annotations = self.get_total_annotations().filter(action=Annotation.REVIEW).prefetch_related('labels')
+        annotation_annotations = self.get_total_annotations().filter(Q(action=Annotation.ANNOTATE) & ~Q(annotation__in=review_annotations)).prefetch_related('labels')
         label_counts = {}
 
         for label in labels:
@@ -177,7 +176,7 @@ class ProjectService():
             'annotations': self.get_annotation_statistics(),
             'labels': self.get_label_statistics(),
             'tasks': self.get_task_statistics(),
-            'agreement': self.get_annotator_reviewer_agreement()
+            #'agreement': self.get_annotator_reviewer_agreement()
         }
 
     def get_desired_label(self):
@@ -194,7 +193,7 @@ class ProjectService():
         return labels
     
     def get_annotator_reviewer_agreement(self):
-        reviewed_annotations = self.get_reviewed_annotations().filter()
+        reviewed_annotations = self.get_reviewed_annotations()
         annotator_reviewer_matches = {}
         for annotation in reviewed_annotations:
             review_labels = [label.name for label in annotation.labels.all()]
