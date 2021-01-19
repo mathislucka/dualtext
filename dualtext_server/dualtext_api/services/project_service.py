@@ -85,22 +85,32 @@ class ProjectService():
             self.total_tasks = self.project.task_set
             return self.total_tasks
     
-    def get_open_annotation_tasks(self):
+    def get_open_annotation_tasks(self, user):
         if self.open_annotation_tasks is not None:
             return self.open_annotation_tasks
         else:
-            self.open_annotation_tasks = self.get_total_tasks().filter(Q(is_finished=False) & Q(action__in=[Task.ANNOTATE, Task.DUPLICATE]) & Q(annotator=None))
+            self.open_annotation_tasks = self.get_total_tasks().filter(
+                Q(is_finished=False) &
+                Q(action__in=[Task.ANNOTATE, Task.DUPLICATE]) &
+                Q(annotator=None) &
+                ~Q(copied_from__annotator=user)
+            )
             return self.open_annotation_tasks
     
-    def get_open_review_tasks(self):
+    def get_open_review_tasks(self, user):
         if self.open_review_tasks is not None:
             return self.open_review_tasks
         else:
-            self.open_review_tasks = self.get_total_tasks().filter(Q(is_finished=False) & Q(action=Task.REVIEW) & Q(annotator=None))
+            self.open_review_tasks = self.get_total_tasks().filter(
+                Q(is_finished=False) &
+                Q(action=Task.REVIEW) &
+                Q(annotator=None) &
+                ~Q(copied_from__annotator=user)
+            )
             return self.open_review_tasks
     
     def claim_annotation_task(self, user):
-        task = self.get_open_annotation_tasks().filter(~Q(copied_from__annotator=user)).first()
+        task = self.get_open_annotation_tasks(user).first()
         if task is not None:
             task.annotator = user
             task.save()
@@ -109,7 +119,7 @@ class ProjectService():
             return None
     
     def claim_review_task(self, user):
-        task = self.get_open_review_tasks().filter(~Q(copied_from__annotator=user)).first()
+        task = self.get_open_review_tasks(user).first()
         if task is not None:
             task.annotator = user
             task.save()

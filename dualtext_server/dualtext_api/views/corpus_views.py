@@ -17,7 +17,7 @@ class CorpusListView(generics.ListCreateAPIView):
         return queryset
 
 class CorpusDetailView(generics.RetrieveDestroyAPIView):
-    queryset = Corpus.objects.all()
+    queryset = Corpus.objects.annotate(Count('document')).all()
     serializer_class = CorpusSerializer
     permission_classes = [MembersReadAdminEdit]
     lookup_url_kwarg = 'corpus_id'

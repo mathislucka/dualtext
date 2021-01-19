@@ -106,6 +106,65 @@ class TestTaskListView(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+class TestTaskDetailView(APITestCase):
+    def setUp(self):
+        standards = run_standard_setup()
+        self.project = standards['project']
+        self.group = standards['group']
+        self.user = standards['user']
+        self.superuser = standards['superuser']
+
+    def test_annotator_task_view(self):
+        """
+        Ensure a task can be viewed by its annotator.
+        """
+        t = Task(name="task 1", annotator=self.user, project=self.project)
+        t.save()
+        self.client.force_authenticate(user=self.user)
+        url = reverse('task_detail', args=[t.id])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], t.name)
+
+    def test_superuser_task_view(self):
+        """
+        Ensure that a task can always be viewed by a superuser.
+        """
+        t = Task(name="task 1", annotator=self.user, project=self.project)
+        t.save()
+        self.client.force_authenticate(user=self.superuser)
+        url = reverse('task_detail', args=[t.id])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], t.name)
+
+    def test_deny_non_annotator_view(self):
+        """
+        Ensure a user can't view a task that they are not annotating.
+        """
+        t = Task(name="task 1", project=self.project)
+        t.save()
+        self.client.force_authenticate(user=self.user)
+        url = reverse('task_detail', args=[t.id])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    
+    def test_autogenerate_review_task(self):
+        """
+        Ensure a review task is created when a task is marked as finished.
+        """
+        t = Task(name="task 1", annotator=self.user, project=self.project)
+        t.save()
+        self.project.use_reviews = True
+        self.project.save()
+        self.client.force_authenticate(user=self.user)
+        url = reverse('task_detail', args=[t.id])
+        self.client.patch(url, { 'is_finished': True }, format='json')
+        review_task = Task.objects.filter(copied_from=t).first()
+        self.assertEqual(review_task.copied_from.id, t.id)
+        self.assertEqual(review_task.action, 'review')
+
+
 class TestClaimTaskView(APITestCase):
     def setUp(self):
         standards = run_standard_setup()
@@ -125,7 +184,7 @@ class TestClaimTaskView(APITestCase):
 
         t1 = Task(name="first task", project=self.project)
         t1.save()
-        t2 = Task(name="claimed task", project=self.project, annotator=self.user, action=Task.REVIEW, copied_from=t1)
+        t2 = Task(name="claimed task", project=self.project, action=Task.REVIEW, copied_from=t1)
         t2.save()
 
         url = reverse('task_claimable', args=[self.project.id])
@@ -170,7 +229,26 @@ class TestClaimTaskView(APITestCase):
         response = self.client.patch(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], t1.id)
-    
+
+    def test_no_copied_from_claiming(self):
+        """
+        Ensure that a user won't claim a task that was copied from a task they annotated.
+        """
+        self.project.allowed_groups.add(self.group)
+        self.project.save()
+        self.user.groups.add(self.group)
+        self.user.save()
+
+        t = Task(name="original task", project=self.project, annotator=self.user)
+        t.save()
+        t1 = Task(name="first task", project=self.project, action=Task.REVIEW, copied_from=t)
+        t1.save()
+
+        url = reverse('task_claim', args=[self.project.id, 'review'])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
     def test_deny_non_members(self):
         """
         Ensure that only project members can claim a task.

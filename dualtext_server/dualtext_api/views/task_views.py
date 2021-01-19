@@ -53,8 +53,8 @@ class ClaimTaskView(APIView):
 
         if permission.has_object_permission(request, self, project):
             ps = ProjectService(project_id)
-            open_annotation_tasks = ps.get_open_annotation_tasks().count()
-            open_review_tasks = ps.get_open_review_tasks().count()
+            open_annotation_tasks = ps.get_open_annotation_tasks(request.user).count()
+            open_review_tasks = ps.get_open_review_tasks(request.user).count()
             out['open_reviews'] = open_review_tasks
             out['open_annotations'] = open_annotation_tasks
             return Response(out)

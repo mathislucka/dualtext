@@ -17,7 +17,10 @@ class CorpusSerializer(serializers.ModelSerializer):
     document_count = serializers.SerializerMethodField('count_documents')
 
     def count_documents(self, obj):
-        return obj.document__count
+        try:
+            return obj.document__count
+        except AttributeError:
+            return 0
 
     class Meta:
         model = Corpus
