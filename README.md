@@ -55,8 +55,8 @@ Now create a virtual environment if you like.
 Then:
 
 ```bash
-$ cd dualtext_server
 $ pip install -r requirements.txt
+$ cd dualtext_server
 $ python manage.py makemigrations
 $ python manage.py migrate
 $ python manage.py createsuperuser
@@ -84,8 +84,6 @@ Your local development server should now be running at `localhost:8080`. If you'
 Go to `dualtext/dualtext_client/` then:
 
 ```bash
-$ pip install -r requirements.txt
-$ pip install --editable
 $ dualtext
 ```
 You can now use the CLI.
