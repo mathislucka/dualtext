@@ -1,0 +1,23 @@
+{
+    "project": {
+        "name": "Search Project 4",
+        "corpora": [1],
+        "annotation_mode": "classification"
+    },
+    "labels": [
+        { "name": "Sport", "key_code": "y" },
+        { "name": "Not Sport", "key_code": "n" }
+    ],
+    "documents": [
+        {
+            "content": "Wenn künftig mehr Zuschauer zum Millerntor kommen sollten, dann wird der FC vielleicht einige amateurhafte Züge ablegen.",
+            "weight": 0.5
+        },
+        {
+            "content": "Damit hat die Mannschaft kaum noch Chancen auf den Einzug ins Viertelfinale der Weltmeisterschaft in Ägypten.",
+            "weight": 0.5
+        }
+    ],
+    "limit": 200,
+    "search_methods": [ "sentence_embedding" ]
+}

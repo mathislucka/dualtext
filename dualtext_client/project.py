@@ -6,6 +6,8 @@ from label import Label
 from task import Task
 from feature import Feature
 from label import Label
+from search import Search
+import math
 
 class Project(ApiBase):
     """
@@ -65,13 +67,12 @@ class Project(ApiBase):
     def split_list(self, lst, chunk_size):
         return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
 
-    def create_project_task(self, task_chunk, project_id, task_idx, corpus_id, labels, documents):
+    def create_project_task(self, task_chunk, project_id, task_idx=None, corpus_id=None, labels=None, documents=None):
         task_instance = Task(self.session, project_id)
         task = task_instance.create({'name': 'P{}T{}'.format(project_id, task_idx)})
         return self.create_annotations(task_chunk, labels, task['id'], corpus_id, documents)
 
     def create_annotations(self, annotations, labels, task_id, corpus_id, documents):
-        print(documents)
         annotation_instance = Annotation(self.session, task_id)
         for annotation in annotations:
             payload = {}
@@ -110,5 +111,43 @@ class Project(ApiBase):
         for label in labels:
             transformed_labels[label['name']] = label['id']
         return transformed_labels
+
+    def create_from_documents(self, data, task_size):
+        self.validate_data(data, 'project_from_documents.schema.json')
+        project = self.create(data['project'])
+        self.create_labels(data['labels'], project['id'])
+
+        query = {
+            'method': data['search_methods'],
+            'corpus': project['corpora']
+        }
+        global_limit = data['limit']
+
+        annotations_to_create = []
+        s = Search(self.session)
+
+        for doc in data['documents']:
+            limit = math.floor(global_limit * doc['weight'])
+            candidates = s.search(params={**query, 'query': doc['content']}, limit=limit)
+            annotations_to_create.extend(candidates)
+
+        chunks = self.split_list(annotations_to_create, task_size)
+        project_id = project['id']
+        task_instance = Task(self.session, project_id)
+        for idx, chunk in enumerate(chunks):
+            task = task_instance.create({'name': 'P{}T{}'.format(project_id, idx)})
+            self.create_annotations_directly(task['id'], chunk)
+
+        return project
+
+    def create_annotations_directly(self, task_id, documents):
+        annotation_instance = Annotation(self.session, task_id)
+        for doc in documents:
+            payload = {'documents': [doc['id']]}
+            annotation_instance.create(payload)
+
+
+
+
 
 

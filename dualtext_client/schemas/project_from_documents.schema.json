@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ProjectFromSentences",
+    "description": "Creating a project from a list of documents adding similar documents from an existing corpus.",
+    "type": "object",
+    "properties": {
+        "project": {
+            "description": "The project that should be created.",
+            "type": "object",
+            "$ref": "project.schema.json"
+        },
+        "labels": {
+            "description": "Labels that should be created.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "label.schema.json"
+            }
+        },
+        "documents": {
+            "description": "A list of documents that should be used to search candidates for the project to create.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "A single document and how much this document should contribute to the total number of candidate documents.",
+                "properties": {
+                    "content": {
+                        "type": "string"
+                    },
+                    "weight": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1
+                    }
+                }
+            }
+        },
+        "limit": {
+            "description": "The maximum number of annotations that should be created.",
+            "type": "integer"
+        },
+        "search_methods": {
+            "description": "A list of methods that should be used to retrieve annotation candidates.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": ["sentence_embedding", "elastic"]
+            }
+        }
+    },
+    "required": [ "project", "labels", "documents", "search_methods" ]
+}
