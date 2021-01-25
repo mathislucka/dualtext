@@ -14,10 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
 from django.urls import path, include
+from django.views.generic import TemplateView
+from .views import OpenApiView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/', include('dualtext_api.urls')),
     path('silk/', include('silk.urls', namespace='silk')),
-    path('api/v1/', include('dualtext_api.urls'))
 ]
+
+if settings.DEBUG:
+    dev_only_urls = [
+        path('openapi/', OpenApiView.as_view(), name='api_schema'),
+        path('api/v1/docs/', TemplateView.as_view(
+            template_name='api_schema.html',
+            extra_context={'schema_url':'api_schema'}
+    ), name='api_docs'),
+    ]
+    urlpatterns += dev_only_urls

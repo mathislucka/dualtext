@@ -26,7 +26,10 @@ SECRET_KEY = '*htuj%+7a6%)$e6837a)_6c-%v_)k&nt2_67w2l5*g5%5w+#-o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -49,6 +52,9 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
     ],
 }
 
@@ -80,7 +86,9 @@ ROOT_URLCONF = 'dualtext.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'dualtext/templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
