@@ -16,6 +16,9 @@
                 <div class="flex flex-wrap">
                     <swatch v-for="swatch in swatches" :key="swatch.key" :swatch="swatch" />
                 </div>
+
+                <h3 class="font-semibold text-lg text-grey-600 mt-8">Progress over Time</h3>
+                <div><svg id="timeseries" /></div>
             </div>
         </template>
     </card>
@@ -26,6 +29,7 @@ import { useBarChart } from './../../composables/useBarChart.js'
 import { useProjectLabels } from './../../composables/useLabels.js'
 import { useProjectStatistics } from './../../composables/useProjects.js'
 import { useDivergingBarChart } from './../../composables/useDivergingBarChart.js'
+import { useTimeseriesChart } from './../../composables/useTimeseriesChart.js'
 import Card from '../../components/layout/Card.vue'
 import Swatch from './Swatch.vue'
 import { computed, inject } from 'vue'
@@ -66,7 +70,7 @@ export default {
                 retVal = [
                     {
                         key: 'Open Annotations',
-                        value: parseInt(annotations.annotated_absolute) - parseInt(annotations.total),
+                        value: parseInt(annotations.open_annotations) * -1,
                         color: '#FC839C'
                     },
                     {
@@ -76,7 +80,7 @@ export default {
                     },
                     {
                         key: 'Open Reviews',
-                        value: parseInt(annotations.reviewed_absolute) - parseInt(annotations.annotated_absolute),
+                        value: parseInt(annotations.open_reviews) * -1,
                         color: '#FFF880'
                     },
                     {
@@ -89,13 +93,34 @@ export default {
             return retVal
         })
 
+        const timeseriesData = computed(() => {
+            if (projectStatistics.value.timetracking && projectStatistics.value.timetracking.timeseries) {
+                const previousSum = (idx, data) => {
+                    const previous = data.slice(0, idx + 1)
+                    return previous.map(val => val.count).reduce((acc, val) => acc + val)
+                }
+                return projectStatistics.value.timetracking.timeseries.map((day, idx) => {
+                    const remaining = projectStatistics.value.annotations.total - previousSum(idx, projectStatistics.value.timetracking.timeseries)
+                    return {
+                        ...day,
+                        date: new Date(day.date),
+                        remaining: remaining < 0 ? 0 : remaining
+                    }
+                })
+            }
+            return []
+        })
+
         const result = useDivergingBarChart(divergingBarChartData)
+        const timeseries = useTimeseriesChart(timeseriesData)
 
         return {
             swatches: preparedData,
             barHtml: html,
             divergingHtml: result.html,
-            divergingBarChartData
+            divergingBarChartData,
+            //timeseriesHtml: timeseries.html
+            timeseriesData
         }
     }
 }

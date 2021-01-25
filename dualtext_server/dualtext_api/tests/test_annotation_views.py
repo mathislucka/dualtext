@@ -1,8 +1,9 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from dualtext_api.models import Task, Corpus, Document, Annotation, Label
+from dualtext_api.models import Task, Corpus, Document, Annotation, Label, Run, Lap
 from .helpers import run_standard_setup
+import datetime
 
 class TestAnnotationListView(APITestCase):
     def setUp(self):
@@ -60,7 +61,7 @@ class TestAnnotationListView(APITestCase):
         t2.save()
         t3 = Task(annotator=self.superuser, project=self.project, name='Not assigned task')
         t3.save()
-        
+
         a1 = Annotation(task=self.task)
         a1.save()
         a1.documents.add(self.document)
@@ -83,10 +84,10 @@ class TestAnnotationListView(APITestCase):
 
         response_2_task = Task.objects.get(id=response_2.data[0]['task'])
         response_task = Task.objects.get(id=response.data[0]['task'])
-        
+
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response_task.annotator, self.user)
-        
+
         self.assertEqual(len(response_2.data), 1)
         self.assertEqual(response_2_task.annotator, self.user)
 
@@ -115,11 +116,11 @@ class TestAnnotationDetailView(APITestCase):
         self.superuser = standards['superuser']
         self.group = standards['group']
         self.project = standards['project']
-        
+
         task = Task(name='Task 1', annotator=self.user, project=self.project)
         task.save()
         self.task = task
-        
+
         corpus = Corpus(name='New Corpus', corpus_meta={})
         corpus.save()
         self.corpus = corpus
@@ -135,7 +136,7 @@ class TestAnnotationDetailView(APITestCase):
         self.annotation = annotation
 
         self.url = reverse('annotation_detail', args=[self.annotation.id])
-    
+
     def test_annotator_view(self):
         """
         Ensure that annotators of a task can view an annotation.
@@ -143,7 +144,7 @@ class TestAnnotationDetailView(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url, format='json')
         response_task_id = response.data['task']
-        
+
         self.assertEqual(response_task_id, self.task.id)
         self.assertEqual(Task.objects.get(id=response_task_id).annotator, self.user)
 
@@ -155,14 +156,16 @@ class TestAnnotationDetailView(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.data['id'], self.annotation.id)
         self.assertEqual(response.data['task'], self.task.id)
-    
+
     def test_annotator_edit(self):
         """
         Ensure that annotators can edit an annotation.
         """
-        label = Label(name="annotator", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
+        label = Label(
+            name="annotator",
+            project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'}
+        )
         label.save()
-
         self.client.force_authenticate(user=self.user)
         response = self.client.patch(self.url, {'labels': [label.id]}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -201,3 +204,37 @@ class TestAnnotationDetailView(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.patch(self.url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_timetracking_on_update(self):
+        """
+        Ensure that a timetracking Lap and possibly a timetracking run is created when the label or documents of
+        an annotation get an update.
+        """
+        label = Label(name="annotator", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
+        label.save()
+        self.client.force_authenticate(user=self.user)
+        self.client.patch(self.url, {'labels': [label.id]}, format='json')
+        run = Run.objects.all()
+        lap = Lap.objects.all()
+
+        self.assertEqual(len(run), 1)
+        self.assertEqual(len(lap), 2)
+
+    def test_new_run_when_idle(self):
+        """
+        Ensure that a timetracking Lap is assigned to a newly created Run if the last Run was idle for more than
+        300 seconds.
+        """
+        label = Label(name="annotator", project=self.project, color={'standard': '#97C0E8', 'light': '#EAF2FA'})
+        label.save()
+        now = datetime.datetime.now()
+        idle = now - datetime.timedelta(seconds=301)
+        run = Run.objects.all().first()
+        run.lap_set.filter(id=1).update(created_at=idle, run_id=run.id, annotation_id=self.annotation.id)
+        self.client.force_authenticate(user=self.user)
+        self.client.patch(self.url, {'labels': [label.id]}, format='json')
+        run = Run.objects.all()
+        lap = Lap.objects.all()
+
+        self.assertEqual(len(run), 2)
+        self.assertEqual(len(lap), 2)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from .validators import validate_alphabetic
 
@@ -115,3 +116,15 @@ class FeatureValue(AbstractBase):
     feature = models.ForeignKey(Feature, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     value = models.BinaryField()
+
+class Run(AbstractBase):
+    """
+    An entity measuring the time spent on a single annotation run.
+    """
+    is_finished = models.BooleanField(blank=True, default=False)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    time_to_completion = models.IntegerField(null=True)
+
+class Lap(AbstractBase):
+    run = models.ForeignKey(Run, on_delete=models.CASCADE)
+    annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE) 

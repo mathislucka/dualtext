@@ -1,9 +1,9 @@
-from django.db.models.signals import pre_save, post_save, pre_delete
+from django.db.models.signals import pre_save, post_save, pre_delete, m2m_changed
 from django.dispatch import receiver
-from .models import Task, Document, Corpus
+from .models import Task, Document, Corpus, Annotation, Run, Lap
 from dualtext_api.feature_builders.builder import Builder
 from .features import FeatureRunner
-from dualtext_api.services import TaskService
+from dualtext_api.services import TaskService, RunService
 
 @receiver(pre_save, sender=Task)
 def generate_review_on_task_completion(sender, instance, **kwargs):
@@ -20,6 +20,8 @@ def generate_review_on_task_completion(sender, instance, **kwargs):
         condition = bool(condition and instance.copied_from == None)
         # reviews should only be generated if the project uses reviews
         condition = bool(condition and task.project.use_reviews == True)
+        # tasks that already have a review should not be reviewed again
+        condition = bool(condition and task.task_set.filter(action=Task.REVIEW).count() == 0)
         if condition:
             ts = TaskService()
             ts.copy_task(task.id)
@@ -42,3 +44,11 @@ def delete_document_features_on_corpus_deletion(sender, **kwargs):
 
     for feature in features:
         builder.remove_document_features(documents, feature.key)
+
+@receiver(m2m_changed, sender=Annotation.documents.through)
+@receiver(m2m_changed, sender=Annotation.labels.through)
+def track_lap(instance, action, **kwargs):
+    if action == 'post_add' or action == 'post_remove' or action == 'post_clear':
+        task = instance.task
+        rs = RunService(task)
+        rs.log_lap(instance)
