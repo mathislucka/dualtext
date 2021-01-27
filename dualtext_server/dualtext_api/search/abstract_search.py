@@ -9,4 +9,3 @@ class AbstractSearch(ABC):
         It returns a sorted list of tuples. The tuples contain document id, search score and search method name.
         [(<id>, <score>, <method name>)]
         """
-        pass

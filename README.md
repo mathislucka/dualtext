@@ -212,6 +212,56 @@ class Builder():
 Now you are done. When you assign a feature containing the feature key `document_length` to a corpus, the length of a document
 will be automagically computed and saved alongside the document in your DB.
 
+Let's build a custom search method that will retrieve all documents below a certain content length:
+
+```python
+# /dualtext_server/dualtext_api/search/document_length_search.py
+from .abstract_search import AbstractSearch
+import pickle
+
+class DocumentLengthSearch(AbstractSearch):
+    def __init__(self):
+        self.feature_key = 'document_length'
+
+    def search(self, document_ids, query):
+        feature_values = FeatureValue.objects.filter(Q(key=self.feature_key) & Q(document__id__in=document_ids)).all()
+
+        found = []
+
+        for fv in feature_values:
+            length = pickle.loads(fv.value)
+            if length < query:
+                found.append((fv.document.id, length, self.feature_key))
+        return found
+```
+
+`DocumentLengthSearch` inherits from `AbstractSearch` it has to implement a `search` method which will be run if the user decides to search for documents using their length. After implementing the custom search module, you need to reference the class in the global search class as follows:
+
+```python
+# /dualtext_server/dualtext_api/search.py
+# ...
+from .document_length_search import DocumentLengthSearch
+
+class Search():
+    # ...
+    @staticmethod
+    def get_available_methods():
+        return {
+            'elastic': ElasticSearch,
+            'sentence_embedding': SentenceEmbeddingSearch,
+            'document_length': DocumentLengthSearch
+        }
+```
+
+The new search method can now be used.
+
+In practice, you might not want to actually store feature values in the database and you might want to avoid using the DB for search requests in order to increase performance. You can look at feature and search implementations using elasticsearch in `/dualtext_server/dualtext_api/feature_builders/sentence_embedding.py` and `/dualtext_server/dualtext_api/search/sentence_embedding_search.py`.
+
+
+
+
+
+
 
 
 
