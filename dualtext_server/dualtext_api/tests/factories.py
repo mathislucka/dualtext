@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 import factory
 import factory.fuzzy
 from dualtext_api.models import Annotation, Corpus, Document, Project, Task, Label
@@ -10,6 +10,21 @@ class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Faker('name')
     is_superuser = False
     password = factory.Faker('name')
+
+    @factory.post_generation
+    def groups(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of groups were passed in, use them
+            for group in extracted:
+                self.groups.add(group)
+
+class GroupFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Group
 
 class CorpusFactory(factory.django.DjangoModelFactory):
     class Meta:

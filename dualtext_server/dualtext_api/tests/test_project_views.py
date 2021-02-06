@@ -347,42 +347,42 @@ class TestProjectStatisticsView(APITestCase):
         self.assertEqual(response.data['annotations']['reviewed_relative'], 1)
     # This test works but it takes a lot of time. Updating the timings on runs and laps does not work.
     # This test can be reactivated when I figured out how to change the created_at field.
-    def test_factories(self):
-        user = UserFactory.create(is_superuser=True)
-        project = ProjectFactory.create(use_reviews=False)
-        url = reverse('project_statistics', args=[project.id])
-        label = LabelFactory.create(project=project)
-        task = TaskFactory.create(annotator=user, project=project)
-        task_unfinished = TaskFactory(annotator=user, project=project)
-        unlabeled_annotations = AnnotationFactory.create_batch(25, task=task_unfinished)
-        def generate_annotations(task_ref, waiting):
-            annotations = AnnotationFactory.create_batch(25, task=task_ref)
-            for annotation in annotations:
-                annotation.labels.add(label)
-                annotation.save()
-                time.sleep(waiting)
-            time.sleep(10)
-            annotations[-1].labels.remove(label)
-            annotations[-1].save()
-        def update_timings(run, n_days, n_seconds):
-            queryset = Run.objects.filter(id=run.id)
-            queryset.update(created_at=run.created_at - datetime.timedelta(days=n_days))
-            for idx, lap in enumerate(run.lap_set.all()):
-                queryset = Lap.objects.filter(id=lap.id)
-                queryset.update(created_at=lap.created_at - datetime.timedelta(days=n_days) + datetime.timedelta(seconds=idx * n_seconds))
+    # def test_factories(self):
+    #     user = UserFactory.create(is_superuser=True)
+    #     project = ProjectFactory.create(use_reviews=False)
+    #     url = reverse('project_statistics', args=[project.id])
+    #     label = LabelFactory.create(project=project)
+    #     task = TaskFactory.create(annotator=user, project=project)
+    #     task_unfinished = TaskFactory(annotator=user, project=project)
+    #     unlabeled_annotations = AnnotationFactory.create_batch(25, task=task_unfinished)
+    #     def generate_annotations(task_ref, waiting):
+    #         annotations = AnnotationFactory.create_batch(25, task=task_ref)
+    #         for annotation in annotations:
+    #             annotation.labels.add(label)
+    #             annotation.save()
+    #             time.sleep(waiting)
+    #         time.sleep(10)
+    #         annotations[-1].labels.remove(label)
+    #         annotations[-1].save()
+    #     def update_timings(run, n_days, n_seconds):
+    #         queryset = Run.objects.filter(id=run.id)
+    #         queryset.update(created_at=run.created_at - datetime.timedelta(days=n_days))
+    #         for idx, lap in enumerate(run.lap_set.all()):
+    #             queryset = Lap.objects.filter(id=lap.id)
+    #             queryset.update(created_at=lap.created_at - datetime.timedelta(days=n_days) + datetime.timedelta(seconds=idx * n_seconds))
 
-        generate_annotations(task, 1)
-        task.is_finished = True
-        task.save()
-        run = Run.objects.all().first()
-        #update_timings(run, 1, 3)
-        task_2 = TaskFactory(annotator=user, project=project)
-        generate_annotations(task_2, 2)
-        task_2.is_finished = True
-        task_2.save()
-        run_2 = Run.objects.filter(is_finished=False).first()
-        print(Run.objects.all())
-        #update_timings(run_2, 0, 5)
-        self.client.force_authenticate(user=user)
-        response = self.client.get(url, format='json')
-        print(response.data)
+    #     generate_annotations(task, 1)
+    #     task.is_finished = True
+    #     task.save()
+    #     run = Run.objects.all().first()
+    #     #update_timings(run, 1, 3)
+    #     task_2 = TaskFactory(annotator=user, project=project)
+    #     generate_annotations(task_2, 2)
+    #     task_2.is_finished = True
+    #     task_2.save()
+    #     run_2 = Run.objects.filter(is_finished=False).first()
+    #     print(Run.objects.all())
+    #     #update_timings(run_2, 0, 5)
+    #     self.client.force_authenticate(user=user)
+    #     response = self.client.get(url, format='json')
+    #     print(response.data)
