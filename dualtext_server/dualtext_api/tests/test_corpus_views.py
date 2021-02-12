@@ -1,9 +1,8 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from dualtext_api.models import Corpus, Document
-from .helpers import run_standard_setup
-from .factories import UserFactory, CorpusFactory, DocumentFactory, GroupFactory
+from dualtext_api.models import Corpus
+from .factories import UserFactory, CorpusFactory, GroupFactory
 
 class TestCorpusListView(APITestCase):
     def test_creation(self):
@@ -57,7 +56,7 @@ class TestCorpusListView(APITestCase):
         """
         group = GroupFactory()
         corpus = CorpusFactory(allowed_groups=[group])
-        corpus_2 = CorpusFactory(name='other')
+        CorpusFactory(name='other')
         user = UserFactory(groups=[group])
         url = reverse('corpus_list')
 
