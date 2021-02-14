@@ -131,4 +131,4 @@ class LabelFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('first_name')
     project = factory.SubFactory(ProjectFactory)
     color = {"standard": "#97C0E8", "light": "#EAF2FA"}
-    key_code = factory.fuzzy.FuzzyChoice(['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g'])
+    key_code = factory.fuzzy.FuzzyChoice(['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'y', 'x', 'c', 'v', 'b', 'n'])
