@@ -1,6 +1,5 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import generics
-from dualtext_api.models import Corpus, Feature
+from dualtext_api.models import Feature
 from dualtext_api.serializers import FeatureSerializer
 from dualtext_api.permissions import AuthenticatedReadAdminCreate
 
