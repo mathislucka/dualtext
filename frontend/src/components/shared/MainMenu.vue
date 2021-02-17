@@ -16,6 +16,11 @@
                 </button>
                 <span class="flex mb-2 w-full border-grey-300 border-b pb-2"><icon class="text-teal-500 mr-2" :icon="'sun'" />Hi {{ user.username }}!</span>
                 <button class="text-blue-500 hover:text-blue-700 mb-8">Log out <icon :icon="'logout'" class="inline ml-2" /></button>
+                <router-link
+                    class="link mb-8"
+                    :to="{ name: 'dashboard' }">
+                Dashboard
+            </router-link>
             </div>
             <div class="flex flex-col items-start" id="menu-content" />
         </nav>
