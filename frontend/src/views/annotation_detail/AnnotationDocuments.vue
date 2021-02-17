@@ -13,9 +13,11 @@
 import { toRefs, ref, computed, inject } from 'vue'
 import { useDocuments } from './../../composables/useDocuments.js'
 import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
+import { useSingleProject } from './../../composables/useProjects.js'
 import Search from './../../store/Search.js'
 import Document from './Document.vue'
 import Annotation from './../../store/Annotation.js'
+
 export default {
     name: 'AnnotationDocuments',
     components: { Document },
@@ -32,6 +34,8 @@ export default {
     setup (props) {
         const { annotation, annotationIdx } = toRefs(props)
         const taskId = inject('taskId')
+        const projectId = inject('projectId')
+        const { project } = useSingleProject(projectId)
 
         const {
             currentDocuments,
@@ -51,7 +55,7 @@ export default {
         return {
             documents: computed(() => {
                 const documents = currentDocuments.value
-                while (documents.length < 2) {
+                while (documents.length < 2 && project.value.annotation_mode === 'dualtext') {
                     documents.push({})
                 }
                 return documents
