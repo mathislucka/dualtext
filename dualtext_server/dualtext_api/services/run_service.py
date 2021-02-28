@@ -3,7 +3,7 @@ from django.utils import timezone
 from dualtext_api.models import Run, Lap, Task
 
 class RunService():
-    MAX_IDLE_SECONDS = 10
+    MAX_IDLE_SECONDS = 300
     def __init__(self, task=None):
         self.task = task
 

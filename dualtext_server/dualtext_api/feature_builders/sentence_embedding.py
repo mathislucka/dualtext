@@ -11,6 +11,7 @@ class SentenceEmbedding(AbstractFeature):
         self.model = model
         self.client = Elasticsearch()
         self.INDEX_NAME = 'sentence_embeddings'
+        self.BATCH_SIZE = 700
     
     def create_features(self, documents):
         self.generate_and_reindex_embeddings(documents)
@@ -24,15 +25,17 @@ class SentenceEmbedding(AbstractFeature):
     
     def remove_features(self, documents):
         documents = [doc.id for doc in documents]
-        self.client.indices.delete_by_query(index=self.INDEX_NAME, body={"query": {"terms": {"doc_id": documents}}})
+        self.client.delete_by_query(index=self.INDEX_NAME, body={"query": {"terms": {"doc_id": documents}}})
         self.refresh_index()
 
     def generate_and_reindex_embeddings(self, documents):
+        split_documents = self.split_list(documents, self.BATCH_SIZE)
+        for docs in split_documents:
+            self.remove_features(docs)
         sentences = [document.content for document in documents.all()]
-        ids = [document.id for document in documents.all()]
-        sentences = self.split_list(sentences, 500)
-        split_ids = self.split_list(ids, 500)
-        self.recreate_es_index()
+        ids = [(document.id, document.corpus.id) for document in documents.all()]
+        sentences = self.split_list(sentences, self.BATCH_SIZE)
+        split_ids = self.split_list(ids, self.BATCH_SIZE)
 
         for idx, lst in enumerate(sentences):
             embeddings = self.encode_sentences(lst)
@@ -64,6 +67,9 @@ class SentenceEmbedding(AbstractFeature):
                     "enabled": "true"
                 },
                 "properties": {
+                    "corpus_id": {
+                        "type": "keyword"
+                    },
                     "doc_id": {
                         "type": "keyword"
                     },
@@ -81,9 +87,10 @@ class SentenceEmbedding(AbstractFeature):
 
     def update_es_index(self, data, call_refresh=True):
         requests = []
-        for doc_id, vector in data:
+        for doc, vector in data:
             request = {}
-            request["doc_id"] = doc_id
+            request["corpus_id"] = doc[1]
+            request["doc_id"] = doc[0]
             request["_op_type"] = "index"
             request["_index"] = self.INDEX_NAME
             request["doc_vector"] = vector.tolist()

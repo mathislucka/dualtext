@@ -5,7 +5,6 @@ from document import Document
 from label import Label
 from task import Task
 from feature import Feature
-from label import Label
 from search import Search
 import math
 

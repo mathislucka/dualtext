@@ -16,10 +16,10 @@ class Search():
 
     def run(self):
         results = []
-        documents = self.get_documents()
+        excluded_documents = self.get_excluded_documents()
         for method in self.methods:
             s = self.get_available_methods()[method]()
-            s = s.search(documents, self.query)
+            s = s.search(self.corpora, excluded_documents, self.query)
             results.extend(s)
         return self.postprocess_results(results)
 
@@ -39,19 +39,17 @@ class Search():
             q.method = methods[idx]
         return queryset
 
-    def get_documents(self):
+    def get_excluded_documents(self):
         project = None
+        excluded_documents = []
         if self.project_id:
             project = Project.objects.get(id=self.project_id)
 
         if project and project.annotation_document_duplicates == False:
-            ps = ProjectService(self.project_id)
-            annotations = ps.get_total_annotations().values_list('id', flat=True)
-            document_queryset = Document.objects.filter(Q(corpus__id__in=self.corpora) & ~Q(annotation__id__in=annotations))
-        else:
-            document_queryset = Document.objects.filter(corpus__id__in=self.corpora)
-
-        return list(document_queryset.values_list('id', flat=True))
+            annotated_documents = Document.objects.filter(Q(corpus__id__in=self.corpora) & Q(annotation__task__project=project))
+            excluded_documents = list(annotated_documents.values_list('id', flat=True))
+        print('excluded documents: {}'.format(excluded_documents))
+        return excluded_documents
 
     @staticmethod
     def get_available_methods():

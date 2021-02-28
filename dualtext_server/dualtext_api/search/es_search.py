@@ -8,7 +8,7 @@ class ElasticSearch(AbstractSearch):
         self.client = Elasticsearch()
         self.elastic = Elastic()
 
-    def search(self, documents, query):
+    def search(self, corpora, excluded_documents, query):
         embedding_start = time.time()
         embedding_time = time.time() - embedding_start
 
@@ -17,8 +17,11 @@ class ElasticSearch(AbstractSearch):
                 "must": [
                     { "match": { "doc_content": query }}
                 ],
-                "filter": [ 
-                    { "terms":  { "doc_id": documents }}
+                "filter": [
+                    { "terms": { "corpus_id": corpora }}
+                ],
+                "must_not": [ 
+                    { "terms":  { "doc_id": excluded_documents }}
                 ]
             }
         }

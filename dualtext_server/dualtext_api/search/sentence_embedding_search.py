@@ -8,7 +8,7 @@ class SentenceEmbeddingSearch(AbstractSearch):
         self.SIMILARITY_THRESHOLD = 1.2
         self.client = Elasticsearch()
 
-    def search(self, documents, query):
+    def search(self, corpora, excluded_documents, query):
         embedding_start = time.time()
         sent_embed = SentenceEmbedding()
         embedded_query = sent_embed.process_query(query).tolist()
@@ -16,7 +16,16 @@ class SentenceEmbeddingSearch(AbstractSearch):
 
         script_query = {
             "script_score": {
-                "query": {"terms": { "doc_id": documents }},
+                "query": {
+                    "bool": { 
+                        "filter": [
+                            { "terms": { "corpus_id": corpora }}
+                        ],
+                        "must_not": [ 
+                            { "terms":  { "doc_id": excluded_documents }}
+                        ]
+                    }
+                },
                 "script": {
                     "source": "cosineSimilarity(params.query_vector, 'doc_vector') + 1.0",
                     "params": {"query_vector": embedded_query}

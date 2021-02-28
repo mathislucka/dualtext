@@ -99,10 +99,19 @@ export default {
     })
 
     watch(corpora, () => {
-        if (currentFilters.value.corpus && currentFilters.value.corpus.length === 0) {
-            currentFilters.value = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)) }
-        }
+        setCorpusFilter()
     })
+
+    watch(corporaIds, () => {
+        setCorpusFilter()
+    })
+
+    const setCorpusFilter = () => {
+        if (currentFilters.value.corpus && currentFilters.value.corpus.length === 0) {
+            const result = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)) }
+            currentFilters.value = result
+        }
+    }
 
     watch(Search.availableMethods, () => {
         if (currentFilters.value.method && currentFilters.value.method.length === 0) {

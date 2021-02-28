@@ -39,8 +39,14 @@ function initDefaultStoreMethods (state) {
         async updateResource (path, payload, params = {}) {
             let resource = state.items[payload.id]
             const newResource = { ...resource, ...payload }
+            // optimisically update state
             state.items[newResource.id] = newResource
-            const response = await Api.patch(path, payload, params)
+            try {
+                const response = await Api.patch(path, payload, params)
+            } catch {
+                // reset state on error
+                state.items[resource.id] = resource
+            }
             handleCache(state, 'update')
             return response
         },

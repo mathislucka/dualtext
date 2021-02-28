@@ -223,8 +223,12 @@ class DocumentLengthSearch(AbstractSearch):
     def __init__(self):
         self.feature_key = 'document_length'
 
-    def search(self, document_ids, query):
-        feature_values = FeatureValue.objects.filter(Q(key=self.feature_key) & Q(document__id__in=document_ids)).all()
+    def search(self, corpora, excluded_documents, query):
+        feature_values = FeatureValue.objects.filter(
+            Q(key=self.feature_key) &
+            Q(document__corpus__id__in=corpora) &
+            ~Q(document__id__in=excluded_documents)
+        ).all()
 
         found = []
 

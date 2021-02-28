@@ -21,10 +21,10 @@ class SearchView(APIView):
                 corpora = [int(c) for c in corpora]
                 if not request.user.is_superuser:
                     user_groups = request.user.groups.all()
-                    corpora = Corpus.objects.filter(
+                    corpora = list(Corpus.objects.filter(
                         Q(id__in=corpora) &
                         Q(allowed_groups__in=user_groups)
-                    ).values_list('id', flat=True)
+                    ).values_list('id', flat=True))
                 s = Search(query, corpora, methods, project)
                 results = DocumentSerializer(s.run(), many=True)
                 results = results.data

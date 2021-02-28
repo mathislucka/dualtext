@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from .factories import DocumentFactory, UserFactory, TaskFactory, ProjectFactory, AnnotationFactory
+from .factories import DocumentFactory, UserFactory, TaskFactory, ProjectFactory, AnnotationFactory, CorpusFactory, FeatureFactory
 
 class TestSearchView(APITestCase):    
     def test_elasticsearch_results(self):
@@ -9,7 +9,9 @@ class TestSearchView(APITestCase):
         Ensure the search with elasticsearch will return all matching documents in a corpus.
         """
         su = UserFactory(is_superuser=True)
-        doc = DocumentFactory(content='a new document')
+        corpus = CorpusFactory()
+        feature = FeatureFactory(key='elastic', corpora=[corpus])
+        doc = DocumentFactory(content='a new document', corpus=corpus)
         url = reverse('search')
         query = '?query=document&corpus={}&method=elastic'.format(doc.corpus.id)
 

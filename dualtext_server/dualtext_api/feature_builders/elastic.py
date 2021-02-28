@@ -7,6 +7,7 @@ class Elastic(AbstractFeature):
     def __init__(self):
         self.client = Elasticsearch()
         self.INDEX_NAME = 'documentas'
+        self.BATCH_SIZE = 700
     
     def create_features(self, documents):
         self.reindex_documents(documents)
@@ -21,10 +22,10 @@ class Elastic(AbstractFeature):
         self.refresh_index()
 
     def reindex_documents(self, documents):
-        split_documents = self.split_list(documents, 500)
-        self.recreate_es_index()
+        split_documents = self.split_list(documents, self.BATCH_SIZE)
 
         for doc_chunk in split_documents:
+            self.remove_features(doc_chunk)
             self.update_es_index(doc_chunk, call_refresh=False)
         self.refresh_index()
 
@@ -48,6 +49,9 @@ class Elastic(AbstractFeature):
                     "enabled": "true"
                 },
                 "properties": {
+                    "corpus_id": {
+                        "type": "keyword"
+                    },
                     "doc_id": {
                         "type": "keyword"
                     },
@@ -64,7 +68,7 @@ class Elastic(AbstractFeature):
 
     def update_index(self, data, call_refresh=True):
         exists = self.client.indices.exists([self.INDEX_NAME])
-        if exists == False:
+        if not exists:
             self.recreate_es_index()
         requests = []
         print(data)
@@ -76,6 +80,7 @@ class Elastic(AbstractFeature):
             request["_op_type"] = "index"
             request["_index"] = self.INDEX_NAME
             request["doc_content"] = doc.content
+            request["corpus_id"] = doc.corpus.id
             requests.append(request)
         bulk(self.client, requests)
         if call_refresh:

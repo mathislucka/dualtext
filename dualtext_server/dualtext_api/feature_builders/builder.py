@@ -17,12 +17,12 @@ class Builder():
             feature_values = feature_instance.create_features(documents)
             msg = 'Successfully build {} for {} documents.'.format(feature_key, len(documents.all()))
             print(msg)
-    
+
     def update_document_features(self, documents, feature_key):
         feature_instance = self.features.get(feature_key, None)
         if feature_instance is not None:
             feature_instance.update_feature(documents)
-    
+
     def remove_document_features(self, documents, feature_key):
         feature_instance = self.features.get(feature_key, None)
         if feature_instance is not None:
