@@ -45,7 +45,6 @@ class ProjectService():
         if self.annotated_annotations is not None:
             return self.annotated_annotations
         else:
-            tasks = self.get_total_tasks()
             annotations = self.get_total_annotations().filter(Q(task__is_finished=True) & Q(task__action=Annotation.ANNOTATE))
             self.annotated_annotations = annotations
             return self.annotated_annotations
@@ -54,7 +53,6 @@ class ProjectService():
         if self.reviewed_annotations is not None:
             return self.reviewed_annotations
         else:
-            tasks = self.get_total_tasks()
             annotations = self.get_total_annotations().filter(Q(task__is_finished=True) & Q(task__action=Task.REVIEW))
             self.reviewed_annotations = annotations
             return self.reviewed_annotations

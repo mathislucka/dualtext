@@ -36,14 +36,9 @@ class RunService():
         runs = Run.objects.all()
 
         for run in runs:
-            laps = Lap.objects.filter(run=run).all()
-            print(run.created_at)
-            for lap in laps:
-                print('lap time: {}'.format(lap.created_at.strftime("%m/%d/%Y, %H:%M:%S")))
             newest = run.lap_set.order_by('-created_at').first()
             newest = newest.created_at
             idle = now - newest
-            print(idle)
 
             if idle.seconds > self.MAX_IDLE_SECONDS:
                 run.is_finished = True

@@ -28,7 +28,7 @@ def generate_review_on_task_completion(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Document)
 def generate_document_features_on_document_creation(sender, **kwargs):
-    if kwargs['created'] == True:
+    if kwargs['created']:
         document = kwargs['instance']
         feature_runner = FeatureRunner()
         corpus = document.corpus

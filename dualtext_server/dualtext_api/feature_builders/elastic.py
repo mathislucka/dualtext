@@ -17,7 +17,6 @@ class Elastic(AbstractFeature):
     
     def remove_features(self, documents):
         documents = [doc.id for doc in documents]
-        print(documents)
         self.client.delete_by_query(index=self.INDEX_NAME, body={"query": {"terms": {"doc_id": documents}}})
         self.refresh_index()
 
@@ -25,8 +24,7 @@ class Elastic(AbstractFeature):
         split_documents = self.split_list(documents, self.BATCH_SIZE)
 
         for doc_chunk in split_documents:
-            self.remove_features(doc_chunk)
-            self.update_es_index(doc_chunk, call_refresh=False)
+            self.update_index(doc_chunk, call_refresh=False)
         self.refresh_index()
 
     def process_query(self, query):
@@ -71,7 +69,7 @@ class Elastic(AbstractFeature):
         if not exists:
             self.recreate_es_index()
         requests = []
-        print(data)
+
         if len(data) > 0:
             self.remove_features(data)
         for doc in data:

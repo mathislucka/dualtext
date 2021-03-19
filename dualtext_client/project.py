@@ -92,6 +92,7 @@ class Project(ApiBase):
     def add_corpus_features(self, corpus_id, features):
         feature_instance = Feature(self.session)
         existing_features = feature_instance.list_resources()
+        print(existing_features)
         for feature in existing_features:
             if feature['key'] in features:
                 feature['corpora'].append(corpus_id)
