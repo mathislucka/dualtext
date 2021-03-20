@@ -90,7 +90,7 @@ class TestAnnotationDetailView(APITestCase):
         user = UserFactory()
         task = TaskFactory(annotator=user)
         anno = AnnotationFactory(task=task)
-        url = reverse('annotation_detail', args=[task.id])
+        url = reverse('annotation_detail', args=[anno.id])
 
         self.client.force_authenticate(user=user)
         response = self.client.get(url, format='json')
@@ -104,7 +104,7 @@ class TestAnnotationDetailView(APITestCase):
         su = UserFactory(is_superuser=True)
         task = TaskFactory()
         anno = AnnotationFactory(task=task)
-        url = reverse('annotation_detail', args=[task.id])
+        url = reverse('annotation_detail', args=[anno.id])
 
         self.client.force_authenticate(user=su)
         response = self.client.get(url, format='json')
@@ -117,9 +117,10 @@ class TestAnnotationDetailView(APITestCase):
         """
         user = UserFactory()
         task = TaskFactory(annotator=user)
-        AnnotationFactory(task=task)
+        lab = LabelFactory()
+        annotation = AnnotationFactory(task=task, labels=[lab])
         label = LabelFactory()
-        url = reverse('annotation_detail', args=[task.id])
+        url = reverse('annotation_detail', args=[annotation.id])
 
         self.client.force_authenticate(user=user)
         response = self.client.patch(url, {'labels': [label.id]}, format='json')
@@ -132,9 +133,9 @@ class TestAnnotationDetailView(APITestCase):
         """
         su = UserFactory(is_superuser=True)
         task = TaskFactory(annotator=su)
-        AnnotationFactory(task=task)
+        annotation = AnnotationFactory(task=task)
         label = LabelFactory()
-        url = reverse('annotation_detail', args=[task.id])
+        url = reverse('annotation_detail', args=[annotation.id])
 
         self.client.force_authenticate(user=su)
         response = self.client.patch(url, {'labels': [label.id]}, format='json')
@@ -147,7 +148,7 @@ class TestAnnotationDetailView(APITestCase):
         """
         user = UserFactory()
         anno = AnnotationFactory()
-        url = reverse('annotation_detail', args=[anno.task.id])
+        url = reverse('annotation_detail', args=[anno.id])
 
         self.client.force_authenticate(user=user)
         response = self.client.get(url, format='json')
@@ -159,7 +160,7 @@ class TestAnnotationDetailView(APITestCase):
         """
         user = UserFactory()
         anno = AnnotationFactory()
-        url = reverse('annotation_detail', args=[anno.task.id])
+        url = reverse('annotation_detail', args=[anno.id])
 
         self.client.force_authenticate(user=user)
         response = self.client.patch(url, {}, format='json')
@@ -173,7 +174,7 @@ class TestAnnotationDetailView(APITestCase):
         su = UserFactory(is_superuser=True)
         anno = AnnotationFactory()
         label = LabelFactory()
-        url = reverse('annotation_detail', args=[anno.task.id])
+        url = reverse('annotation_detail', args=[anno.id])
         
         self.client.force_authenticate(user=su)
         self.client.patch(url, {'labels': [label.id]}, format='json')
@@ -191,7 +192,7 @@ class TestAnnotationDetailView(APITestCase):
         su = UserFactory(is_superuser=True)
         anno = AnnotationFactory()
         label = LabelFactory()
-        url = reverse('annotation_detail', args=[anno.task.id])
+        url = reverse('annotation_detail', args=[anno.id])
 
         self.client.force_authenticate(user=su)
         self.client.patch(url, {'labels': [label.id]}, format='json')
