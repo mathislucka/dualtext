@@ -56,6 +56,66 @@ class TestTaskListView(APITestCase):
         self.assertEqual(response.data[0]['name'], task_1.name)
         self.assertEqual(response.data[1]['name'], task_2.name)
 
+    def test_is_finished_filter(self):
+        """
+        Ensure tasks can be filtered by status.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory(is_finished=True)
+        TaskFactory(project=task.project)
+        url = reverse('task_list', args=[task.project.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url + '?is_finished=true', format='json')
+
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['is_finished'], True)
+
+    def test_action_filter(self):
+        """
+        Ensure tasks can be filtered by action.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory(is_finished=True, action=Task.REVIEW)
+        TaskFactory(project=task.project)
+        url = reverse('task_list', args=[task.project.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url + '?action=review', format='json')
+
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['action'], task.action)
+
+    def test_annotator_filter(self):
+        """
+        Ensure tasks can be filtered by annotator id.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory(is_finished=True, annotator=su)
+        TaskFactory(project=task.project)
+        url = reverse('task_list', args=[task.project.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url + f'?annotator={su.id}', format='json')
+
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['annotator'], su.id)
+
+    def test_annotator_name_filter(self):
+        """
+        Ensure tasks can be filtered by annotator name.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory(is_finished=True, annotator=su)
+        TaskFactory(project=task.project)
+        url = reverse('task_list', args=[task.project.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url + f'?annotator_username={su.username}', format='json')
+
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['annotator'], su.id)
+
     def test_list(self):
         """
         A user should see all tasks assigned to them as annotator.

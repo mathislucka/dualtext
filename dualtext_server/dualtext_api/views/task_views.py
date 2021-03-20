@@ -7,6 +7,8 @@ from dualtext_api.models import Task, Project
 from dualtext_api.serializers import TaskSerializer
 from dualtext_api.permissions import TaskPermission, AuthenticatedReadAdminCreate, MembersReadAdminEdit, MembersEdit
 from dualtext_api.services import ProjectService
+from dualtext_api.filters import TaskFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 class TaskListView(generics.ListCreateAPIView):
     """
@@ -15,6 +17,8 @@ class TaskListView(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [AuthenticatedReadAdminCreate]
+    filterset_class = TaskFilter
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         queryset = Task.objects.filter(project=self.kwargs['project_id'])
