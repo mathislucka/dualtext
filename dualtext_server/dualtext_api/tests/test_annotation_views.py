@@ -4,6 +4,7 @@ from rest_framework import status
 from dualtext_api.models import Annotation, Run, Lap
 from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory
 import datetime
+import time
 
 class TestAnnotationListView(APITestCase):
     def test_creation(self):
@@ -22,6 +23,27 @@ class TestAnnotationListView(APITestCase):
         self.assertEqual(Annotation.objects.count(), 1)
         self.assertEqual(Annotation.objects.get(id=1).documents.all()[0], doc)
         self.assertEqual(Annotation.objects.get(id=1).task, task)
+
+    def test_no_timetracking_on_creation(self):
+        """
+        Ensure that no timetracking runs or laps are created when creating an annotation
+        with documents or labels
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory()
+        doc = DocumentFactory()
+        label = LabelFactory(project=task.project)
+        data = {'documents': [doc.id], 'labels': [label.id]}
+        url = reverse('annotation_list', args=[task.id])
+        
+        self.client.force_authenticate(user=su)
+        self.client.post(url, data, format='json')
+
+        runs = Run.objects.all()
+        laps = Lap.objects.all()
+
+        self.assertEqual(len(runs), 0)
+        self.assertEqual(len(laps), 0)
 
     def test_superuser_view(self):
         """

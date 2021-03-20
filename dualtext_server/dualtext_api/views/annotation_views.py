@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from dualtext_api.models import Annotation, Task
 from dualtext_api.serializers import AnnotationSerializer, LabelSerializer
 from dualtext_api.permissions import AnnotationPermission, AuthenticatedReadAdminCreate
-from dualtext_api.services import ProjectService
+from dualtext_api.services import ProjectService, RunService
 
 
 class AnnotationListView(APIView):
@@ -46,3 +46,27 @@ class AnnotationDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = AnnotationSerializer
     permission_classes = [AnnotationPermission]
     lookup_url_kwarg = 'annotation_id'
+
+    def update(self, request, *args, **kwargs):
+        annotation_id = kwargs['annotation_id']
+        annotation = get_object_or_404(Annotation, id=annotation_id)
+        labels = set(annotation.labels.values_list("id", flat=True))
+        documents = set(annotation.documents.values_list("id", flat=True))
+        new_documents = request.data.get('documents', None)
+        new_labels = request.data.get('labels', None)
+        documents_changed = False
+        labels_changed = False
+        if new_labels is not None:
+            new_labels = set([int(l) for l in new_labels])
+            labels_changed = new_labels != labels
+
+        if new_documents is not None:
+            new_documents = set([int(d) for d in new_documents])
+            documents_changed = new_documents != documents
+
+        if documents_changed or labels_changed:
+            task = annotation.task
+            rs = RunService(task)
+            rs.log_lap(annotation)
+
+        return super(AnnotationDetailView, self).update(request, *args, **kwargs)
