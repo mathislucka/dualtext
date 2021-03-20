@@ -242,7 +242,7 @@ class TestClaimTaskView(APITestCase):
         user = UserFactory(groups=[group])
         project = ProjectFactory(allowed_groups=[group])
         task = TaskFactory(project=project, annotator=user)
-        TaskFactory(copied_from=task, project=project, action=Task.REVIEW, annotator=None)
+        TaskFactory(copied_from=task, project=project, action=Task.REVIEW, annotator=None, name="unique")
         url = reverse('task_claim', args=[project.id, 'review'])
 
         self.client.force_authenticate(user=user)
