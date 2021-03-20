@@ -4,10 +4,12 @@ from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters import rest_framework as filters
 from dualtext_api.models import Annotation, Task
 from dualtext_api.serializers import AnnotationSerializer, LabelSerializer
 from dualtext_api.permissions import AnnotationPermission, AuthenticatedReadAdminCreate
 from dualtext_api.services import ProjectService, RunService
+from dualtext_api.filters import AnnotationFilter
 
 
 class AnnotationListView(APIView):
@@ -22,6 +24,7 @@ class AnnotationListView(APIView):
                 queryset = queryset.filter(task__annotator=user)
             ps = ProjectService(task.project_id)
             desired_label = ps.get_desired_label()
+            queryset = AnnotationFilter(data=request.GET, queryset=queryset).qs
             data = AnnotationSerializer(queryset, many=True).data
             if desired_label:
                 for annotation in data:

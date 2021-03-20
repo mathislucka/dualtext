@@ -61,6 +61,42 @@ class TestAnnotationListView(APITestCase):
         self.assertEqual(response.data[0]['documents'], [doc.id])
         self.assertEqual(response.data[0]['id'], anno.id)
 
+    def test_label_id_filter(self):
+        """
+        Ensure annotations can be filtered by label id.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory()
+        label = LabelFactory(project=task.project)
+        anno = AnnotationFactory(labels=[label], task=task)
+        AnnotationFactory(task=task)
+        url = reverse('annotation_list', args=[task.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url + f'?label={label.id}', format='json')
+
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['labels'], [label.id])
+        self.assertEqual(response.data[0]['id'], anno.id)
+
+    def test_label_name_filter(self):
+        """
+        Ensure annotations can be filtered by label name.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory()
+        label = LabelFactory(project=task.project)
+        anno = AnnotationFactory(labels=[label], task=task)
+        AnnotationFactory(task=task)
+        url = reverse('annotation_list', args=[task.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url + f'?label_name={label.name}', format='json')
+
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['labels'], [label.id])
+        self.assertEqual(response.data[0]['id'], anno.id)
+
     def test_view_only_allowed(self):
         """
         Ensure users can only view annotations that are children of tasks where the user is assigned as annotator.
@@ -130,6 +166,7 @@ class TestAnnotationDetailView(APITestCase):
 
         self.client.force_authenticate(user=su)
         response = self.client.get(url, format='json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], anno.id)
 
