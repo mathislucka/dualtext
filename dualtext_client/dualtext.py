@@ -39,3 +39,28 @@ def make_project(ctx, project_data, search):
         proj = p.create_from_scratch(data, task_size=100)
     print('Finished creating the project. Project id is {}'.format(proj['id']))
 
+@cli.command('dlproj')
+@click.option('--project-id',
+        help='Id of project that you would like to download from.',
+        type=click.INT,
+        default=sys.stdin)
+@click.option('--action', '-a', type=str)
+@click.option('--finished', 'status', flag_value=True)
+@click.option('--notfinished', 'status', flag_value=False)
+@click.option('--label', '-l', type=str, multiple=True)
+@click.pass_context
+def download_project(ctx, project_id, action=None, label=None, status=None):
+    task_params = {}
+    annotation_params = {}
+    if action is not None:
+        task_params['action'] = action
+    if status is not None:
+        task_params['is_finished'] = status
+    if label is not None:
+        annotation_params['label_name'] = list(label)
+    token = ctx.obj['Token']
+    s = Session()
+    s = s.set_token(token)
+    p = Project(s)
+    click.echo(p.get_annotations(project_id, task_params=task_params, annotation_params=annotation_params))
+

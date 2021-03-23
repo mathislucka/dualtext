@@ -146,8 +146,27 @@ class Project(ApiBase):
             payload = {'documents': [doc['id']]}
             annotation_instance.create(payload)
 
-
-
-
-
-
+    def get_annotations(self, project_id, task_params={}, annotation_params={}):
+        self.validate_data(task_params, 'task_filter.schema.json')
+        self.validate_data(annotation_params, 'annotation_filter.schema.json')
+        task_instance = Task(self.session, project_id)
+        label_instance = Label(self.session, project_id)
+        labels = label_instance.list_resources()
+        document_instance = Document(self.session)
+        tasks = task_instance.list_resources(task_params)
+        annotations = []
+        doc_ids = []
+        documents = []
+        for task in tasks:
+            anno_instance = Annotation(self.session, task['id'])
+            annos = anno_instance.list_resources(annotation_params)
+            for anno in annos:
+                doc_ids += anno['documents']
+            annotations.extend(annos)
+        for doc_id in doc_ids:
+            documents.append(document_instance.get(doc_id))
+        return {
+            'annotations': annotations,
+            'documents': documents,
+            'labels': labels
+        }

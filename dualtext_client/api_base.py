@@ -42,7 +42,6 @@ class ApiBase():
         return None
 
     def validate_data(self, data, schema_file=None):
-        print(self.absolute_path)
         if schema_file == None:
             schema_file = self.schema
         if schema_file is not None:

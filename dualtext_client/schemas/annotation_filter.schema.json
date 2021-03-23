@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Annotation Filters",
+    "description": "An object allowing to filter annotations.",
+    "type": "object",
+    "properties": {
+        "label": {
+            "description": "A label id that should be used for filtering.",
+            "type": "integer"
+        },
+        "label_name": {
+            "description": "A label name that should be used for filtering.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

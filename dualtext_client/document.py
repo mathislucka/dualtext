@@ -4,7 +4,7 @@ class Document(ApiBase):
     """
     A class to interact with documents from the dualtext api.
     """
-    def __init__(self, session, corpus_id):
+    def __init__(self, session, corpus_id=None):
         super().__init__(session)
         self.single_resource_path = self.base_url + '/document/{}'
         self.list_resources_path = self.base_url + '/corpus/{}/document/'.format(corpus_id)

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Task Filters",
+    "description": "An object allowing to filter tasks.",
+    "type": "object",
+    "properties": {
+        "annotator": {
+            "description": "ID of the person annotating the task that should be used for filtering.",
+            "type": "integer"
+        },
+        "annotator_name": {
+            "description": "Used to filter tasks by name of their annotator.",
+            "type": "string"
+        },
+        "is_finished": {
+            "description": "Used to filter tasks bases on whether they are finished or not.",
+            "type": "boolean"
+        },
+        "action": {
+            "description": "Used to filter tasks based on the action associated with that task.",
+            "type": "string",
+            "enum": ["annotate", "review", "duplicate"]
+        }
+    }
+}
