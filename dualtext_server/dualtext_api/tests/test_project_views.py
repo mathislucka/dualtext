@@ -307,9 +307,9 @@ class TestProjectStatisticsView(APITestCase):
         """
         su = UserFactory(is_superuser=True)
         project = ProjectFactory()
-        task_1 = TaskFactory(project=project, action=Task.REVIEW, is_finished=True)
-        task_2 = TaskFactory(project=project, is_finished=True)
-        task_3 = TaskFactory(project=project)
+        task_1 = TaskFactory(project=project, action=Task.REVIEW, is_finished=True, name="1")
+        task_2 = TaskFactory(project=project, is_finished=True, name="2")
+        task_3 = TaskFactory(project=project, name="3")
         AnnotationFactory.create_batch(3, task=task_1, action=Annotation.REVIEW)
         AnnotationFactory(task=task_2)
         AnnotationFactory(task=task_3)
