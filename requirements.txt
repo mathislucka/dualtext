@@ -14,7 +14,6 @@ django-elasticsearch-dsl==7.1.4
 django-filter==2.4.0
 django-silk==4.1.0
 djangorestframework==3.12.2
--e git+git@github.com:mathislucka/dualtext.git@90a8ccc00615742fc1318368ff6d8b9b61bd5b4b#egg=DualtextCli&subdirectory=dualtext_client
 elasticsearch==7.10.0
 elasticsearch-dsl==7.3.0
 factory-boy==3.2.0
