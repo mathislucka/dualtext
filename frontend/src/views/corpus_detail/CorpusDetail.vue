@@ -35,7 +35,7 @@ export default {
     },
     setup (props) {
         const { corpusId } = toRefs(props)
-        const corporaIds = computed(() => [corpusId])
+        const corporaIds = computed(() => [corpusId.value])
         provide('corporaIds', corporaIds)
         provide('shouldStayOnSearch', true)
     }
