@@ -73,7 +73,6 @@ export default {
   },
   watch: {
       selection () {
-          console.log('setting selection', this.selection)
           this.selectedItems = { ...this.selection }
       },
       selectedItems: {
@@ -113,7 +112,6 @@ export default {
           }
       },
       toggleSelection (id) {
-          console.log('id ist', id)
           if (this.selectedItems[id]) {
               delete this.selectedItems[id]
           } else if (!this.selectedItems[id]) {

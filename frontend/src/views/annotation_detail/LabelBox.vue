@@ -56,9 +56,6 @@ export default {
             return this.bgColor === 'grey' ? 'bg-grey-100' : 'bg-blue-100'
         }
 
-    },
-    mounted () {
-        console.log(this.labels)
     }
 }
 </script>
