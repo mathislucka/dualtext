@@ -14,6 +14,8 @@ class SentenceEmbedding(AbstractFeature):
         self.BATCH_SIZE = 700
     
     def create_features(self, documents):
+        if not self.client.indices.exists(index=self.INDEX_NAME):
+            self.recreate_es_index()
         self.generate_and_reindex_embeddings(documents)
 
     def update_feature(self, documents):
