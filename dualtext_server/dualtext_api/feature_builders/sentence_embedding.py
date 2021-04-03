@@ -18,7 +18,7 @@ class SentenceEmbedding(AbstractFeature):
 
     def update_feature(self, documents):
         sentences = [d.content for d in documents]
-        ids = [d.id for d in documents]
+        ids = [(d.id, d.corpus.id) for d in documents]
         embeddings = self.encode_sentences(sentences)
         indexable = list(zip(ids, embeddings))
         self.update_es_index(indexable)

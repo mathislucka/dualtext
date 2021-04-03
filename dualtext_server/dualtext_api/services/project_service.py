@@ -279,7 +279,6 @@ class ProjectService():
             return self.total_runs
         else:
             self.total_runs = Run.objects.filter(Q(task__project=self.project) & Q(is_finished=True))
-            print(self.total_runs)
             return self.total_runs
 
     def get_total_laps(self):
@@ -287,7 +286,6 @@ class ProjectService():
             return self.total_laps
         else:
             self.total_laps = Lap.objects.filter(run__in=self.get_total_runs().all())
-            print(len(self.total_laps))
             return self.total_laps
 
     def get_laps_by_annotation(self):
@@ -341,7 +339,7 @@ class ProjectService():
             for lap in laps:
                 daily_annotation_count[lap.created_at.date()] += 1
             self.daily_annotation_count = daily_annotation_count
-            print(daily_annotation_count)
+
             return self.daily_annotation_count
 
     def get_daily_average_annotation_count(self):
@@ -415,8 +413,7 @@ class ProjectService():
         avgs = self.get_daily_average_annotation_seconds()
         avgc = self.get_daily_average_annotation_count()
         dates = sorted(list(das.keys()))
-        print(dates)
-        print(dac)
+
         timeseries = []
 
         for date in dates:
