@@ -85,3 +85,10 @@ class DocumentPermission(BasePermission):
         # allow access to corpus members only
         else:
             return check_member_status(obj.corpus, request.user)
+
+class AdminReadOnlyPermission(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS and request.user and request.user.is_superuser:
+            return True
+        else:
+            return False

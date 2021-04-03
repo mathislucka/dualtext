@@ -1,9 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
-from dualtext_api.services import ProjectService
 from .validators import validate_alphabetic
 from .features import FeatureRunner
 from datetime import datetime
@@ -27,6 +26,11 @@ class CorpusSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'corpus_meta', 'document_count'] + DEFAULT_FIELDS
         extra_kwargs = { 'document_set': {'required': False}}
         read_only_fields = ['document_count']
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id', 'name']
 
 class DocumentListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
