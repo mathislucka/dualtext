@@ -1,4 +1,5 @@
 import requests
+
 class Session():
     """
     docstring

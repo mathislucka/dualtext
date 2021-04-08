@@ -2,8 +2,8 @@ import click
 import keyring
 import json
 import sys
-from session import Session
-from project import Project
+from dualtext_client.client_lib.session import Session
+from dualtext_client.client_lib.project import Project
 
 @click.group()
 @click.pass_context

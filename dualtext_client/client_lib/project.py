@@ -1,11 +1,11 @@
-from api_base import ApiBase
-from annotation import Annotation
-from corpus import Corpus
-from document import Document
-from label import Label
-from task import Task
-from feature import Feature
-from search import Search
+from .api_base import ApiBase
+from .annotation import Annotation
+from .corpus import Corpus
+from .document import Document
+from .label import Label
+from .task import Task
+from .feature import Feature
+from .search import Search
 import math
 
 class Project(ApiBase):

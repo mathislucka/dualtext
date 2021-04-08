@@ -1,9 +1,9 @@
 Metadata-Version: 1.0
-Name: DualtextCli
-Version: 1.0
-Summary: UNKNOWN
+Name: dualtext-client
+Version: 0.1.0
+Summary: Client lib to interact with dualtext API
 Home-page: UNKNOWN
-Author: UNKNOWN
+Author: Mathis
 Author-email: UNKNOWN
 License: UNKNOWN
 Description: UNKNOWN

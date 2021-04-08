@@ -1,4 +1,4 @@
-from api_base import ApiBase
+from .api_base import ApiBase
 
 class Document(ApiBase):
     """
