@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from dualtext_api.models import Task
-from .factories import UserFactory, TaskFactory, ProjectFactory, GroupFactory
+from .factories import UserFactory, TaskFactory, ProjectFactory, GroupFactory, AnnotationGroupFactory
 
 class TestTaskListView(APITestCase):
     def test_creation(self):
@@ -240,6 +240,19 @@ class TestTaskDetailView(APITestCase):
         self.assertEqual(review_task.copied_from.id, task.id)
         self.assertEqual(review_task.action, 'review')
 
+    def test_task_annotation_group_view(self):
+        """
+        Ensure that tasks have a list of all related annotation groups.
+        """
+        user = UserFactory()
+        task = TaskFactory(annotator=user)
+        annotation_group = AnnotationGroupFactory(task=task)
+        url = reverse('task_detail', args=[task.id])
+
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['annotationgroup_set'], [annotation_group.id])
 
 class TestClaimTaskView(APITestCase):
     def test_claimable_tasks(self):

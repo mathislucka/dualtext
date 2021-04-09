@@ -81,12 +81,14 @@ class TaskSerializer(serializers.ModelSerializer):
             'annotator',
             'is_finished',
             'action',
-            'project'
+            'project',
+            'annotationgroup_set',
         ] + DEFAULT_FIELDS
         extra_kwargs = {
             'is_finished': {'required': False},
             'action': {'required': False},
         }
+        read_only_fields = ['annotationgroup_set']
 
         validators = [
             UniqueTogetherValidator(
