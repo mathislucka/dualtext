@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from .validators import validate_alphabetic
 
@@ -78,6 +77,12 @@ class Task(AbstractBase):
             models.UniqueConstraint(fields=['name', 'project'], name='unique_task_name_in_project')
         ]
 
+class AnnotationGroup(AbstractBase):
+    """
+    An entity grouping annotations for more advanced annotation modes
+    """
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
 class Annotation(AbstractBase):
     ANNOTATE = 'annotate'
     REVIEW = 'review'
@@ -93,6 +98,7 @@ class Annotation(AbstractBase):
     is_finished = models.BooleanField(blank=True, default=False)
     copied_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     action = models.CharField(max_length=10, choices=ACTION_CHOICES, blank=True, default=ANNOTATE)
+    annotation_group = models.ForeignKey(AnnotationGroup, on_delete=models.CASCADE, null=True) 
 
 class Prediction(AbstractBase):
     annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)
@@ -127,4 +133,4 @@ class Run(AbstractBase):
 
 class Lap(AbstractBase):
     run = models.ForeignKey(Run, on_delete=models.CASCADE)
-    annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE) 
+    annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)

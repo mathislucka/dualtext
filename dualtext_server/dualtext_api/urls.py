@@ -4,9 +4,11 @@ from .views import LabelListView, ProjectListView, TaskListView, AnnotationListV
 from .views import CorpusDetailView, DocumentListView, CorpusListView, DocumentDetailView, SearchView
 from .views import CurrentUserView, CurrentUserStatisticsView, ProjectDetailView, TaskDetailView, ProjectStatisticsView
 from .views import ClaimTaskView, FeatureListView, SearchMethodsView, FeatureDetailView, DocumentBatchView, GroupListView
+from .views import AnnotationGroupListView, AnnotationGroupDetailView
 
 urlpatterns = [
     path('annotation/<int:annotation_id>', AnnotationDetailView.as_view(), name='annotation_detail'),
+    path('annotation-group/<int:annotation_group_id>', AnnotationGroupDetailView.as_view(), name='annotation_group_detail'),
     path('corpus/<int:corpus_id>', CorpusDetailView.as_view(), name='corpus_detail'),
     path('document/<int:document_id>', DocumentDetailView.as_view(), name='document_detail'),
     path('corpus/<int:corpus_id>/document/', DocumentListView.as_view(), name='document_list'),
@@ -24,6 +26,7 @@ urlpatterns = [
     path('project/<int:project_id>/task/claim/', ClaimTaskView.as_view(), name='task_claimable'),
     re_path(r'project/(?P<project_id>[0-9]+)/task/$', TaskListView.as_view(), name='task_list'),
     path('task/<int:task_id>', TaskDetailView.as_view(), name='task_detail'),
+    path('task/<int:task_id>/annotation-group/', AnnotationGroupListView.as_view(), name='annotation_group_list'),
     re_path(r'task/(?P<task_id>[0-9]+)/annotation/$', AnnotationListView.as_view(), name='annotation_list'),
     path('user/current', CurrentUserView.as_view(), name='current_user'),
     path('user/current/statistics', CurrentUserStatisticsView.as_view(), name='current_user_statistics'),

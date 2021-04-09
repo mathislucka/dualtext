@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 import factory
 import factory.fuzzy
 from dualtext_api.models import Annotation, Corpus, Document, Project, Task, Label, Feature
+from dualtext_api.models import AnnotationGroup
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -86,6 +87,10 @@ class TaskFactory(factory.django.DjangoModelFactory):
     copied_from = None
     action = 'annotate'
 
+class AnnotationGroupFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = AnnotationGroup
+    task = factory.SubFactory(TaskFactory)
 
 class AnnotationFactory(factory.django.DjangoModelFactory):
     class Meta:

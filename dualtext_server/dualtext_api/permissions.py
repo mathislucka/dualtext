@@ -75,6 +75,7 @@ class AnnotationPermission(BasePermission):
             return True
         # allow access to assigned annotators
         else:
+            print(obj.task.annotator)
             return bool(request.user == obj.task.annotator)
 
 class DocumentPermission(BasePermission):

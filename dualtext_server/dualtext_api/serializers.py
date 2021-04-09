@@ -3,6 +3,7 @@ from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
+from dualtext_api.models import AnnotationGroup
 from .validators import validate_alphabetic
 from .features import FeatureRunner
 from datetime import datetime
@@ -110,6 +111,12 @@ class AnnotationSerializer(serializers.ModelSerializer):
             'documents': {'required': False},
         }
         read_only_fields = ['task', 'action', 'copied_from']
+
+class AnnotationGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnnotationGroup
+        fields = ['id', 'task'] + DEFAULT_FIELDS
+        read_only_fields = ['task']
 
 class PredictionSerializer(serializers.ModelSerializer):
     class Meta:
