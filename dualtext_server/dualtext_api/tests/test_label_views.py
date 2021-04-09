@@ -139,7 +139,7 @@ class TestLabelListView(APITestCase):
         user = UserFactory(groups=[group])
         project = ProjectFactory(allowed_groups=[group])
         label = LabelFactory(project=project)
-        project_2 = ProjectFactory(allowed_groups=[group])
+        project_2 = ProjectFactory(allowed_groups=[group], name='different')
         LabelFactory(project=project_2)
         url = reverse('label_list', args=[project.id])
 
