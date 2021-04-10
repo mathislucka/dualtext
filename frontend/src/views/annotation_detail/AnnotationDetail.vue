@@ -9,12 +9,11 @@
                         :annotation-idx="annotationIdx" />
                     <annotation-labels
                         :is-review="isReview" />
-                    <annotation-pager
-                        :is-review="isReview"
-                        :current-idx="annotationIdx + 1"
-                        :next-annotation-id="nextAnnotationId"
-                        :previous-annotation-id="previousAnnotationId"
-                        :total-annotations="totalAnnotations" />
+                    <pager
+                        :current-page="annotationIdx + 1"
+                        :total-pages="totalAnnotations"
+                        @page-down="handlePageDown"
+                        @page-up="handlePageUp" />
                 </template>
             </card>
             <card class="overflow-auto" v-if="showSearch" :use-header="false">
@@ -50,10 +49,11 @@ import { toRefs, provide, computed, watch } from 'vue'
 import { useAnnotations } from './../../composables/useAnnotations.js'
 import { useSingleProject } from './../../composables/useProjects.js'
 import { useTask, useOpenTasks } from './../../composables/useTask.js'
+import { preparePageChangeHandler } from './../../composables/usePager.js'
 import { useUser } from './../../composables/useUser.js'
 import { useRoute, useRouter } from 'vue-router'
 
-import AnnotationPager from './AnnotationPager.vue'
+import Pager from './../../components/shared/Pager.vue'
 import AnnotationDocuments from './AnnotationDocuments.vue'
 import AnnotationLabels from './AnnotationLabels.vue'
 import PageHeader from './../../components/shared/PageHeader.vue'
@@ -66,7 +66,7 @@ export default {
     name: 'AnnotationDetail',
     components: {
         AnnotationDocuments,
-        AnnotationPager,
+        Pager,
         AnnotationLabels,
         PageHeader,
         SearchResultList,
@@ -76,6 +76,7 @@ export default {
     },
     setup (props, context) {
         const route = useRoute()
+        const router = useRouter()
 
         const annotationId = computed(() => parseInt(route.params.annotationId || -1))
         const projectId = computed(() => parseInt(route.params.projectId || -1))
@@ -113,6 +114,11 @@ export default {
         provide('shouldStayOnSearch', shouldStayOnSearch)
         const showSearch = computed(() => isReview.value === false && project.value.annotation_mode === 'dualtext')
 
+        const pageChangeParams = { projectId: projectId.value, taskId: taskId.value }
+        const handlePageChange = preparePageChangeHandler(router, route.name, pageChangeParams)
+        const handlePageDown = () => handlePageChange({ annotationId: previousAnnotationId.value })
+        const handlePageUp = () => handlePageChange({ annotationId: nextAnnotationId.value }) 
+
         return {
             annotation,
             annotationIdx,
@@ -124,7 +130,9 @@ export default {
             openAnnotationTasks,
             openReviewTasks,
             project,
-            showSearch
+            showSearch,
+            handlePageDown,
+            handlePageUp
         }
     }
 }
