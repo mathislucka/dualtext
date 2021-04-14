@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from dualtext_api.models import Annotation, Run, Lap
 from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory, AnnotationGroupFactory
-import datetime
+from django.utils import timezone
 import time
 
 class TestAnnotationListView(APITestCase):
@@ -270,8 +270,8 @@ class TestAnnotationDetailView(APITestCase):
         self.client.force_authenticate(user=su)
         self.client.patch(url, {'labels': [label.id]}, format='json')
 
-        now = datetime.datetime.now()
-        idle = now - datetime.timedelta(seconds=301)
+        now = timezone.now()
+        idle = now - timezone.timedelta(seconds=301)
         run = Run.objects.all().first()
         run.lap_set.filter(id=1).update(created_at=idle, run_id=run.id, annotation_id=anno.id)
 

@@ -6,7 +6,7 @@ from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Pre
 from dualtext_api.models import AnnotationGroup
 from .validators import validate_alphabetic
 from .features import FeatureRunner
-from datetime import datetime
+from django.utils import timezone
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
 
@@ -36,7 +36,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class DocumentListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
         documents = [Document(**item) for item in validated_data]
-        now = datetime.now()
+        now = timezone.now()
         Document.objects.bulk_create(documents)
         feature_runner = FeatureRunner()
         # This might be almost save to get an id from documents created in bulk_create
@@ -120,7 +120,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
         Check that annotation and annotation_group belong to the same task.
         """
         group = data.get('annotation_group', None)
-        if group and group.task.id != data['task']:
+        task = data.get('task', None)
+        if group and task and group.task.id != task:
             raise serializers.ValidationError("Annotation must belong to the same task as its group.")
         return data
 
