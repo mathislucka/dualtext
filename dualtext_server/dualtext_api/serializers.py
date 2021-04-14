@@ -106,13 +106,23 @@ class AnnotationSerializer(serializers.ModelSerializer):
             'labels',
             'task',
             'action',
-            'copied_from'
+            'copied_from',
+            'annotation_group'
         ] + DEFAULT_FIELDS
         extra_kwargs = {
             'labels': {'required': False},
             'documents': {'required': False},
         }
-        read_only_fields = ['task', 'action', 'copied_from']
+        read_only_fields = ['action', 'copied_from']
+
+    def validate(self, data):
+        """
+        Check that annotation and annotation_group belong to the same task.
+        """
+        group = data.get('annotation_group', None)
+        if group and group.task.id != data['task']:
+            raise serializers.ValidationError("Annotation must belong to the same task as its group.")
+        return data
 
 class AnnotationGroupSerializer(serializers.ModelSerializer):
     class Meta:

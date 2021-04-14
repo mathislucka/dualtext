@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from dualtext_api.models import Annotation, Run, Lap
-from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory
+from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory, AnnotationGroupFactory
 import datetime
 import time
 
@@ -23,6 +23,20 @@ class TestAnnotationListView(APITestCase):
         self.assertEqual(Annotation.objects.count(), 1)
         self.assertEqual(Annotation.objects.get(id=1).documents.all()[0], doc)
         self.assertEqual(Annotation.objects.get(id=1).task, task)
+
+    def test_same_task_group(self):
+        """
+        Ensure an annotation can't have a group with a different task.
+        """
+        su = UserFactory(is_superuser=True)
+        task = TaskFactory()
+        group = AnnotationGroupFactory()
+        data = {'annotation_group': group.id}
+        url = reverse('annotation_list', args=[task.id])
+        
+        self.client.force_authenticate(user=su)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_no_timetracking_on_creation(self):
         """

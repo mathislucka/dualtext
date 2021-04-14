@@ -27,9 +27,11 @@ class Document(AbstractBase):
 class Project(AbstractBase):
     DUALTEXT = 'dualtext'
     CLASSIFICATION = 'classification'
+    GROUPED = 'grouped'
     MODE_CHOICES = (
         (DUALTEXT, 'dualtext'),
         (CLASSIFICATION, 'classification'),
+        (GROUPED, 'grouped'),
     )
     name = models.CharField(max_length=255)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_creator', null=True)
@@ -98,7 +100,7 @@ class Annotation(AbstractBase):
     is_finished = models.BooleanField(blank=True, default=False)
     copied_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     action = models.CharField(max_length=10, choices=ACTION_CHOICES, blank=True, default=ANNOTATE)
-    annotation_group = models.ForeignKey(AnnotationGroup, on_delete=models.CASCADE, null=True) 
+    annotation_group = models.ForeignKey(AnnotationGroup, on_delete=models.CASCADE, null=True)
 
 class Prediction(AbstractBase):
     annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)

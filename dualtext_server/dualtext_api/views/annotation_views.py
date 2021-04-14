@@ -34,11 +34,12 @@ class AnnotationListView(APIView):
     def post(self, request, task_id):
         serializer = AnnotationSerializer
         permission = AuthenticatedReadAdminCreate
-        if AuthenticatedReadAdminCreate().has_permission(request, self):
-            task = get_object_or_404(Task, id=task_id)
-            serialized = AnnotationSerializer(data=request.data)
+        if permission().has_permission(request, self):
+            data = request.data
+            data['task'] = task_id
+            serialized = serializer(data=data)
             serialized.is_valid(raise_exception=True)
-            serialized.save(task=task)
+            serialized.save()
             return Response(serialized.data, status=status.HTTP_201_CREATED)
         return Response('You are not permitted to access this resource.', status.HTTP_403_FORBIDDEN)
 
