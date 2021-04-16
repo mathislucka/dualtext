@@ -3,6 +3,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from dualtext_api.models import Annotation, Run, Lap
 from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory, AnnotationGroupFactory
+from .factories import ProjectFactory
 from django.utils import timezone
 import time
 
@@ -58,6 +59,23 @@ class TestAnnotationListView(APITestCase):
 
         self.assertEqual(len(runs), 0)
         self.assertEqual(len(laps), 0)
+
+    def test_no_exceeding_max_documents(self):
+        """
+        Ensure that an annotation can't have more documents than the project's maximum number of documents.
+        """
+        su = UserFactory(is_superuser=True)
+        project = ProjectFactory(max_documents=5)
+        task = TaskFactory()
+        docs = DocumentFactory.create_batch(6)
+        docs = [doc.id for doc in docs]
+        data = {'documents': docs}
+        url = reverse('annotation_list', args=[task.id])
+        
+        self.client.force_authenticate(user=su)
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_superuser_view(self):
         """

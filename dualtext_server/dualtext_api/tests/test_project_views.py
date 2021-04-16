@@ -206,6 +206,19 @@ class TestProjectDetailView(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_max_documents(self):
+        """
+        Ensure that a project has an max_documents property.
+        """
+        su = UserFactory(is_superuser=True)
+        project = ProjectFactory(max_documents=5)
+        url = reverse('project_detail', args=[project.id])
+
+        self.client.force_authenticate(user=su)
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.data['max_documents'], 5)
+
 class TestProjectStatisticsView(APITestCase):
     def test_allowed_view(self):
         """

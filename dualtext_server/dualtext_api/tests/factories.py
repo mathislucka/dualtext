@@ -53,6 +53,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     annotation_document_duplicates = True
     use_reviews = True
     annotation_mode = 'dualtext'
+    max_documents = 2
 
     @factory.post_generation
     def allowed_groups(self, create, extracted, **kwargs):

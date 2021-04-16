@@ -64,11 +64,20 @@ class ProjectSerializer(serializers.ModelSerializer):
     ])
     class Meta:
         model = Project
-        fields = ['id', 'name', 'allowed_groups', 'creator', 'corpora', 'annotation_mode'] + DEFAULT_FIELDS
+        fields = [
+            'id',
+            'name',
+            'allowed_groups',
+            'creator',
+            'corpora',
+            'annotation_mode',
+            'max_documents'
+        ] + DEFAULT_FIELDS
         extra_kwargs = {
             'allowed_groups': {'required': False},
             'corpora': {'required': False},
             'annotation_mode': {'required': False},
+            'max_documents': {'required': False},
         }
         read_only_fields = ['creator']
 
@@ -118,11 +127,21 @@ class AnnotationSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """
         Check that annotation and annotation_group belong to the same task.
+        Check that annotations do not have more documents than the project allows.
         """
         group = data.get('annotation_group', None)
         task = data.get('task', None)
-        if group and task and group.task.id != task:
+
+        if group and task and group.task.id != task.id:
             raise serializers.ValidationError("Annotation must belong to the same task as its group.")
+
+        documents = data.get('documents', None)
+        if task and documents:
+            project = task.project
+            max_documents = project.max_documents
+            if len(documents) > max_documents:
+                raise serializers.ValidationError(f'The annotation may have a maximum of {max_documents} documents.')
+
         return data
 
 class AnnotationGroupSerializer(serializers.ModelSerializer):

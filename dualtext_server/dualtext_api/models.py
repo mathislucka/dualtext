@@ -40,6 +40,7 @@ class Project(AbstractBase):
     annotation_document_duplicates = models.BooleanField(blank=True, default=True)
     use_reviews = models.BooleanField(blank=True, default=True)
     annotation_mode = models.CharField(max_length=15, choices=MODE_CHOICES, blank=True, default=DUALTEXT)
+    max_documents = models.IntegerField(blank=True, default=2)
 
     class Meta(AbstractBase.Meta):
         constraints = [
