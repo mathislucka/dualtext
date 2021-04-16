@@ -39,6 +39,7 @@ const useAnnotations = (taskId, annotationId) => {
     
     watch(taskId, () => {
         if (taskId.value && taskId.value > 1) {
+            console.log('called annotation fetching')
             fetchAnnotations(taskId.value)
         }
     })

@@ -41,8 +41,9 @@ function initDefaultStoreMethods (state) {
             const newResource = { ...resource, ...payload }
             // optimisically update state
             state.items[newResource.id] = newResource
+            let response = null
             try {
-                const response = await Api.patch(path, payload, params)
+                response = await Api.patch(path, payload, params)
             } catch {
                 // reset state on error
                 state.items[resource.id] = resource

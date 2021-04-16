@@ -15,7 +15,7 @@ import { useDocuments } from './../../composables/useDocuments.js'
 import { useGlobalEvents } from './../../composables/useGlobalEvents.js'
 import { useSingleProject } from './../../composables/useProjects.js'
 import Search from './../../store/Search.js'
-import Document from './Document.vue'
+import Document from '../../components/shared/Document.vue'
 import Annotation from './../../store/Annotation.js'
 
 export default {

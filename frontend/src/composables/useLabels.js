@@ -18,7 +18,7 @@ function getAnnotatorLabels (annotation) {
     return ids.map(id => Label.items.value[id] || null).filter(label => label)
 }
 
-function useLabels (project, annotation, isReview = ref(false)) {
+function useLabels (project, annotation, isReview = ref(false), useHotkeys = true) {
     function removeLabel (labelId) {
         let labelPatch = { id: annotation.value.id }
         labelPatch.labels = annotation.value.labels.filter(label => label !== labelId)
@@ -30,6 +30,16 @@ function useLabels (project, annotation, isReview = ref(false)) {
         labelPatch.labels = [ ...annotation.value.labels || [], labelId ]
         Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
     }
+
+    function replaceLabel (labelId) {
+        let labelPatch = { id: annotation.value.id, labels: [ labelId ] }
+        Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, labelPatch)
+    }
+
+    function removeAllLabels () {
+        Annotation.actions.updateAnnotation(`/annotation/${annotation.value.id}`, { id: annotation.value.id, labels: [] })
+    }
+
     const labelsToReview = computed(() => {
         const reviewAnnotation = Annotation.items.value[annotation.value.copied_from]
         return reviewAnnotation && reviewAnnotation.labels.map(id => Label.items.value[id] || null).filter(label => label)
@@ -41,8 +51,11 @@ function useLabels (project, annotation, isReview = ref(false)) {
         return Object.values(Label.items.value)
     })
 
-    const labelCallback = prepareLabelHotkeys(availableLabels, addLabel, removeLabel, labels)
-    const unregister = useGlobalEvents('keypress', labelCallback)
+    if (useHotkeys) {
+        const labelCallback = prepareLabelHotkeys(availableLabels, addLabel, removeLabel, labels)
+        const unregister = useGlobalEvents('keypress', labelCallback)
+    }
+
 
     watch(project, () => {
         fetchProjectLabels(project.value.id)
@@ -62,6 +75,8 @@ function useLabels (project, annotation, isReview = ref(false)) {
         availableLabels,
         confirmLabelsToReview,
         removeLabel,
+        replaceLabel,
+        removeAllLabels,
         labelsToReview
     }
 }

@@ -1,14 +1,22 @@
 <template>
     <div class="flex flex-col">
         <div class="flex flex-row justify-start content-end">
-            <button v-if="isAnnotationView" @click="addDocument(result.id)"><icon :icon="'plus'" class="text-grey-300 hover:text-grey-700 mr-1" :height="16" :width="16" /></button>
+            <button v-if="showSingleAddButtons" @click="addDocument(result.id)"><icon :icon="'plus'" class="text-grey-300 hover:text-grey-700 mr-1" :height="16" :width="16" /></button>
             <div class="relative mr-2"><span class="text-sm text-grey-500 text-center">method: {{ result.method }}</span></div>
             <button
-                v-if="index <= 9 && isAnnotationView"
+                v-if="index <= 9 && showSingleAddButtons"
                 class="shadow-sm rounded bg-grey-100 text-center text-xs py-1 px-2"
                 @click="addDocument(result.id)">
                 {{ index }}
             </button>
+            <template v-for="(annoId, idx) in groupAnnotationIds" :key="annoId">
+                <button
+                    v-if="isAnnotationView"
+                    class="bg-grey-100 text-center text-xs py-1 px-2 text-blue-500 shadow-sm rounded mr-2"
+                    @click="addDocument(result.id, idx)">
+                    {{ idx }}
+                </button>
+            </template>
         </div>
         <span>{{ result.content }}</span>
     </div>
@@ -17,7 +25,7 @@
 <script>
 import Icon from './Icon.vue'
 import Annotation from './../../store/Annotation.js'
-import { inject } from 'vue'
+import { inject, toRefs, computed } from 'vue'
 
 export default {
     name: 'SearchResult',
@@ -41,19 +49,28 @@ export default {
         }
     },
     setup (props) {
+        const { isAnnotationView } = toRefs(props)
         const annotationId = inject('annotationId', null)
-        const taskId = inject('taskId', null)
+        const groupAnnotationIds = inject('groupAnnotationIds', [])
 
-        const addDocument = (docId) => {
-            const annotation = Annotation.items.value[annotationId.value]
+        const addDocument = (docId, annotationIdx=null) => {
+            const annotation = annotationIdx === null
+                ? Annotation.items.value[annotationId.value]
+                : Annotation.items.value[groupAnnotationIds.value[annotationIdx]]
             if (annotation && annotation.documents) {
                 const documents = annotation.documents.length === 2 ? [ annotation.documents[0], docId ] : [ ...annotation.documents, docId ]
-                Annotation.actions.updateAnnotation(`/annotation/${annotation.id}`, { documents, id: annotation.id }, {}, taskId.value)
+                Annotation.actions.updateAnnotation(`/annotation/${annotation.id}`, { documents, id: annotation.id }, {})
             }
         }
 
+        const showSingleAddButtons = computed(() => {
+            return isAnnotationView.value && groupAnnotationIds.value.length === 0
+        })
+
         return {
-            addDocument
+            addDocument,
+            groupAnnotationIds,
+            showSingleAddButtons
         }
     }
 }

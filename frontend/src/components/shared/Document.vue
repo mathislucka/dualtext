@@ -17,11 +17,12 @@
 </template>
 
 <script>
-import Icon from '../../components/shared/Icon.vue'
+import Icon from './Icon.vue'
 import { inject } from 'vue'
 export default {
     components: { Icon },
     name: 'document',
+    emits: ['remove-document'],
     props: {
         document: {
             type: Object,
