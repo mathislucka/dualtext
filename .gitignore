@@ -7,3 +7,4 @@ db.sqlite3
 /fixtures/
 venv/
 .vscode/
+DualtextCli.egg-info/
