@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Annotation Group",
+    "description": "Annotation groups connect multiple annotations. They can be used for more complex annotation projects.",
+    "type": "object",
+    "properties": {
+        "task": {
+            "description": "The task (unit of work) that this annotation group belongs to.",
+            "type": "integer"
+        }
+    }
+}

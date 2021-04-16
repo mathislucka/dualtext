@@ -1,0 +1,55 @@
+{
+    "project": {
+        "name": "Grouped Project 4",
+        "corpora": [1],
+        "annotation_mode": "grouped"
+    },
+    "corpus": {
+        "name": "Simple Corpus 4",
+        "corpus_meta": "{}"
+    },
+    "features": ["elastic"],
+    "labels": [
+        { "name": "premise", "key_code": "p" },
+        { "name": "closer", "key_code": "c" },
+        { "name": "farther", "key_code": "f" }
+    ],
+    "annotations": [
+        {"identifier": 1, "labels": ["premise"]},
+        {"identifier": 2},
+        {"identifier": 3},
+        {"identifier": 4, "labels": ["premise"]},
+        {"identifier": 5},
+        {"identifier": 6}
+    ],
+    "documents": [
+        {
+            "content": "Simple doc 1",
+            "annotation_identifier": 1
+        },
+        {
+            "content": "Simple doc 2",
+            "annotation_identifier": 2
+        },
+        {
+            "content": "Simple doc 3",
+            "annotation_identifier": 3
+        },
+        {
+            "content": "Simple doc 4",
+            "annotation_identifier": 4
+        },
+        {
+            "content": "Simple doc 5",
+            "annotation_identifier": 5
+        },
+        {
+            "content": "Simple doc 6",
+            "annotation_identifier": 6
+        }
+    ],
+    "annotation_groups": [
+        {"annotation_ids": [1,2,3]},
+        {"annotation_ids": [4,5,6]}
+    ]
+}

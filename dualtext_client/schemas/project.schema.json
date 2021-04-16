@@ -28,7 +28,7 @@
         "annotation_mode": {
             "description": "Determines which mode or style of annotation to use (either dualtext or classification).",
             "type": "string",
-            "enum": [ "classification", "dualtext" ]
+            "enum": [ "classification", "dualtext", "grouped" ]
         },
         "use_reviews": {
             "description": "Determines whether a review task should be auto-generated upon completion of a task.",

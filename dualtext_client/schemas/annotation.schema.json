@@ -27,8 +27,13 @@
             "type": "integer"
         },
         "action": {
-            "description": "The annotation mode for this annotation (one of annotate, review or duplicate)",
-            "type": "string"
+            "description": "The annotation mode for this annotation.",
+            "type": "string",
+            "enum": ["annotate", "review", "duplicate"]
+        },
+        "annotation_group": {
+            "description": "The annotation group that this annotation belongs to",
+            "type": "integer"
         }
     }
 }

@@ -2,8 +2,8 @@ import click
 import keyring
 import json
 import sys
-from dualtext_client.client_lib.session import Session
-from dualtext_client.client_lib.project import Project
+from client_lib.session import Session
+from client_lib.project import Project
 
 @click.group()
 @click.pass_context
@@ -15,7 +15,7 @@ def cli(ctx):
         username = click.prompt('Please enter your username')
         pw = click.prompt('Password', hide_inpute=True)
         access_token = s.login(username, pw)
-        keyring.set_password('dualtext', username, token)
+        keyring.set_password('dualtext', username, access_token)
     ctx.obj['Token'] = access_token
 
 @cli.command('mkproj')

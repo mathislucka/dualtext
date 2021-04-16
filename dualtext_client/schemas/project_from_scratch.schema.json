@@ -66,6 +66,22 @@
                     }
                 }
             }
+        },
+        "annotation_groups": {
+            "description": "A list of annotation groups that should be created",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "annotation_ids": {
+                        "description": "The annotations that belong to this group.",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
         }
     },
     "required": [ "project", "corpus", "annotations" ]

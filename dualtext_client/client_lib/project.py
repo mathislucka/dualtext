@@ -6,6 +6,7 @@ from .label import Label
 from .task import Task
 from .feature import Feature
 from .search import Search
+from .annotation_group import AnnotationGroup
 import math
 
 class Project(ApiBase):
@@ -38,10 +39,21 @@ class Project(ApiBase):
         if documents is not None:
             created_documents = self.create_documents(documents, created_corpus['id'])
 
-        tasks = self.split_list(data['annotations'], task_size)
-        for idx, task_chunk in enumerate(tasks):
-            annotations = self.create_project_task(task_chunk, project['id'], idx, created_corpus['id'], labels, created_documents)
-        
+        groups = data.get('annotation_groups', None)
+        if groups:
+            groups = self.split_list(groups, task_size)
+            for idx, chunk in enumerate(groups):
+                annotation_ids = set()
+                for group in chunk:
+                    if group.get('annotation_ids', None):
+                        annotation_ids.update(group['annotation_ids'])
+                annotations = [anno for anno in data['annotations'] if anno['identifier'] in annotation_ids]
+                self.create_project_task(annotations, project['id'], idx, labels, created_documents, chunk)
+        else:
+            annotations = self.split_list(data['annotations'], task_size)
+            for idx, chunk in enumerate(annotations):
+                self.create_project_task(chunk, project['id'], idx, labels, created_documents)
+
         return project
 
     def create_documents(self, documents, corpus_id):
@@ -66,33 +78,41 @@ class Project(ApiBase):
     def split_list(self, lst, chunk_size):
         return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range((len(lst) + chunk_size - 1) // chunk_size )]
 
-    def create_project_task(self, task_chunk, project_id, task_idx=None, corpus_id=None, labels=None, documents=None):
+    def create_project_task(self, annotations, project_id, task_idx=None, labels=None, documents=None, groups=None):
         task_instance = Task(self.session, project_id)
         task = task_instance.create({'name': 'P{}T{}'.format(project_id, task_idx)})
-        return self.create_annotations(task_chunk, labels, task['id'], corpus_id, documents)
+        annotation_group_lookup = None
+        if groups is not None:
+            annotation_group_lookup = self.create_groups(task, groups)
+        return self.create_annotations(
+            annotations=annotations,
+            labels=labels,
+            task_id=task['id'],
+            documents=documents,
+            annotation_group_map=annotation_group_lookup
+        )
 
-    def create_annotations(self, annotations, labels, task_id, corpus_id, documents):
+    def create_groups(self, task, groups):
+        ag_instance = AnnotationGroup(self.session, task['id'])
+        annotation_group_map = {}
+        for group in groups:
+            g = ag_instance.create({})
+            for anno in group['annotation_ids']:
+                annotation_group_map[anno] = g['id']
+        return annotation_group_map
+
+    def create_annotations(self, annotations, labels, task_id, documents, annotation_group_map):
         annotation_instance = Annotation(self.session, task_id)
-        for annotation in annotations:
-            payload = {}
-            if documents is not None:
-                anno_documents = documents.get(annotation['identifier'], None)
-                if anno_documents is not None:
-                    payload['documents'] = anno_documents
-
-            anno_labels = annotation.get('labels', None)
-            if anno_labels is not None:
-                label_ids = []
-                for label in anno_labels:
-                    label_ids.append(labels[label])
-                payload['labels'] = label_ids
-
-            anno = annotation_instance.create(payload)
+        return annotation_instance.batch_create(
+            annotations=annotations,
+            labels=labels,
+            doc_anno_lookup=documents,
+            group_annotation_lookup=annotation_group_map
+        )
 
     def add_corpus_features(self, corpus_id, features):
         feature_instance = Feature(self.session)
         existing_features = feature_instance.list_resources()
-        print(existing_features)
         for feature in existing_features:
             if feature['key'] in features:
                 feature['corpora'].append(corpus_id)

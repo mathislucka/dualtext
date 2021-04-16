@@ -21,8 +21,9 @@
             "type": "integer"
         },
         "action": {
-            "description": "The annotation mode for this task (one of annotate, review or duplicate).",
-            "type": "string"
+            "description": "The annotation mode for this task.",
+            "type": "string",
+            "enum": ["annotate", "review", "duplicate"]
         },
         "is_finished": {
             "description": "Indicates wether this task was fully completed.",
