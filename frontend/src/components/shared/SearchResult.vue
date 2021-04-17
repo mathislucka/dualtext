@@ -25,7 +25,8 @@
 <script>
 import Icon from './Icon.vue'
 import Annotation from './../../store/Annotation.js'
-import { inject, toRefs, computed } from 'vue'
+import Project from './../../store/Project.js'
+import { inject, toRefs, computed, ref } from 'vue'
 
 export default {
     name: 'SearchResult',
@@ -51,14 +52,20 @@ export default {
     setup (props) {
         const { isAnnotationView } = toRefs(props)
         const annotationId = inject('annotationId', null)
-        const groupAnnotationIds = inject('groupAnnotationIds', [])
+        const groupAnnotationIds = inject('groupAnnotationIds', ref([]))
+        const projectId = inject('projectId')
+        const project = computed(() => Project.items.value[projectId.value] || {})
 
         const addDocument = (docId, annotationIdx=null) => {
             const annotation = annotationIdx === null
                 ? Annotation.items.value[annotationId.value]
                 : Annotation.items.value[groupAnnotationIds.value[annotationIdx]]
+            const max_documents = project.value.max_documents || 0
             if (annotation && annotation.documents) {
-                const documents = annotation.documents.length === 2 ? [ annotation.documents[0], docId ] : [ ...annotation.documents, docId ]
+                console.log(`max docs is ${max_documents} and docs is ${annotation.documents.length}`)
+                const documents = annotation.documents.length === max_documents
+                    ? [ ...annotation.documents.slice(0, max_documents - 1), docId ]
+                    : [ ...annotation.documents, docId ]
                 Annotation.actions.updateAnnotation(`/annotation/${annotation.id}`, { documents, id: annotation.id }, {})
             }
         }

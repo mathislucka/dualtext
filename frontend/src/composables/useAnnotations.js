@@ -78,4 +78,5 @@ function useAnnotationDecider (projectId, taskId, router, isReview) {
     })
 }
 
-export { useAnnotations, useAnnotationDecider }
+
+export { useAnnotations, useAnnotationDecider, fetchAnnotations }

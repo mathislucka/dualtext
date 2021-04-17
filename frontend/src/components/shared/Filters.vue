@@ -47,7 +47,7 @@ export default {
   setup (props, context) {
     const route = useRoute()
     const projectId = inject('projectId', null)
-    const corporaIds = inject('corporaIds', null)
+    const corporaIds = inject('corporaIds', ref(null))
     let currentProject = ref({})
     if (projectId) {
         const { project } = useSingleProject(projectId)
@@ -62,7 +62,7 @@ export default {
             return acc
         }, {})
 
-        if (corporaIds) {
+        if (corporaIds.value) {
             transformed = corporaIds.value.reduce((acc, corpusId) => {
                 const corpus = transformed[corpusId]
                 if (corpus) {
@@ -86,7 +86,7 @@ export default {
         } else {
             transformed = transformedCorpora.value
         }
-        if (corporaIds) {
+        if (corporaIds.value) {
             transformed = corporaIds.value.reduce((acc, corpusId) => {
                 const corpus = transformed[corpusId]
                 if (corpus) {
@@ -108,7 +108,7 @@ export default {
 
     const setCorpusFilter = () => {
         if (currentFilters.value.corpus && currentFilters.value.corpus.length === 0) {
-            const result = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)) }
+            const result = { corpus: corpora.value.map(c => c.id ).filter(id => corporaIds.value === null || corporaIds.value.includes(id)) }
             currentFilters.value = result
         }
     }
@@ -130,7 +130,7 @@ export default {
         if (!route.query || Object.keys(route.query).length === 0) {
             currentFilters.value = {
                 method: Search.availableMethods.value,
-                corpus: corpora.value.map(c => c.id ).filter(id => corporaIds === null || corporaIds.value.includes(id)),
+                corpus: corpora.value.map(c => c.id ).filter(id => corporaIds.value === null || corporaIds.value.includes(id)),
                 ...projectId ? { project: projectId.value } : {},
             }
         }

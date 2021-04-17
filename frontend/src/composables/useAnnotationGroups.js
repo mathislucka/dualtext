@@ -1,6 +1,9 @@
 import { onMounted, watch, computed, ref } from 'vue'
-import { useAnnotations } from './useAnnotations.js'
+import { useAnnotations, fetchAnnotations } from './useAnnotations.js'
+import { fetchProject } from './useProjects.js'
 import AnnotationGroup from './../store/AnnotationGroup.js'
+import Annotation from '../store/Annotation.js'
+import Project from './../store/Project.js'
 
 const fetchAnnotationGroups = (taskId) => {
     return AnnotationGroup.actions.fetchAnnotationGroupList(`/task/${taskId}/annotation-group/`, {})
@@ -68,4 +71,37 @@ const useAnnotationGroups = (taskId, annotationGroupId) => {
     }
 }
 
-export { useAnnotationGroups }
+function navigateToNextGroup (projectId, router, taskId, routeName) {
+    const groups = Object.values(AnnotationGroup.items.value)
+    const annotations = Object.values(Annotation.items.value)
+    const project = Project.items.value[projectId]
+    const groupedAnnotations = groups.reduce((acc, current) => {
+        const groupAnnotations = annotations.filter(anno => anno.annotation_group === current.id)
+        acc.push(groupAnnotations)
+        return acc
+    }, [])
+    let nextGroupId = groups.length !== 0 && groups[groups.length - 1].id
+    let i = 0
+    let isFound = false
+    while (i < groupedAnnotations.length && !isFound) {
+        isFound = groupedAnnotations[i].some(anno => anno.documents.length < project.max_documents || anno.labels.length === 0)
+        if (isFound) {
+            nextGroupId = groups[i].id
+        }
+        i++
+    }
+    console.log(nextGroupId)
+    router.push({ name: routeName, params: { projectId: projectId, taskId: taskId, annotationGroupId: nextGroupId }})
+}
+
+function useAnnotationGroupDecider (projectId, taskId, router, isReview) {
+    onMounted(() => {
+        const routeName = isReview.value === true ? 'group_review_detail' : 'group_detail'
+        const groupsAndAnnotationsFetched = [ fetchAnnotationGroups(taskId), fetchAnnotations(taskId),  fetchProject(projectId)]
+        Promise.all(groupsAndAnnotationsFetched).then(() => {
+            navigateToNextGroup(projectId, router, taskId, routeName)
+        })
+    })
+}
+
+export { useAnnotationGroups, useAnnotationGroupDecider }

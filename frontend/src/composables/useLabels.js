@@ -42,7 +42,7 @@ function useLabels (project, annotation, isReview = ref(false), useHotkeys = tru
 
     const labelsToReview = computed(() => {
         const reviewAnnotation = Annotation.items.value[annotation.value.copied_from]
-        return reviewAnnotation && reviewAnnotation.labels.map(id => Label.items.value[id] || null).filter(label => label)
+        return reviewAnnotation && reviewAnnotation.labels.map(id => Label.items.value[id] || null).filter(label => label) || []
     })
     
     const labels = computed(() => getAnnotatorLabels(annotation) || [])

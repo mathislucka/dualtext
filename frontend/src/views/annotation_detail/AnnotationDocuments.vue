@@ -35,6 +35,7 @@ export default {
         const { annotation, annotationIdx } = toRefs(props)
         const taskId = inject('taskId')
         const projectId = inject('projectId')
+        const isReview = inject('isReview')
         const { project } = useSingleProject(projectId)
 
         const {
@@ -55,7 +56,7 @@ export default {
         return {
             documents: computed(() => {
                 const documents = currentDocuments.value
-                while (documents.length < 2 && project.value.annotation_mode === 'dualtext') {
+                while (documents.length < project.value.max_documents && project.value.annotation_mode === 'dualtext' && !isReview.value) {
                     documents.push({})
                 }
                 return documents

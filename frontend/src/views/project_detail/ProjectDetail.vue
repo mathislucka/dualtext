@@ -33,6 +33,7 @@ export default {
         const { projectId } = toRefs(props)
         provide('projectId', projectId)
         const { project } = useSingleProject(projectId)
+        provide('project', project)
         const corporaIds = computed(() => project.value.corpora || [])
         provide('corporaIds', corporaIds)
 

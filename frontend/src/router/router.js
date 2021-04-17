@@ -71,6 +71,40 @@ const routes = [
         component: AnnotationDetail,
     },
     {
+        path: '/project/:projectId/task/:taskId/group-review',
+        name: 'group_review_decider',
+        component: AnnotationDecider,
+        beforeEnter: (to, from, next) => {
+            if (from.name === 'group_review_detail') {
+                next({ name: 'project_detail', params: { projectId: to.params.projectId }})
+            } else {
+                next()
+            }
+        }
+    },
+    {
+        path: '/project/:projectId/task/:taskId/group-review/:annotationGroupId',
+        name: 'group_review_detail',
+        component: GroupDetail,
+        props: route => ({
+            projectId: parseInt(route.params.projectId),
+            taskId: parseInt(route.params.taskId),
+            annotationGroupId: parseInt(route.params.annotationGroupId)
+        })
+    },
+    {
+        path: '/project/:projectId/task/:taskId/group',
+        name: 'group_decider',
+        component: AnnotationDecider,
+        beforeEnter: (to, from, next) => {
+            if (from.name === 'group_detail') {
+                next({ name: 'project_detail', params: { projectId: to.params.projectId }})
+            } else {
+                next()
+            }
+        }
+    },
+    {
         path: '/project/:projectId/task/:taskId/group/:annotationGroupId',
         name: 'group_detail',
         component: GroupDetail,

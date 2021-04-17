@@ -89,10 +89,11 @@ export default {
         const route = useRoute()
         const router = useRouter()
         const { annotationGroupId, projectId, taskId } = toRefs(props)
-        const isReview = ref(false)
+        const isReview = computed(() => route.name === 'group_review_detail')
         provide('projectId', projectId)
         provide('annotationGroupId', annotationGroupId)
         provide('taskId', taskId)
+        provide('isReview', isReview)
 
         const { project } = useSingleProject(projectId)
 

@@ -62,7 +62,7 @@ import { useUser } from './../../composables/useUser.js'
 import Card from './../../components/layout/Card.vue'
 import Icon from './../../components/shared/Icon.vue'
 import Task from './../../store/Task.js'
-import { computed, inject, toRefs } from 'vue'
+import { computed, inject, toRefs, ref } from 'vue'
 
 export default {
     name: 'TaskCard',
@@ -80,6 +80,7 @@ export default {
     setup (props) {
         const { taskType } = toRefs(props)
         const projectId = inject('projectId')
+        const project = inject('project', ref(null))
     
         const { user } = useUser()
         const userId = computed(() => user.value.id || '' )
@@ -106,7 +107,24 @@ export default {
         })
         const unclaimTask = taskType.value === 'annotation' ? unclaimAnnotationTask : unclaimReviewTask
 
-        const routeName = taskType.value === 'annotation' ? 'annotation_decider' : 'review_decider'
+        const routeName = computed(() => {
+            const isAnnotationTask = taskType.value === 'annotation'
+            const isGroup = project.value && project.value.annotation_mode === 'grouped'
+            let routeName = 'annotation_decider'
+            if (isAnnotationTask && !isGroup) {
+                routeName = 'annotation_decider'
+            }
+            if (!isAnnotationTask && !isGroup) {
+                routeName = 'review_decider'
+            }
+            if (isAnnotationTask && isGroup) {
+                routeName = 'group_decider'
+            }
+            if (!isAnnotationTask && isGroup) {
+                routeName = 'group_review_decider'
+            }
+            return routeName
+        })
 
         const heading = computed(() => taskType.value === 'annotation' ? 'Annotation Tasks' : 'Review Tasks')
 

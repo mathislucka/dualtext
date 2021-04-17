@@ -1,18 +1,22 @@
 import { onMounted, watch, computed } from 'vue'
 import Project from './../store/Project.js'
 
-const useSingleProject = (projectId) => {
-    
-    const fetchProject = () => {
-        if (!Project.items.value[projectId.value] && Project.isLoading.value === false) {
-            Project.actions.fetchProject(`/project/${projectId.value}`)
-        }
+const fetchProject = (projectId) => {
+    if (!Project.items.value[projectId] && Project.isLoading.value === false) {
+        return Project.actions.fetchProject(`/project/${projectId}`)
     }
+}
+
+const useSingleProject = (projectId) => {
 
     const project = computed(() => Project.items.value[projectId.value] || {})
 
-    onMounted(fetchProject)
-    watch(projectId, fetchProject)
+    onMounted(() => {
+        fetchProject(projectId.value)
+    })
+    watch(projectId, () => {
+        fetchProject(projectId.value)
+    })
 
     return {
         project,
@@ -53,4 +57,4 @@ function useProjectStatistics (projectId) {
     }
 }
 
-export { useSingleProject, useMultipleProjects, useProjectStatistics }
+export { useSingleProject, useMultipleProjects, useProjectStatistics, fetchProject }
