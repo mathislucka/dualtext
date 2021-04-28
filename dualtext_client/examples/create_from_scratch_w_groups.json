@@ -5,7 +5,7 @@
         "annotation_mode": "grouped"
     },
     "corpus": {
-        "name": "Simple Corpus 4",
+        "name": "Simple Corpus 5",
         "corpus_meta": "{}"
     },
     "features": ["elastic"],

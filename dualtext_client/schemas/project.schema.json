@@ -33,6 +33,10 @@
         "use_reviews": {
             "description": "Determines whether a review task should be auto-generated upon completion of a task.",
             "type": "boolean"
+        },
+        "max_documents": {
+            "description": "Determines the maximun number of documents that can be associated with one annotation.",
+            "type": "integer"
         }
     },
     "required": [ "name" ]
