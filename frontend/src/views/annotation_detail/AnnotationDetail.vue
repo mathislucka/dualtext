@@ -22,35 +22,15 @@
                 </template>
             </card>
         </multi-column>
-        <teleport to="#menu-content">
-            <span class="font-semibold text-teal-500">Project</span>
-            <router-link :to="{ name: 'project_detail', params: { projectId: project.id }}" class="link">{{ project.name }}</router-link>
-            <span class="font-semibold text-teal-500 mt-4">Open Tasks</span>
-            <router-link
-                v-for="task in openAnnotationTasks"
-                :key="task.id"
-                class="link"
-                :to="{ name: 'annotation_decider', params: { projectId: project.id, taskId: task.id }}">
-                {{ task.name }}
-            </router-link>
-            <span class="font-semibold text-teal-500 mt-4">Open Reviews</span>
-            <router-link
-                v-for="task in openReviewTasks"
-                :key="task.id"
-                class="link"
-                :to="{ name: 'review_decider', params: { projectId: project.id, taskId: task.id }}">
-                {{ task.name }}
-            </router-link>
-        </teleport>
+        <menu-content :project="project" />
 </template>
 
 <script>
 import { toRefs, provide, computed, watch } from 'vue'
 import { useAnnotations } from './../../composables/useAnnotations.js'
 import { useSingleProject } from './../../composables/useProjects.js'
-import { useTask, useOpenTasks } from './../../composables/useTask.js'
+import { useTask } from './../../composables/useTask.js'
 import { preparePageChangeHandler } from './../../composables/usePager.js'
-import { useUser } from './../../composables/useUser.js'
 import { useRoute, useRouter } from 'vue-router'
 
 import Pager from './../../components/shared/Pager.vue'
@@ -61,6 +41,7 @@ import SearchResultList from './../../components/shared/SearchResultList.vue'
 import MultiColumn from './../../components/layout/MultiColumn.vue'
 import Card from './../../components/layout/Card.vue'
 import DesiredLabel from './DesiredLabel.vue'
+import MenuContent from './../../components/shared/MenuContent.vue'
 
 export default {
     name: 'AnnotationDetail',
@@ -72,7 +53,8 @@ export default {
         SearchResultList,
         MultiColumn,
         Card,
-        DesiredLabel
+        DesiredLabel,
+        MenuContent
     },
     setup (props, context) {
         const route = useRoute()
@@ -94,11 +76,6 @@ export default {
         provide('corporaIds', corporaIds)
 
         useTask(taskId)
-
-        const { user } = useUser()
-        const userId = computed(() => user.value.id || '' )
-
-        const { openAnnotationTasks, openReviewTasks } = useOpenTasks(userId, projectId)
 
         const {
             nextAnnotationId,
@@ -127,8 +104,6 @@ export default {
             nextAnnotationId,
             previousAnnotationId,
             totalAnnotations,
-            openAnnotationTasks,
-            openReviewTasks,
             project,
             showSearch,
             handlePageDown,

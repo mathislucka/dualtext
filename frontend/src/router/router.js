@@ -37,7 +37,7 @@ const routes = [
         name: 'annotation_decider',
         component: AnnotationDecider,
         beforeEnter: (to, from, next) => {
-            if (from.name === 'annotation_detail') {
+            if (from.name === 'annotation_detail' && from.params.taskId === to.params.taskId) {
                 next({ name: 'project_detail', params: { projectId: to.params.projectId }})
             } else {
                 next()
@@ -58,7 +58,7 @@ const routes = [
         name: 'review_decider',
         component: AnnotationDecider,
         beforeEnter: (to, from, next) => {
-            if (from.name === 'review_detail') {
+            if (from.name === 'review_detail' && from.params.taskId === to.params.taskId) {
                 next({ name: 'project_detail', params: { projectId: to.params.projectId }})
             } else {
                 next()
@@ -75,7 +75,7 @@ const routes = [
         name: 'group_review_decider',
         component: AnnotationDecider,
         beforeEnter: (to, from, next) => {
-            if (from.name === 'group_review_detail') {
+            if (from.name === 'group_review_detail'  && from.params.taskId === to.params.taskId) {
                 next({ name: 'project_detail', params: { projectId: to.params.projectId }})
             } else {
                 next()
@@ -97,7 +97,7 @@ const routes = [
         name: 'group_decider',
         component: AnnotationDecider,
         beforeEnter: (to, from, next) => {
-            if (from.name === 'group_detail') {
+            if (from.name === 'group_detail' && from.params.taskId === to.params.taskId) {
                 next({ name: 'project_detail', params: { projectId: to.params.projectId }})
             } else {
                 next()

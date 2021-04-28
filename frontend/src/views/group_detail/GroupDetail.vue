@@ -22,36 +22,18 @@
                 </template>
             </card>
         </multi-column>
-        <!-- <teleport to="#menu-content">
-            <span class="font-semibold text-teal-500">Project</span>
-            <router-link :to="{ name: 'project_detail', params: { projectId: project.id }}" class="link">{{ project.name }}</router-link>
-            <span class="font-semibold text-teal-500 mt-4">Open Tasks</span>
-            <router-link
-                v-for="task in openAnnotationTasks"
-                :key="task.id"
-                class="link"
-                :to="{ name: 'annotation_decider', params: { projectId: project.id, taskId: task.id }}">
-                {{ task.name }}
-            </router-link>
-            <span class="font-semibold text-teal-500 mt-4">Open Reviews</span>
-            <router-link
-                v-for="task in openReviewTasks"
-                :key="task.id"
-                class="link"
-                :to="{ name: 'review_decider', params: { projectId: project.id, taskId: task.id }}">
-                {{ task.name }}
-            </router-link>
-        </teleport> -->
+        <menu-content
+            :project="project"
+            :is-group="true" />
 </template>
 
 <script>
-import { toRefs, provide, computed, watch, ref } from 'vue'
+import { toRefs, provide, computed } from 'vue'
 import { useAnnotationGroups } from './../../composables/useAnnotationGroups.js'
 import { useSingleProject } from './../../composables/useProjects.js'
-import { useTask, useOpenTasks } from './../../composables/useTask.js'
+import { useTask } from './../../composables/useTask.js'
 import { preparePageChangeHandler } from './../../composables/usePager.js'
 import { fetchGroupedDocuments } from './../../composables/useDocuments.js'
-import { useUser } from './../../composables/useUser.js'
 import { useRoute, useRouter } from 'vue-router'
 
 import Annotation from './Annotation.vue'
@@ -60,6 +42,7 @@ import PageHeader from './../../components/shared/PageHeader.vue'
 import SearchResultList from './../../components/shared/SearchResultList.vue'
 import MultiColumn from './../../components/layout/MultiColumn.vue'
 import Card from './../../components/layout/Card.vue'
+import MenuContent from './../../components/shared/MenuContent.vue'
 
 export default {
     name: 'AnnotationGroupDetail',
@@ -69,6 +52,7 @@ export default {
         PageHeader,
         SearchResultList,
         MultiColumn,
+        MenuContent,
         Card,
     },
     props: {
@@ -134,8 +118,6 @@ export default {
             columnNumber,
             isReview,
             totalAnnotationGroups,
-            // openAnnotationTasks,
-            // openReviewTasks,
             project,
             showSearch,
             handlePageDown,
