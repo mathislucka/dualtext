@@ -23,8 +23,8 @@ class Annotation(ApiBase):
             if doc_anno_lookup and doc_anno_lookup.get(anno['identifier'], None):
                 payload['documents'] = doc_anno_lookup[anno['identifier']]
 
-            if group_annotation_lookup:
-                payload['annotation_group'] = group_annotation_lookup.get(anno['identifier'], None)
+            if group_annotation_lookup and group_annotation_lookup.get(anno['identifier'], None):
+                payload['annotation_group'] = group_annotation_lookup[anno['identifier']]
 
             created_annotations.append(self.create(payload))
 
