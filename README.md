@@ -1,3 +1,5 @@
+**Please note that this project is under active development and is not yet stable. Use at your own discretion.**
+
 # DUALTEXT
 *unleash your annotation superpowers \o/*
 
