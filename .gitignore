@@ -8,3 +8,7 @@ db.sqlite3
 venv/
 .vscode/
 DualtextCli.egg-info/
+simple_annotation/
+.idea/
+dualtext.egg-info/*
+
