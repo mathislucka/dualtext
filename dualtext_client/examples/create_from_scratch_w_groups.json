@@ -1,14 +1,15 @@
 {
     "project": {
-        "name": "Grouped Project 4",
+        "name": "Grouped Project 13",
         "corpora": [1],
-        "annotation_mode": "grouped"
+        "annotation_mode": "grouped",
+        "max_documents": 1
     },
     "corpus": {
-        "name": "Simple Corpus 5",
+        "name": "Simple Corpus 12",
         "corpus_meta": "{}"
     },
-    "features": ["elastic"],
+    "features": ["elastic", "sentence_embedding"],
     "labels": [
         { "name": "premise", "key_code": "p" },
         { "name": "closer", "key_code": "c" },
