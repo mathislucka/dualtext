@@ -4,7 +4,6 @@ import yaml
 import os
 
 
-
 class OpenApiView(APIView):
     """
     Documentation.
@@ -13,5 +12,5 @@ class OpenApiView(APIView):
         module_dir = os.path.dirname(__file__)  # get current directory
         file_path = os.path.join(module_dir, 'openapi-schema.yml')
         with open(file_path) as f:
-            data1 = yaml.load(f)
+            data1 = yaml.load(f, Loader=yaml.CLoader)
         return Response(data1)
