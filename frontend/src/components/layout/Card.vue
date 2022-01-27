@@ -3,7 +3,7 @@
         <div class="w-full mb-4" v-if="useHeader">
             <slot name="header" />
         </div>
-        <div class="w-full">
+        <div class="w-full h-full">
             <slot name="content" />
         </div>
     </div>

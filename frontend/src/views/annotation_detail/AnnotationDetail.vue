@@ -1,23 +1,31 @@
 <template>
-        <page-header />
-        <multi-column :columns="columnNumber">
-            <card class="overflow-auto" :use-header="false">
+        <page-header v-show="!isFullScreen" />
+        <multi-column class="h-full" :columns="columnNumber" :class="{ 'p-0': isFullScreen }">
+            <card class="overflow-auto relative h-full" :use-header="false">
                 <template v-slot:content>
-                    <document-orientation
-                        v-if="!showSearch"
-                        @change-orientation="setOrientation"/>
-                    <desired-label v-if="!isReview && showSearch" :annotation="annotation" />
-                    <annotation-documents
-                        :annotation="annotation"
-                        :annotation-idx="annotationIdx"
-                        :orientation="currentOrientation" />
-                    <annotation-labels
-                        :is-review="isReview" />
-                    <pager
-                        :current-page="annotationIdx + 1"
-                        :total-pages="totalAnnotations"
-                        @page-down="handlePageDown"
-                        @page-up="handlePageUp" />
+                    <div class="flex flex-col h-full">
+                        <div class="grow">
+                            <window-settings
+                                v-if="!showSearch"
+                                @change-orientation="setOrientation"
+                                @change-screen-size="setScreenSize"/>
+                            <desired-label v-if="!isReview && showSearch" :annotation="annotation" />
+                            <annotation-documents
+                                :annotation="annotation"
+                                :annotation-idx="annotationIdx"
+                                :orientation="currentOrientation" />
+                        </div>
+                        <div>
+                            <annotation-labels
+                                :is-review="isReview" />
+                            <pager
+                                class="mb-4"
+                                :current-page="annotationIdx + 1"
+                                :total-pages="totalAnnotations"
+                                @page-down="handlePageDown"
+                                @page-up="handlePageUp" />
+                        </div>
+                    </div>
                 </template>
             </card>
             <card class="overflow-auto" v-if="showSearch" :use-header="false">
@@ -46,7 +54,7 @@ import MultiColumn from './../../components/layout/MultiColumn.vue'
 import Card from './../../components/layout/Card.vue'
 import DesiredLabel from './DesiredLabel.vue'
 import MenuContent from './../../components/shared/MenuContent.vue'
-import DocumentOrientation from './DocumentOrientation.vue'
+import WindowSettings from './WindowSettings.vue'
 
 export default {
     name: 'AnnotationDetail',
@@ -60,7 +68,7 @@ export default {
         Card,
         DesiredLabel,
         MenuContent,
-        DocumentOrientation
+        WindowSettings
     },
     setup (props, context) {
         const route = useRoute()
@@ -94,8 +102,18 @@ export default {
 
         const currentOrientation = ref('horizontal')
         const setOrientation = (orientation) => {
-            currentOrientation.value = orientation
+            if (project.value.annotation_mode === 'classification' || isReview.value) {
+                currentOrientation.value = orientation
+            }
         }
+
+        const currentScreenSize = ref('normal')
+        const setScreenSize = (size) => {
+            currentScreenSize.value = size
+        }
+        const isFullScreen = computed(() => {
+            return currentScreenSize.value === 'full'
+        })
 
         const shouldStayOnSearch = computed(() => !isReview.value && project.value.annotation_mode === 'dualtext')
         provide('shouldStayOnSearch', shouldStayOnSearch)
@@ -120,7 +138,9 @@ export default {
             handlePageDown,
             handlePageUp,
             currentOrientation,
-            setOrientation
+            setOrientation,
+            setScreenSize,
+            isFullScreen
         }
     }
 }

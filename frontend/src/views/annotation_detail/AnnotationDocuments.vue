@@ -1,9 +1,10 @@
 <template>
-    <multi-column :columns="numColumns" class="-m-8">
+    <multi-column :columns="numColumns" class="p-0 w-full">
         <document 
             v-for="(document, idx) in documents"
             :key="idx"
             :document="document"
+            :annotation-mode="annotationMode"
             @remove-document="removeDocument" />
     </multi-column>
 </template>
