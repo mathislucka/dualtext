@@ -1,10 +1,15 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 
-setup(
-    name='dualtext',
-    packages=find_packages(),
-    version='0.1.0',
-    description='Client lib to interact with dualtext API',
-    author='Mathis',
-    license='',
+
+setup (
+        name='DualtextCli',
+        version='1.0',
+        py_modules=['dualtext'],
+        install_requires=[
+            'Click',
+        ],
+        entry_points='''
+            [console_scripts]
+            dualtext=dualtext:cli
+        '''
 )

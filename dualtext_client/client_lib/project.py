@@ -1,12 +1,12 @@
-from .api_base import ApiBase
-from .annotation import Annotation
-from .corpus import Corpus
-from .document import Document
-from .label import Label
-from .task import Task
-from .feature import Feature
-from .search import Search
-from .annotation_group import AnnotationGroup
+from api_base import ApiBase
+from annotation import Annotation
+from corpus import Corpus
+from document import Document
+from label import Label
+from task import Task
+from feature import Feature
+from search import Search
+from annotation_group import AnnotationGroup
 import math
 
 class Project(ApiBase):
@@ -24,6 +24,7 @@ class Project(ApiBase):
         corpus = Corpus(self.session)
         created_corpus = corpus.create(data['corpus'])
         features = data.get('features', None)
+        print(features)
         if features is not None:
             self.add_corpus_features(created_corpus['id'], features)
 
@@ -113,10 +114,20 @@ class Project(ApiBase):
     def add_corpus_features(self, corpus_id, features):
         feature_instance = Feature(self.session)
         existing_features = feature_instance.list_resources()
-        for feature in existing_features:
-            if feature['key'] in features:
-                feature['corpora'].append(corpus_id)
-                feature_instance.update(feature)
+        if len(existing_features) != 0:
+            for feature in existing_features:
+                if feature['key'] in features:
+                    feature['corpora'].append(corpus_id)
+                    feature_instance.update(feature)
+        else:
+            for feature in features:
+                feature_instance.create({
+                    'name': feature,
+                    'corpora': [corpus_id],
+                    'description': feature,
+                    'key': feature
+                })
+
     
     def create_labels(self, labels, project_id):
         label_instance = Label(self.session, project_id)

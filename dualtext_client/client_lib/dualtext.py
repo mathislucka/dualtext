@@ -2,8 +2,9 @@ import click
 import keyring
 import json
 import sys
-from client_lib.session import Session
-from client_lib.project import Project
+from session import Session
+from project import Project
+
 
 @click.group()
 @click.pass_context
@@ -13,10 +14,13 @@ def cli(ctx):
     if access_token is None:
         s = Session()
         username = click.prompt('Please enter your username')
-        pw = click.prompt('Password', hide_inpute=True)
-        access_token = s.login(username, pw)
-        keyring.set_password('dualtext', username, access_token)
+        pw = click.prompt('Password', hide_input=True)
+        s.login(username, pw)
+        access_token = s.get_token()
+        print(access_token)
+        #keyring.set_password('dualtext', username, access_token)
     ctx.obj['Token'] = access_token
+
 
 @cli.command('mkproj')
 @click.option('--search/--no-search', default=False)
@@ -38,6 +42,7 @@ def make_project(ctx, project_data, search):
     else:
         proj = p.create_from_scratch(data, task_size=100)
     print('Finished creating the project. Project id is {}'.format(proj['id']))
+
 
 @cli.command('dlproj')
 @click.option('--project-id',
