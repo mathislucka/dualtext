@@ -1,4 +1,4 @@
-import { axisLeft, axisBottom, create, line, scaleUtc, scaleLinear, max, extent, event, select } from 'd3'
+import { axisLeft, axisBottom, create, line, scaleUtc, scaleLinear, max, extent, select } from 'd3'
 import { watch, ref } from 'vue'
 
 function createTimeseriesChart (data) {
