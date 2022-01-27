@@ -31,7 +31,7 @@ const ApiBuilder = class {
                 returnVal = { error: null, response: await response.json() }
             }
         } catch(e) {
-            returnVal = { error: e, response: null }
+            returnVal = { error: 'An error occurred. Try to reload the page.', response: null }
         }
 
         if (returnVal.error) {   
