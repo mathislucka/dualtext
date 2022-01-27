@@ -78,7 +78,8 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:8080'
+    'http://localhost:8080',
+    'http://localhost:3000'
 ]
 
 ROOT_URLCONF = 'dualtext.urls'
@@ -106,6 +107,8 @@ WSGI_APPLICATION = 'dualtext.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 DATABASES = {
     'default': {
