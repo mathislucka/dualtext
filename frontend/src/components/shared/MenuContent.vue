@@ -1,13 +1,13 @@
 <template>
     <teleport to="#menu-content">
         <span class="font-semibold text-teal-500">Project</span>
-        <router-link :to="{ name: 'project_detail', params: { projectId: project.id }}" class="link">{{ project.name }}</router-link>
+        <router-link :to="{ name: 'project_detail', params: { projectId: project.id || -1 }}" class="link">{{ project.name }}</router-link>
         <span class="font-semibold text-teal-500 mt-4">Open Tasks</span>
         <router-link
             v-for="task in openAnnotationTasks"
             :key="task.id"
             class="link"
-            :to="{ name: annotationRouteName, params: { projectId: project.id, taskId: task.id }}">
+            :to="{ name: annotationRouteName, params: { projectId: project.id || -1, taskId: task.id }}">
             {{ task.name }}
         </router-link>
         <span class="font-semibold text-teal-500 mt-4">Open Reviews</span>
@@ -15,7 +15,7 @@
             v-for="task in openReviewTasks"
             :key="task.id"
             class="link"
-            :to="{ name: reviewRouteName, params: { projectId: project.id, taskId: task.id }}">
+            :to="{ name: reviewRouteName, params: { projectId: project.id || -1, taskId: task.id }}">
             {{ task.name }}
         </router-link>
     </teleport>
