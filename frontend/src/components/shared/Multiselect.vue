@@ -90,7 +90,7 @@ export default {
       hideWrappedElements () {
         const elements = []
         Object.keys(this.selectedItems).forEach(id => {
-            elements.push({ el: this.$refs['tag' + id], id })
+            elements.push({ el: this.$refs['tag' + id][0], id })
         })
         let previousTop = null
         elements.forEach(item => {
