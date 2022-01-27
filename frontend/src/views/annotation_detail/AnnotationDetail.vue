@@ -3,7 +3,7 @@
         <multi-column :columns="columnNumber">
             <card class="overflow-auto" :use-header="false">
                 <template v-slot:content>
-                    <desired-label v-if="!isReview" :annotation="annotation" />
+                    <desired-label v-if="!isReview && showSearch" :annotation="annotation" />
                     <annotation-documents
                         :annotation="annotation"
                         :annotation-idx="annotationIdx" />
