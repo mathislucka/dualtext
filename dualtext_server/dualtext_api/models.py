@@ -10,6 +10,7 @@ class AbstractBase(models.Model):
         abstract = True
         ordering = ('created_at',)
 
+
 class Corpus(AbstractBase):
     name = models.CharField(max_length=255)
     corpus_meta = models.JSONField()
@@ -20,9 +21,11 @@ class Corpus(AbstractBase):
             models.UniqueConstraint(fields=['name'], name='unique_corpus_name')
         ]
 
+
 class Document(AbstractBase):
     content = models.TextField(blank=True, default='')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
+
 
 class Project(AbstractBase):
     DUALTEXT = 'dualtext'
@@ -47,6 +50,7 @@ class Project(AbstractBase):
             models.UniqueConstraint(fields=['name'], name='unique_project_name')
         ]
 
+
 class Label(AbstractBase):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -58,6 +62,7 @@ class Label(AbstractBase):
             models.UniqueConstraint(fields=['name', 'project'], name='unique_label_name_in_project'),
             models.UniqueConstraint(fields=['key_code', 'project'], name='unique_key_code_in_project'),
         ]
+
 
 class Task(AbstractBase):
     ANNOTATE = 'annotate'
@@ -80,11 +85,13 @@ class Task(AbstractBase):
             models.UniqueConstraint(fields=['name', 'project'], name='unique_task_name_in_project')
         ]
 
+
 class AnnotationGroup(AbstractBase):
     """
     An entity grouping annotations for more advanced annotation modes
     """
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
 
 class Annotation(AbstractBase):
     ANNOTATE = 'annotate'
@@ -103,11 +110,13 @@ class Annotation(AbstractBase):
     action = models.CharField(max_length=10, choices=ACTION_CHOICES, blank=True, default=ANNOTATE)
     annotation_group = models.ForeignKey(AnnotationGroup, on_delete=models.CASCADE, null=True)
 
+
 class Prediction(AbstractBase):
     annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)
     score = models.FloatField(null=True)
     method = models.CharField(max_length=255)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
+
 
 class Feature(AbstractBase):
     name = models.CharField(max_length=255)
@@ -121,10 +130,12 @@ class Feature(AbstractBase):
             models.UniqueConstraint(fields=['name'], name='unique_feature_name'),
         ]
 
+
 class FeatureValue(AbstractBase):
     feature = models.ForeignKey(Feature, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     value = models.BinaryField()
+
 
 class Run(AbstractBase):
     """
@@ -133,6 +144,7 @@ class Run(AbstractBase):
     is_finished = models.BooleanField(blank=True, default=False)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     time_to_completion = models.IntegerField(null=True)
+
 
 class Lap(AbstractBase):
     run = models.ForeignKey(Run, on_delete=models.CASCADE)
