@@ -4,13 +4,13 @@ from elasticsearch.helpers import bulk
 from .abstract_feature import AbstractFeature
 import json
 
-model = SentenceTransformer('T-Systems-onsite/cross-en-de-roberta-sentence-transformer')
+model = SentenceTransformer('sentence-transformers/msmarco-distilbert-multilingual-en-de-v2-tmp-trained-scratch')
 
 class SentenceEmbedding(AbstractFeature):
     def __init__(self):
         self.model = model
         self.client = Elasticsearch()
-        self.INDEX_NAME = 'sentence_embeddings'
+        self.INDEX_NAME = 'sentence_emb'
         self.BATCH_SIZE = 700
     
     def create_features(self, documents):
