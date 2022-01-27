@@ -3,10 +3,14 @@
         <multi-column :columns="columnNumber">
             <card class="overflow-auto" :use-header="false">
                 <template v-slot:content>
+                    <document-orientation
+                        v-if="!showSearch"
+                        @change-orientation="setOrientation"/>
                     <desired-label v-if="!isReview && showSearch" :annotation="annotation" />
                     <annotation-documents
                         :annotation="annotation"
-                        :annotation-idx="annotationIdx" />
+                        :annotation-idx="annotationIdx"
+                        :orientation="currentOrientation" />
                     <annotation-labels
                         :is-review="isReview" />
                     <pager
@@ -26,7 +30,7 @@
 </template>
 
 <script>
-import { toRefs, provide, computed, watch } from 'vue'
+import { toRefs, provide, computed, ref } from 'vue'
 import { useAnnotations } from './../../composables/useAnnotations.js'
 import { useSingleProject } from './../../composables/useProjects.js'
 import { useTask } from './../../composables/useTask.js'
@@ -42,6 +46,7 @@ import MultiColumn from './../../components/layout/MultiColumn.vue'
 import Card from './../../components/layout/Card.vue'
 import DesiredLabel from './DesiredLabel.vue'
 import MenuContent from './../../components/shared/MenuContent.vue'
+import DocumentOrientation from './DocumentOrientation.vue'
 
 export default {
     name: 'AnnotationDetail',
@@ -54,7 +59,8 @@ export default {
         MultiColumn,
         Card,
         DesiredLabel,
-        MenuContent
+        MenuContent,
+        DocumentOrientation
     },
     setup (props, context) {
         const route = useRoute()
@@ -86,10 +92,15 @@ export default {
             annotationIdx,
         } = useAnnotations(taskId, annotationId)
 
-        const columnNumber = computed(() => isReview.value || project.value.annotation_mode === 'classification' ? 1 : 2)
+        const currentOrientation = ref('horizontal')
+        const setOrientation = (orientation) => {
+            currentOrientation.value = orientation
+        }
+
         const shouldStayOnSearch = computed(() => !isReview.value && project.value.annotation_mode === 'dualtext')
         provide('shouldStayOnSearch', shouldStayOnSearch)
         const showSearch = computed(() => isReview.value === false && project.value.annotation_mode === 'dualtext')
+        const columnNumber = computed(() => isReview.value || project.value.annotation_mode === 'classification' ? 1 : 2)
 
         const pageChangeParams = { projectId: projectId.value, taskId: taskId.value }
         const handlePageChange = preparePageChangeHandler(router, route.name, pageChangeParams)
@@ -107,7 +118,9 @@ export default {
             project,
             showSearch,
             handlePageDown,
-            handlePageUp
+            handlePageUp,
+            currentOrientation,
+            setOrientation
         }
     }
 }

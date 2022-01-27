@@ -1,12 +1,11 @@
 <template>
-    <div>
+    <multi-column :columns="numColumns" class="-m-8">
         <document 
             v-for="(document, idx) in documents"
             :key="idx"
             :document="document"
-            :class="{ 'mb-16': idx !== documents.length - 1}"
             @remove-document="removeDocument" />
-    </div>
+    </multi-column>
 </template>
 
 <script>
@@ -17,10 +16,11 @@ import { useSingleProject } from './../../composables/useProjects.js'
 import Search from './../../store/Search.js'
 import Document from '../../components/shared/Document.vue'
 import Annotation from './../../store/Annotation.js'
+import MultiColumn from '../../components/layout/MultiColumn.vue'
 
 export default {
     name: 'AnnotationDocuments',
-    components: { Document },
+    components: { Document, MultiColumn },
     props: {
         annotation: {
             type: Object,
@@ -29,10 +29,14 @@ export default {
         annotationIdx: {
             type: Number,
             required: true
+        },
+        orientation: {
+            type: String,
+            required: true
         }
     },
     setup (props) {
-        const { annotation, annotationIdx } = toRefs(props)
+        const { annotation, annotationIdx, orientation } = toRefs(props)
         const taskId = inject('taskId')
         const projectId = inject('projectId')
         const isReview = inject('isReview')
@@ -51,17 +55,24 @@ export default {
 
         useGlobalEvents('keypress', addDocumentToSearch)
 
+        const annotationMode = computed(() => project.value.annotation_mode)
 
+        const documents = computed(() => {
+            const documents = currentDocuments.value
+            while (documents.length < project.value.max_documents && annotationMode.value === 'dualtext' && !isReview.value) {
+                documents.push({})
+            }
+            return documents
+        })
+
+
+        const numColumns = computed(() => orientation.value === 'vertical' ? documents.value.length : 1)
 
         return {
-            documents: computed(() => {
-                const documents = currentDocuments.value
-                while (documents.length < project.value.max_documents && project.value.annotation_mode === 'dualtext' && !isReview.value) {
-                    documents.push({})
-                }
-                return documents
-            }),
-            removeDocument
+            documents,
+            removeDocument,
+            annotationMode,
+            numColumns
         }
     }
 }
