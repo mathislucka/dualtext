@@ -11,6 +11,7 @@ class AbstractFeature(ABC):
         Deletion of stale feature values inside the DB is handled by the caller. 
         """
         pass
+
     @abstractmethod
     def update_feature(self, documents):
         """

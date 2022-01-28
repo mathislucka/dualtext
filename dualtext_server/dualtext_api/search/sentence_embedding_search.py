@@ -49,7 +49,6 @@ class SentenceEmbeddingSearch(AbstractSearch):
         print("embedding time: {:.2f} ms".format(embedding_time * 1000))
         print("search time: {:.2f} ms".format(search_time * 1000))
         for hit in response["hits"]["hits"]:
-            print(hit['_score'])
             if hit['_score'] > self.SIMILARITY_THRESHOLD:
                 results.append((hit['_source']['doc_id'], hit['_score'], 'sentence_embedding'))
 

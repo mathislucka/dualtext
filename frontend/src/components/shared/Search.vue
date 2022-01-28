@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 py-2 border-b border-grey-200 h-16"
+    <div class="px-4 py-2 border-b border-grey-200 md:h-16 h-8 mr-4 md:mr-0"
         :class="{ 'ring-inset ring-2': hasFocus }">
         <input
             ref="search"

@@ -2,7 +2,7 @@
         <page-header />
         <multi-column>
             <task-card />
-            <project-progress-card class="col-span-2 row-span-2" />
+            <project-progress-card class="md:col-span-2 md:row-span-2" />
             <task-card task-type="review" />
         </multi-column>
 </template>

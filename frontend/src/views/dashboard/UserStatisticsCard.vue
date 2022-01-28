@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-grey-800">Work Done</h2>
         </template>
         <template v-slot:content>
-            <div id="chart" class="flex w-full justify-center"></div>
+            <div id="chart" class="md:flex w-full justify-center"></div>
         </template>
     </card>
 </template>

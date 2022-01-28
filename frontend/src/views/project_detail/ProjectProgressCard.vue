@@ -1,5 +1,5 @@
 <template>
-    <card class="overflow-auto">
+    <card class="md:overflow-auto overflow-y-auto">
         <template v-slot:header>
             <h2 class="font-semibold text-xl text-grey-800">Project Statistics</h2>
         </template>

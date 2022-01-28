@@ -1,7 +1,7 @@
 <template>
         <page-header />
         <multi-column :columns="columnNumber">
-            <card class="overflow-auto" :use-header="false">
+            <card class="md:overflow-auto" :use-header="false">
                 <template v-slot:content>
                     <desired-label v-if="!isReview" :annotation="annotation" />
                     <annotation-documents
@@ -16,7 +16,7 @@
                         @page-up="handlePageUp" />
                 </template>
             </card>
-            <card class="overflow-auto" v-if="showSearch" :use-header="false">
+            <card class="md:overflow-auto overflow-hidden" v-if="showSearch" :use-header="false">
                 <template v-slot:content>
                     <search-result-list :is-annotation-view="true" />
                 </template>

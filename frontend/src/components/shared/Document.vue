@@ -2,7 +2,7 @@
     <div
         class="border-grey-700 rounded-sm"
         :class="{ 'border-2 border-dashed': !document.content }">
-        <div v-if="document.content" class="p-4 relative text-2xl font-light">
+        <div v-if="document.content" class="md:p-4 p-2 relative md:text-2xl text-xl font-light">
             {{ document.content }}
             <button
                 v-if="!isReview"

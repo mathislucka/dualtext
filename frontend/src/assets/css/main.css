@@ -82,10 +82,16 @@
     }
 
     #app {
-        height: 100%;
+        /* height: 100%; */
         display: flex;
         flex-flow: column;
     }
+
+    @media (min-width: 768px) { 
+        #app {
+            height: 100%;
+        }
+     }
 
     main {
         flex: 1 1 auto;

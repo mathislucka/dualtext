@@ -1,6 +1,6 @@
 <template>
-    <div class="flex">
-        <div class="flex items-center w-1/2 mr-4">
+    <div class="flex flex-col md:flex-row">
+        <div class="flex items-center md:w-1/2 w-full mr-4">
             <span class="mr-2 text-xs">Methods:</span>
             <multiselect
                 :selection="selectedMethods"

@@ -2,7 +2,7 @@
         <page-header />
         <multi-column>
             <project-card class="overflow-auto" />
-            <user-statistics-card class="row-span-2 col-span-2" />
+            <user-statistics-card class="md:row-span-2 md:col-span-2 overflow-y-auto md:overflow-auto" />
             <corpora-card class="overflow-auto" />
         </multi-column>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full mt-8">
+    <div class="w-full md:mt-8 mt-2">
         <label-box
             class="mb-2"
             v-if="isReview"
@@ -16,7 +16,7 @@
         <label-box
             :heading="'Selected Labels'"
             @label-removed="removeLabel"
-            class="mb-8"
+            class="md:mb-8 mb-4"
             :labels="selectedLabels"
             :event="'label-removed'" />
         <label-box

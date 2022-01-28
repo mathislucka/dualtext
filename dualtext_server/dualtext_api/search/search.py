@@ -48,7 +48,6 @@ class Search():
         if project and project.annotation_document_duplicates == False:
             annotated_documents = Document.objects.filter(Q(corpus__id__in=self.corpora) & Q(annotation__task__project=project))
             excluded_documents = list(annotated_documents.values_list('id', flat=True))
-        print('excluded documents: {}'.format(excluded_documents))
         return excluded_documents
 
     @staticmethod
