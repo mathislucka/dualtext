@@ -4,11 +4,13 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
 from dualtext_api.models import AnnotationGroup
+from dualtext_api.haystack_documents import DualtextDocument
 from .validators import validate_alphabetic
 from .features import FeatureRunner
 from django.utils import timezone
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
+
 
 class CorpusSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=255, validators=[
@@ -28,27 +30,31 @@ class CorpusSerializer(serializers.ModelSerializer):
         extra_kwargs = { 'document_set': {'required': False}}
         read_only_fields = ['document_count']
 
+
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ['id', 'name']
+
 
 class DocumentListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
         documents = [Document(**item) for item in validated_data]
         now = timezone.now()
         Document.objects.bulk_create(documents)
-        feature_runner = FeatureRunner()
+
         # This might be almost save to get an id from documents created in bulk_create
         # It is not impossible for another document to have been created by another process
         # since now was calculated but it's extremely unlikely that it has the same content.
         # Postgres apparently provides ids on bulk_create so this might be resolved later.
         contents = [doc.content for doc in documents]
-        documents = Document.objects.filter(Q(created_at__gte=now) & Q(content__in=contents))
+        documents = Document.objects.filter(Q(created_at__gte=now) & Q(content__in=contents)).all()
         if len(documents) > 0:
             corpus_id = documents[0].corpus.id
-            feature_runner.update_features(documents, corpus_id)
+            DualtextDocument.save_batch(documents=documents, index=corpus_id, common_attributes={'corpus__id': corpus_id})
+
         return documents
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     method = serializers.CharField(read_only=True)
@@ -57,6 +63,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         model = Document
         fields = ['id', 'content', 'corpus', 'method'] + DEFAULT_FIELDS
         read_only_fields = ['corpus', 'method']
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=255, validators=[
@@ -80,6 +87,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'max_documents': {'required': False},
         }
         read_only_fields = ['creator']
+
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -105,6 +113,7 @@ class TaskSerializer(serializers.ModelSerializer):
                 fields=['name', 'project']
             )
         ]
+
 
 class AnnotationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -144,16 +153,19 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
         return data
 
+
 class AnnotationGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnnotationGroup
         fields = ['id', 'task'] + DEFAULT_FIELDS
         read_only_fields = ['task']
 
+
 class PredictionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prediction
         fields = ['id', 'annotation', 'score', 'method', 'label'] + DEFAULT_FIELDS
+
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -173,13 +185,16 @@ class LabelSerializer(serializers.ModelSerializer):
                 fields=['key_code', 'project']
             ),
         ]
+
     def validate_key_code(self, value):
         return validate_alphabetic(value)
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
 
 class FeatureSerializer(serializers.ModelSerializer):
     class Meta:

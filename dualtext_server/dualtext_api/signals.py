@@ -1,9 +1,8 @@
 from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
 from .models import Task, Document, Corpus
-from dualtext_api.feature_builders.builder import Builder
-from .features import FeatureRunner
 from dualtext_api.services import TaskService
+from dualtext_api.haystack_documents import DualtextDocument
 
 @receiver(pre_save, sender=Task)
 def generate_review_on_task_completion(sender, instance, **kwargs):
@@ -26,21 +25,24 @@ def generate_review_on_task_completion(sender, instance, **kwargs):
             ts = TaskService()
             ts.copy_task(task.id)
 
+
 @receiver(post_save, sender=Document)
 def generate_document_features_on_document_creation(sender, **kwargs):
     if kwargs['created']:
         document = kwargs['instance']
-        feature_runner = FeatureRunner()
-        corpus = document.corpus
         document_update = Document.objects.get(id=document.id)
-        feature_runner.update_features([document_update], corpus.id)
+        dualtext_document = DualtextDocument(model_instance=document_update)
+        dualtext_document.save()
+
 
 @receiver(pre_delete, sender=Corpus)
 def delete_document_features_on_corpus_deletion(sender, **kwargs):
-    corpus = kwargs['instance']
-    builder = Builder()
-    documents = corpus.document_set.all()
-    features = corpus.feature_set.all()
-
-    for feature in features:
-        builder.remove_document_features(documents, feature.key)
+    pass
+    # TODO implement corpus deletion in haystack connector
+    # corpus = kwargs['instance']
+    # builder = Builder()
+    # documents = corpus.document_set.all()
+    # features = corpus.feature_set.all()
+    #
+    # for feature in features:
+    #     builder.remove_document_features(documents, feature.key)

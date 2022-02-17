@@ -1,0 +1,10 @@
+elastic_index:
+  type: indexing
+  url:
+  token:
+
+elastic_query:
+  type: query
+  url:
+  token:
+

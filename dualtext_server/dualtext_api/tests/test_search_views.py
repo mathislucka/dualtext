@@ -1,21 +1,25 @@
+import yaml
+import os
+
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from .factories import DocumentFactory, UserFactory, TaskFactory, ProjectFactory, AnnotationFactory, CorpusFactory, FeatureFactory
 
-class TestSearchView(APITestCase):    
+
+class TestSearchView(APITestCase):
     def test_elasticsearch_results(self):
         """
         Ensure the search with elasticsearch will return all matching documents in a corpus.
         """
         su = UserFactory(is_superuser=True)
         corpus = CorpusFactory()
-        feature = FeatureFactory(key='elastic', corpora=[corpus])
-        doc = DocumentFactory(content='a new document', corpus=corpus)
-        url = reverse('search')
-        query = '?query=document&corpus={}&method=elastic'.format(doc.corpus.id)
+        doc = DocumentFactory(content='different', corpus=corpus)
+
 
         self.client.force_authenticate(user=su)
+        url = reverse('search')
+        query = '?query=different&corpus={}&method=elastic_query'.format(corpus.id)
         response = self.client.get(url + query, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -41,8 +45,7 @@ class TestSearchView(APITestCase):
         self.client.force_authenticate(user=user)
         response = self.client.get(url + query, format='json')
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_no_results_incomplete_params(self):
         """
@@ -54,12 +57,11 @@ class TestSearchView(APITestCase):
         self.client.force_authenticate(user=su)
         response = self.client.get(url + '?query=document&method=elastic', format='json')
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_no_annotation_document_duplicates(self):
         """
-        Ensure that a document already assigned to an annotation is not returned if a project 
+        Ensure that a document already assigned to an annotation is not returned if a project
         using annotation_document_duplicates=False is passed.
         """
         su = UserFactory(is_superuser=True)
@@ -68,7 +70,7 @@ class TestSearchView(APITestCase):
         task = TaskFactory(project=project)
         AnnotationFactory(task=task, documents=[doc])
         url = reverse('search')
-        query = '?query=document&corpus={}&method=elastic&project={}'.format(doc.corpus.id, project.id)
+        query = '?query=document&corpus={}&method=elastic_query&project={}'.format(doc.corpus.id, project.id)
 
         self.client.force_authenticate(user=su)
         response = self.client.get(url + query, format='json')
@@ -86,10 +88,21 @@ class TestSearchMethodsView(APITestCase):
         self.client.force_authenticate(user=user)
         response = self.client.get(url, format='json')
 
+        # load yaml configuration to extract search methods that should be available
+        module_dir = os.path.dirname(__file__)  # get current directory
+        file_path = os.path.join(module_dir, '../haystack_connector/pipeline_config.yml')
+        with open(file_path, 'r') as f:
+            pipelines = yaml.load(f)
+
+        expected_search_methods = [pipeline_name for pipeline_name, pipeline_cfg in pipelines.items() if pipeline_cfg['type'] == 'query']
+        expected_search_methods = sorted(expected_search_methods)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0], 'elastic')
-        self.assertEqual(response.data[1], 'sentence_embedding')
+
+        self.assertEqual(len(response.data), len(expected_search_methods))
+
+        result = sorted(response.data)
+        self.assertEqual(result, expected_search_methods)
+
 
     def test_deny_not_authenticated(self):
         """
