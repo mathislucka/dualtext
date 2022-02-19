@@ -4,7 +4,7 @@ import os
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from .factories import DocumentFactory, UserFactory, TaskFactory, ProjectFactory, AnnotationFactory, CorpusFactory, FeatureFactory
+from .factories import DocumentFactory, UserFactory, TaskFactory, ProjectFactory, AnnotationFactory, CorpusFactory
 
 
 class TestSearchView(APITestCase):

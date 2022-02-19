@@ -129,37 +129,4 @@ class TestAnnotationGroupDetailView(APITestCase):
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-#         su = UserFactory(is_superuser=True)
-#         feature = FeatureFactory()
-#         url = reverse('feature_detail', args=[feature.id])
-#         data = {'name': 'changed'}
 
-#         self.client.force_authenticate(user=su)
-#         response = self.client.patch(url, data, format='json')
-
-#         updated_feature = Feature.objects.get(id=feature.id)
-#         self.assertEqual(updated_feature.name, data['name'])
-#         self.assertEqual(response.data['id'], feature.id)
-
-#     def test_deny_non_superuser_update(self):
-#         """
-#         Ensure that non superusers users can't update a feature.
-#         """
-#         user = UserFactory()
-#         feature = FeatureFactory()
-#         url = reverse('feature_detail', args=[feature.id])
-#         data = {'name': 'changed'}
-
-#         self.client.force_authenticate(user=user)
-#         response = self.client.patch(url, data, format='json')
-
-#         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-#     def test_deny_non_authenticated_view(self):
-#         """
-#         Ensure that non-authenticated users can't view a single feature.
-#         """
-#         feature = FeatureFactory()
-#         url = reverse('feature_detail', args=[feature.id])
-#         response = self.client.get(url, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

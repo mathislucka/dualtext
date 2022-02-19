@@ -22,13 +22,6 @@
                 "$ref": "label.schema.json"
             }
         },
-        "features": {
-            "description": "A list of features that should be generated for this corpus.",
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
         "annotations": {
             "description": "A list of annotations that should be created",
             "type": "array",

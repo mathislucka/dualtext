@@ -43,8 +43,7 @@
             "description": "A list of methods that should be used to retrieve annotation candidates.",
             "type": "array",
             "items": {
-                "type": "string",
-                "enum": ["sentence_embedding", "elastic"]
+                "type": "string"
             }
         }
     },

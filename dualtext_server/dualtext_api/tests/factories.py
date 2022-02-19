@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 import factory
 import factory.fuzzy
-from dualtext_api.models import Annotation, Corpus, Document, Project, Task, Label, Feature
+from dualtext_api.models import Annotation, Corpus, Document, Project, Task, Label
 from dualtext_api.models import AnnotationGroup
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -138,22 +138,3 @@ class LabelFactory(factory.django.DjangoModelFactory):
     project = factory.SubFactory(ProjectFactory)
     color = {"standard": "#97C0E8", "light": "#EAF2FA"}
     key_code = factory.fuzzy.FuzzyChoice(['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'y', 'x', 'c', 'v', 'b', 'n'])
-
-class FeatureFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Feature
-
-    name = factory.Faker('first_name')
-    description = factory.Faker('text')
-    key = factory.Faker('first_name')
-
-    @factory.post_generation
-    def corpora(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # A list of groups were passed in, use them
-            for corpus in extracted:
-                self.corpora.add(corpus)

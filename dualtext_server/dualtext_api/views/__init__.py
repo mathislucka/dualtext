@@ -6,7 +6,6 @@ from .project_views import *
 from .task_views import *
 from .search_views import *
 from .user_views import *
-from .feature_views import *
 from dualtext_api.signals import *
 from .group_views import *
 from .annotation_group_views import *

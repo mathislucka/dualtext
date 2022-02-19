@@ -2,11 +2,10 @@ from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
-from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label, Feature
+from dualtext_api.models import Annotation, Project, Corpus, Task, Document, Prediction, Label
 from dualtext_api.models import AnnotationGroup
 from dualtext_api.haystack_documents import DualtextDocument
 from .validators import validate_alphabetic
-from .features import FeatureRunner
 from django.utils import timezone
 
 DEFAULT_FIELDS = ['created_at', 'modified_at']
@@ -194,13 +193,3 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
-
-
-class FeatureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Feature
-        fields = ['id', 'name', 'corpora', 'description', 'key'] + DEFAULT_FIELDS
-        extra_kwargs = {
-            'description': {'required': False},
-            'corpora': {'required': False},
-        }

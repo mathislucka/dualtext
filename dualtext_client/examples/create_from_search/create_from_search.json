@@ -19,5 +19,5 @@
         }
     ],
     "limit": 200,
-    "search_methods": [ "sentence_embedding" ]
+    "search_methods": [ "elastic_query" ]
 }

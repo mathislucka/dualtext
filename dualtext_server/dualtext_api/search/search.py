@@ -2,7 +2,7 @@ from django.db.models import Case, When, Q
 from ..models import Document, Project
 from .sentence_embedding_search import SentenceEmbeddingSearch
 from .es_search import ElasticSearch
-from dualtext_api.services import ProjectService
+
 
 class Search():
     def __init__(self, query, corpora, methods, project_id):

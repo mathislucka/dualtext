@@ -9,7 +9,6 @@
         "name": "Simple Corpus 12",
         "corpus_meta": "{}"
     },
-    "features": ["elastic", "sentence_embedding"],
     "labels": [
         { "name": "premise", "key_code": "p" },
         { "name": "closer", "key_code": "c" },

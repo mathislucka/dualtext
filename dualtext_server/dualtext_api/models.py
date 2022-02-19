@@ -118,25 +118,6 @@ class Prediction(AbstractBase):
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
 
 
-class Feature(AbstractBase):
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True, default='')
-    corpora = models.ManyToManyField(Corpus, blank=True)
-    key = models.CharField(max_length=255)
-
-    class Meta(AbstractBase.Meta):
-        constraints = [
-            models.UniqueConstraint(fields=['key'], name='unique_feature_key'),
-            models.UniqueConstraint(fields=['name'], name='unique_feature_name'),
-        ]
-
-
-class FeatureValue(AbstractBase):
-    feature = models.ForeignKey(Feature, on_delete=models.CASCADE)
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    value = models.BinaryField()
-
-
 class Run(AbstractBase):
     """
     An entity measuring the time spent on a single annotation run.
