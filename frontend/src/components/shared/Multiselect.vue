@@ -58,6 +58,11 @@ export default {
         type: Object,
         required: false,
         default: () => ({})
+    },
+    selectionMode: {
+        type: String,
+        required: false,
+        default: () => 'single'
     }
   },
   data () {
@@ -115,7 +120,11 @@ export default {
           if (this.selectedItems[id]) {
               delete this.selectedItems[id]
           } else if (!this.selectedItems[id]) {
-              this.selectedItems[id] = this.items[id]
+              if (this.selectionMode !== 'single') {
+                this.selectedItems[id] = this.items[id]
+              } else {
+                  this.selectedItems = { [id]: this.items[id] }
+              }
           }
           this.$emit('selection-changed', { ...this.selectedItems })
       }
