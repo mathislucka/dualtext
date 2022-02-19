@@ -1,7 +1,6 @@
 import itertools
 from .pipeline_queryset import PipelineQueryset
 from.pipelines import initialized_pipelines
-from .custom_pipelines import document_store
 
 indexing_pipelines = initialized_pipelines['indexing']
 
@@ -100,8 +99,6 @@ class Document:
         for pipeline in cls.indexing_pipelines:
             try:
                 indexing_pipelines[pipeline].save(prepared_documents, index)
-                docs = document_store.get_all_documents(index=index)
-                print(docs)
             except KeyError:
                 raise ValueError(f'{pipeline} does not exist.')
 

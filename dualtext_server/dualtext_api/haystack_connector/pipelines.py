@@ -21,7 +21,7 @@ def init_pipeline(pipeline_name, pipeline_cfg, pipeline_type, initialized_pipeli
 module_dir = os.path.dirname(__file__)  # get current directory
 file_path = os.path.join(module_dir, 'pipeline_config.yml')
 with open(file_path, 'r') as f:
-    pipelines = yaml.load(f)
+    pipelines = yaml.safe_load(f) or {}
 
 initialized_pipelines = {
     'indexing': {},

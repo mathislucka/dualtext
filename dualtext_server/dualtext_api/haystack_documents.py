@@ -6,5 +6,5 @@ class DualtextDocument(Document):
     content_field = 'content'
     id_field = 'id'
     index_by = 'corpus__id'
-    indexing_pipelines = ['elastic_index']
-    query_pipelines = ['elastic_query']
+    # indexing_pipelines = ['elastic_index']
+    # query_pipelines = ['elastic_query', 'alternative_query']

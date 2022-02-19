@@ -1,10 +1,15 @@
-elastic_index:
-  type: indexing
-  url:
-  token:
-
-elastic_query:
-  type: query
-  url:
-  token:
-
+#elastic_index:
+#  type: indexing
+#  url:
+#  token:
+#
+#elastic_query:
+#  type: query
+#  url:
+#  token:
+#
+#alternative_query:
+#  type: query
+#  url:
+#  token:
+#
