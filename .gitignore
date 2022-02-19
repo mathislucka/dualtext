@@ -12,5 +12,4 @@ simple_annotation/
 .idea/
 dualtext.egg-info/*
 frontend/dist
-
 /data/db/

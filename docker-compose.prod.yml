@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - static_volume:/home/dualtext/web/staticfiles
+      - spa_volume:/home/dualtext/web/spa
+    command: sh -c "cd ./dualtext_server && gunicorn dualtext.wsgi:application --bind 0.0.0.0:8000 --timeout 0"
+    expose:
+      - 8000
+    env_file:
+      - ./.env.prod
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/dualtext/web/staticfiles
+      - spa_volume:/home/dualtext/web/spa
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+volumes:
+  static_volume:
+  spa_volume:

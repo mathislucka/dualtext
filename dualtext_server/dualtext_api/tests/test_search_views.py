@@ -92,7 +92,7 @@ class TestSearchMethodsView(APITestCase):
         module_dir = os.path.dirname(__file__)  # get current directory
         file_path = os.path.join(module_dir, '../haystack_connector/pipeline_config.yml')
         with open(file_path, 'r') as f:
-            pipelines = yaml.load(f)
+            pipelines = yaml.safe_load(f) or {}
 
         expected_search_methods = [pipeline_name for pipeline_name, pipeline_cfg in pipelines.items() if pipeline_cfg['type'] == 'query']
         expected_search_methods = sorted(expected_search_methods)
