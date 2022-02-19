@@ -1,21 +1,14 @@
 click
 Django
 django-cors-headers
-django-elasticsearch-dsl
 django-filter
 django-silk
 djangorestframework
-elasticsearch
-elasticsearch-dsl
 factory-boy
 Faker
 jsonschema
 keyring
-nltk
-numpy
 requests
-scikit-learn
-scipy
-sentence-transformers
--e 'dualtext_client/cli/'
-
+psycopg2>=2.8
+uvicorn
+gunicorn
