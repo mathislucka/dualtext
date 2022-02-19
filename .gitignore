@@ -13,3 +13,4 @@ simple_annotation/
 dualtext.egg-info/*
 frontend/dist
 /data/db/
+.env.prod
