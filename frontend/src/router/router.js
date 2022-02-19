@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from './../components/login/Login.vue'
+import Login from '../components/authentication/Login.vue'
+import Logout from '../components/authentication/Logout.vue'
 import AnnotationDetail from './../views/annotation_detail/AnnotationDetail.vue'
 import AnnotationDecider from './../views/annotation_detail/AnnotationDecider.vue'
 import Dashboard from './../views/dashboard/Dashboard.vue'
@@ -118,6 +119,11 @@ const routes = [
         path: '/login',
         name: 'login',
         component: Login,
+    },
+    {
+        path: '/logout',
+        name: 'logout',
+        component: Logout
     },
     {
         path: '/',

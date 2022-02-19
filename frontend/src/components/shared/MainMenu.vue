@@ -6,8 +6,8 @@
             <icon icon="burger" />
         </button>
         <nav
-            class="absolute top-0 left-0 w-0 bg-white z-10 shadow-lg height-nearly-full mb-4 transition-all duration-500 p-4"
-            :class="{ 'w-64': isOpen, '-ml-28': !isOpen }">
+            class="absolute top-0 left-0 bg-white z-10 shadow-lg height-nearly-full mb-4 transition-all duration-500 p-4"
+            :class="{ 'w-64': isOpen, 'w-0': !isOpen, '-ml-28': !isOpen }">
             <div class="flex flex-col items-start relative">
                 <button
                     @click="toggleMenu"
@@ -15,7 +15,9 @@
                     <icon :icon="'close'" :width="16" :height="16"/>
                 </button>
                 <span class="flex mb-2 w-full border-grey-300 border-b pb-2"><icon class="text-teal-500 mr-2" :icon="'sun'" />Hi {{ user.username }}!</span>
-                <button class="text-blue-500 hover:text-blue-700 mb-8">Log out <icon :icon="'logout'" class="inline ml-2" /></button>
+                <router-link :to="{ name: 'logout' }" class="text-blue-500 hover:text-blue-700 mb-8">
+                    Log out <icon :icon="'logout'" class="inline ml-2" />
+                </router-link>
                 <router-link
                     class="link mb-8"
                     :to="{ name: 'dashboard' }">

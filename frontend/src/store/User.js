@@ -15,6 +15,12 @@ const UserStore = {
                 this.fetchCurrentUser()
             })
         },
+        logout () {
+          return Api.fetch('/logout/').then(() => {
+              sessionStorage.removeItem('auth_token')
+              Api.removeCredentials()
+          })
+        },
         fetchCurrentUser () {
             if (Object.keys(state.user).length === 0) {
                 Api.fetch('/user/current').then(response => {

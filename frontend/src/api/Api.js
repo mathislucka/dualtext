@@ -24,7 +24,7 @@ const ApiBuilder = class {
                 headers: this.headers,
                 ...payload ? { body: JSON.stringify(payload) } : {}
             })
-
+            console.log(response)
             if (!response.ok) {
                 returnVal = { error: await response.json(), response: null }
             } else {
@@ -64,6 +64,10 @@ const ApiBuilder = class {
 
     setCredentials (token) {
         this.headers = { ...this.headers, 'Authorization': token }
+    }
+
+    removeCredentials () {
+        delete this.headers.Authorization
     }
 }
 
