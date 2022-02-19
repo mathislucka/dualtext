@@ -19,7 +19,7 @@ export default {
         const groupRouteNames = [ 'group_decider', 'group_review_decider' ]
         if (taskId && projectId && annotationRouteNames.includes(route.name)) {
             useAnnotationDecider(projectId, taskId, router, isReview)
-        } else if (groupRouteNames.includes(route.name)) {
+        } else if (taskId && projectId && groupRouteNames.includes(route.name)) {
             useAnnotationGroupDecider(projectId, taskId, router, isReview)
         }
     },

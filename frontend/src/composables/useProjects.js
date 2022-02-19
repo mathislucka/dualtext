@@ -15,7 +15,9 @@ const useSingleProject = (projectId) => {
         fetchProject(projectId.value)
     })
     watch(projectId, () => {
-        fetchProject(projectId.value)
+        if (projectId.value !== -1) {
+            fetchProject(projectId.value)
+        }
     })
 
     return {
