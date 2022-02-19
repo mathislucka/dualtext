@@ -67,6 +67,6 @@ const ApiBuilder = class {
     }
 }
 
-const Api = new ApiBuilder('http://localhost:8000/api/v1')
+const Api = new ApiBuilder(import.meta.env.VITE_API_URL)
 
 export { Api }
