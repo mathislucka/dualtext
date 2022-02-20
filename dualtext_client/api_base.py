@@ -1,6 +1,5 @@
 import os
 import json
-from pathlib import Path
 import jsonschema
 from requests.exceptions import HTTPError
 from settings import API_URL
@@ -12,7 +11,7 @@ class ApiBase():
     def __init__(self, session):
         self.base_url = API_URL
         self.session = session
-        self.absolute_path = os.path.join(Path(__file__).resolve(), 'schemas')
+        self.absolute_path = os.path.join(os.path.dirname(__file__), 'schemas')
         self.schema = None
 
     def get(self, resource_id):
