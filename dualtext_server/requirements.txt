@@ -5,9 +5,6 @@ django-silk
 djangorestframework
 factory-boy
 Faker
-jsonschema
-keyring
-requests
 # psycopg2>=2.8
 mysqlclient
 uvicorn
