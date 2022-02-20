@@ -3,13 +3,13 @@ import json
 from pathlib import Path
 import jsonschema
 from requests.exceptions import HTTPError
-from settings.py import API_URL
+from settings import API_URL
 class ApiBase():
     """
     A base class to interact with the dualtext api.
     """
     def __init__(self, session):
-        self.base_url = 'API_URL'
+        self.base_url = API_URL
         self.session = session
         self.absolute_path = os.path.join(Path(__file__).resolve(), 'schemas')
         self.schema = None
