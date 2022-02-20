@@ -4,7 +4,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./docker/Dockerfile
     volumes:
       - static_volume:/home/dualtext/web/staticfiles
       - spa_volume:/home/dualtext/web/spa

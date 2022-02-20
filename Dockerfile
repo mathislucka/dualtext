@@ -38,6 +38,8 @@ RUN npm run build
 
 FROM python:3.9.10-bullseye
 
+WORKDIR /dualtext
+
 # create directory for the app user
 RUN mkdir -p /home/dualtext
 
