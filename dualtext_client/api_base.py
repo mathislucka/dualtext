@@ -4,6 +4,7 @@ from pathlib import Path
 import jsonschema
 from requests.exceptions import HTTPError
 from settings import API_URL
+
 class ApiBase():
     """
     A base class to interact with the dualtext api.
