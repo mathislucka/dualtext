@@ -8,7 +8,8 @@ Faker
 jsonschema
 keyring
 requests
-psycopg2>=2.8
+# psycopg2>=2.8
+mysqlclient
 uvicorn
 gunicorn
 pyyaml
