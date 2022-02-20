@@ -5,7 +5,7 @@ from .views import CorpusDetailView, DocumentListView, CorpusListView, DocumentD
 from .views import CurrentUserView, CurrentUserStatisticsView, ProjectDetailView, TaskDetailView, ProjectStatisticsView
 from .views import ClaimTaskView, SearchMethodsView, DocumentBatchView, GroupListView
 from .views import AnnotationGroupListView, AnnotationGroupDetailView
-from.views import LogoutView
+from.views import LogoutView, TokenValidityView
 
 urlpatterns = [
     path('annotation/<int:annotation_id>', AnnotationDetailView.as_view(), name='annotation_detail'),
@@ -18,6 +18,7 @@ urlpatterns = [
     path('group/', GroupListView.as_view(), name='group_list'),
     path('login/', obtain_auth_token, name='api_token_auth'),
     path('logout/', LogoutView.as_view(), name='api_token_logout'),
+    path('validtoken/', TokenValidityView.as_view(), name='api_token_validation'),
     path('project/<int:project_id>', ProjectDetailView.as_view(), name='project_detail'),
     path('project/<int:project_id>/statistics', ProjectStatisticsView.as_view(), name='project_statistics'),
     path('project/', ProjectListView.as_view(), name='project_list'),

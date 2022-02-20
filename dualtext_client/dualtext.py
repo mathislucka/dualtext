@@ -2,6 +2,7 @@ import click
 import keyring
 import json
 import sys
+import requests
 from session import Session
 from project import Project
 from settings import API_URL
@@ -11,7 +12,15 @@ from settings import API_URL
 @click.pass_context
 def cli(ctx):
     ctx.ensure_object(dict)
-    access_token = keyring.get_password('dualtext', 'admin')
+    access_token = keyring.get_password('dualtext', 'token')
+    if access_token:
+        s = Session()
+        s.set_token(access_token)
+        token_valid = s.validate_token()
+        if not token_valid:
+            keyring.delete_password('dualtext', 'token')
+            access_token = None
+
     if access_token is None:
         s = Session()
         username = click.prompt('Please enter your username')
@@ -20,8 +29,9 @@ def cli(ctx):
         s.login(username, pw)
         click.echo('login successful', err=True)
         access_token = s.get_token()
-        #keyring.set_password('dualtext', username, access_token)
+        keyring.set_password('dualtext', 'token', access_token)
     ctx.obj['Token'] = access_token
+
 
 @click.group()
 @click.pass_context
