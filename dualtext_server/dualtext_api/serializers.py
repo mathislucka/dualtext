@@ -60,7 +60,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         list_serializer_class = DocumentListSerializer
         model = Document
-        fields = ['id', 'content', 'corpus', 'method'] + DEFAULT_FIELDS
+        fields = ['id', 'content', 'corpus', 'method', 'document_meta'] + DEFAULT_FIELDS
         read_only_fields = ['corpus', 'method']
 
 

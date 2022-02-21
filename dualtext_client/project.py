@@ -61,7 +61,7 @@ class Project(ApiBase):
             identifiers = []
             for doc in chunk:
                 identifiers.append(doc.get('annotation_identifier', None))
-                documents_to_create.append({'content': doc['content']})
+                documents_to_create.append({'content': doc['content'], 'document_meta': doc.get('document_meta', {})})
             docs = document_instance.batch_create(documents_to_create)
             for idx, doc in enumerate(docs):
                 _id = identifiers[idx]

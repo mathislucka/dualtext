@@ -53,6 +53,10 @@
                         "description": "The content of a document.",
                         "type": "string"
                     },
+                    "document_meta": {
+                        "description": "Meta data that should be added for the document.",
+                        "type": ["array", "object", "string"]
+                    },
                     "annotation_identifier": {
                         "description": "The annotation that this document should be assigned to.",
                         "type": "integer"

@@ -64,6 +64,20 @@ class TestDocumentListView(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_accept_meta_field(self):
+        """
+        Ensure that a document accepts meta data in a meta field.
+        """
+        user = UserFactory(is_superuser=True)
+        corpus = CorpusFactory()
+        url = reverse('document_list', args=[corpus.id])
+        data = {'content': 'A new document', 'document_meta': {'doc_id': 'external-doc-id'}}
+
+        self.client.force_authenticate(user=user)
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.data['document_meta'], data['document_meta'])
+
     def test_deny_not_authenticated(self):
         """
         Ensure only authenticated users can see documents.

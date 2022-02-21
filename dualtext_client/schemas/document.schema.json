@@ -12,6 +12,10 @@
         "content": {
             "description": "The content of the document.",
             "type": "string"
+        },
+        "document_meta": {
+            "description": "Meta data that should be added for the document.",
+            "type": ["array", "object", "string"]
         }
     },
     "required": [ "content" ]

@@ -13,7 +13,7 @@ class AbstractBase(models.Model):
 
 class Corpus(AbstractBase):
     name = models.CharField(max_length=255)
-    corpus_meta = models.JSONField()
+    corpus_meta = models.JSONField(blank=True, default=dict)
     allowed_groups = models.ManyToManyField(Group)
 
     class Meta(AbstractBase.Meta):
@@ -24,6 +24,7 @@ class Corpus(AbstractBase):
 
 class Document(AbstractBase):
     content = models.TextField(blank=True, default='')
+    document_meta = models.JSONField(blank=True, default=dict)
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
 
 
