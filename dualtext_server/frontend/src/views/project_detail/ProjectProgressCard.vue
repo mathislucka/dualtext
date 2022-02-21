@@ -1,10 +1,10 @@
 <template>
-    <card class="overflow-auto">
+    <card>
         <template v-slot:header>
             <h2 class="font-semibold text-xl text-grey-800">Project Statistics</h2>
         </template>
         <template v-slot:content>
-            <div class="w-full">
+            <div class="w-full h-full">
                 <h3 class="font-semibold text-lg text-grey-600 mb-2">Annotation Progress</h3>
                 <div class="flex flex-wrap">
                     <swatch v-for="swatch in divergingBarChartData" :key="swatch.key" :swatch="swatch" />
@@ -17,8 +17,8 @@
                     <swatch v-for="swatch in swatches" :key="swatch.key" :swatch="swatch" />
                 </div>
 
-                <h3 class="font-semibold text-lg text-grey-600 mt-8">Progress over Time</h3>
-                <div><svg id="timeseries" /></div>
+                <h3 v-if="false" class="font-semibold text-lg text-grey-600 mt-8">Progress over Time</h3>
+                <div v-if="false"><svg id="timeseries" /></div>
             </div>
         </template>
     </card>

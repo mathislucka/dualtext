@@ -221,7 +221,7 @@ class ProjectService():
             'annotations': self.get_annotation_statistics(),
             'labels': self.get_label_statistics(),
             'tasks': self.get_task_statistics(),
-            'timetracking': self.get_timetracking_statistics(),
+            # 'timetracking': self.get_timetracking_statistics(),
             #'agreement': self.get_annotator_reviewer_agreement()
         }
 

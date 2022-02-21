@@ -2,7 +2,6 @@ import { axisLeft, axisBottom, create, line, scaleUtc, scaleLinear, max, extent,
 import { watch, ref } from 'vue'
 
 function createTimeseriesChart (data) {
-    console.log(data)
     if (!data || data.length === 0) {
         return
     }

@@ -1,6 +1,6 @@
 <template>
         <page-header />
-        <multi-column>
+        <multi-column class="overflow-hidden">
             <task-card />
             <project-progress-card class="col-span-2 row-span-2" />
             <task-card task-type="review" />
