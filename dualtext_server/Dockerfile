@@ -3,7 +3,7 @@
 ##################
 
 ### build django dependencies ###
-FROM python:3.9.10-bullseye AS djangobuilder
+FROM python:3.9.10-slim-bullseye AS djangobuilder
 
 WORKDIR /dualtext
 
@@ -36,7 +36,7 @@ RUN npm run build
 # FINAL BUILD #
 ###############
 
-FROM python:3.9.10-bullseye
+FROM python:3.9.10-slim-bullseye
 
 WORKDIR /dualtext
 

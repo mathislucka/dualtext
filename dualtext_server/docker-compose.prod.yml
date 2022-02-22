@@ -19,7 +19,8 @@ services:
       - static_volume:/home/dualtext/web/staticfiles
       - spa_volume:/home/dualtext/web/spa
     ports:
-      - 1337:80
+      - "80:80"
+      - "443:443"
     depends_on:
       - web
 
