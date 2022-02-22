@@ -63,8 +63,8 @@ def create(ctx, project_file, search, task_size):
     s = s.set_token(token)
     p = Project(s)
 
-    with project_data:
-        data = json.loads(project_data.read())
+    with project_file:
+        data = json.loads(project_file.read())
     if (search):
         proj = p.create_from_documents(data, task_size=task_size)
     else:
