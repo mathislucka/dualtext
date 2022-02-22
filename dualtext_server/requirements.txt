@@ -5,8 +5,8 @@ django-silk
 djangorestframework
 factory-boy
 Faker
-#psycopg2>=2.8
-mysqlclient
+psycopg2>=2.8
+#mysqlclient
 uvicorn
 gunicorn
 pyyaml
