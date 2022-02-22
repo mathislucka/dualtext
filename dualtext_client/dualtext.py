@@ -2,7 +2,7 @@ import click
 import keyring
 import json
 import sys
-import requests
+
 from session import Session
 from project import Project
 from settings import API_URL
@@ -46,8 +46,15 @@ def project(ctx):
     type=click.File('r'),
     default=sys.stdin
 )
+@click.option(
+    '--task-size',
+    '-t',
+    help='Sets the number of documents for a task. Default is 20.',
+    type=click.INT,
+    default=20
+)
 @click.pass_context
-def create(ctx, project_data, search):
+def create(ctx, project_file, search, task_size):
     click.echo('Starting to create a project...', err=True)
 
     # create session
@@ -59,9 +66,9 @@ def create(ctx, project_data, search):
     with project_data:
         data = json.loads(project_data.read())
     if (search):
-        proj = p.create_from_documents(data, task_size=100)
+        proj = p.create_from_documents(data, task_size=task_size)
     else:
-        proj = p.create_from_scratch(data, task_size=100)
+        proj = p.create_from_scratch(data, task_size=task_size)
 
     click.echo('Finished creating the project. Project id is {}'.format(proj['id']), err=True)
 
