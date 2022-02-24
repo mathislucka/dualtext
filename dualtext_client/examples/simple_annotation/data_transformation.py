@@ -16,7 +16,6 @@ def make_search_project_data(p_name, corpus_name, annotation_mode, data, use_yes
         'name': corpus_name,
         'corpus_meta': {'source': 'germandpr'}
     }
-    features = ['elastic', 'sentence_embedding']
 
     if annotation_mode == 'grouped':
         labels = [
@@ -65,7 +64,7 @@ def make_search_project_data(p_name, corpus_name, annotation_mode, data, use_yes
         ]
 
     documents = []
-    for idx in range(1,50):
+    for idx in range(1,1000):
         row = data[idx]
         if idx < 2 and annotation_mode == 'grouped':
             docs = [
@@ -87,7 +86,6 @@ def make_search_project_data(p_name, corpus_name, annotation_mode, data, use_yes
     collection = {
         'project': project,
         'corpus': corpus,
-        'features': features,
         'labels': labels,
         'annotations': annotations,
         'documents': documents
