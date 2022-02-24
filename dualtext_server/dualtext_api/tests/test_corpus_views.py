@@ -21,6 +21,27 @@ class TestCorpusListView(APITestCase):
         self.assertEqual(Corpus.objects.get(id=response.data['id']).name, 'Test Corpus')
         self.assertEqual(Corpus.objects.get(id=response.data['id']).corpus_meta, {'info': 'corpus info'})
 
+
+    def test_allowed_group_create(self):
+        """
+        Ensure that you can set the allowed group when creating a Corpus through the API.
+        """
+        group = GroupFactory()
+
+        user = UserFactory(groups=[group])
+        url = reverse('corpus_list')
+
+        su = UserFactory(is_superuser=True)
+        url = reverse('corpus_list')
+        data = {'name': 'Test Corpus', 'corpus_meta': {'info': 'corpus info'}, 'allowed_groups': [group.id]}
+
+        self.client.force_authenticate(user=su)
+        response = self.client.post(url, data, format='json')
+
+
+        self.assertEqual(Corpus.objects.get(id=response.data['id']).allowed_groups.first().name, group.name)
+
+
     def test_unique_name(self):
         """
         Ensure that corpus names are unique.
