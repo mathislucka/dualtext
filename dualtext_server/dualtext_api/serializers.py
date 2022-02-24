@@ -25,7 +25,7 @@ class CorpusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Corpus
-        fields = ['id', 'name', 'corpus_meta', 'document_count'] + DEFAULT_FIELDS
+        fields = ['id', 'name', 'corpus_meta', 'document_count', 'allowed_groups'] + DEFAULT_FIELDS
         extra_kwargs = { 'document_set': {'required': False}}
         read_only_fields = ['document_count']
 
