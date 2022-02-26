@@ -20,9 +20,10 @@ def authenticate():
         username = click.prompt('Please enter your username')
         pw = click.prompt('Password', hide_input=True)
         click.echo(f'connecting to dualtext at {API_URL}', err=True)
-        session = session.login(username, pw)
+        session.login(username, pw)
         click.echo('login successful', err=True)
         access_token = session.get_token()
         keyring.set_password('dualtext', 'token', access_token)
+        session = session.session
 
     return session
