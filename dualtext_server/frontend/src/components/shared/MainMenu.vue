@@ -6,26 +6,29 @@
             <icon icon="burger" />
         </button>
         <nav
-            class="absolute top-0 left-0 bg-white z-10 shadow-lg height-nearly-full mb-4 transition-all duration-500 p-4"
-            :class="{ 'w-64': isOpen, 'w-0': !isOpen, '-ml-28': !isOpen }">
-            <div class="flex flex-col items-start relative">
-                <button
-                    @click="toggleMenu"
-                    class="absolute top-0 right-0 btn-icon">
-                    <icon :icon="'close'" :width="16" :height="16"/>
-                </button>
-                <span class="flex mb-2 w-full border-grey-300 border-b pb-2"><icon class="text-teal-500 mr-2" :icon="'sun'" />Hi {{ user.username }}!</span>
-                <router-link :to="{ name: 'logout' }" class="text-blue-500 hover:text-blue-700 mb-8">
-                    Log out <icon :icon="'logout'" class="inline ml-2" />
-                </router-link>
-                <router-link
-                    class="link mb-8"
-                    :to="{ name: 'dashboard' }">
-                Dashboard
+        class="absolute top-0 left-0 bg-white z-10 shadow-lg height-nearly-full mb-4 transition-all duration-500 p-4 w-64"
+        :class="{ 'w-64': isOpen, 'w-0': !isOpen, '-ml-28': !isOpen }">
+        <div class="flex flex-col items-start relative">
+            <button
+                @click="toggleMenu"
+                class="absolute top-0 right-0 btn-icon">
+                <icon :icon="'close'" :width="16" :height="16"/>
+            </button>
+            <span
+            v-show="isOpen"
+            class="flex mb-2 w-full border-grey-300 border-b pb-2"><icon class="text-teal-500 mr-2" :icon="'sun'" />Hi {{ user.username }}!</span>
+
+            <router-link :to="{ name: 'logout' }" class="text-blue-500 hover:text-blue-700 mb-8">
+                Log out <icon :icon="'logout'" class="inline ml-2" />
             </router-link>
-            </div>
-            <div class="flex flex-col items-start" id="menu-content" />
-        </nav>
+            <router-link
+                class="link mb-8"
+                :to="{ name: 'dashboard' }">
+            Dashboard
+        </router-link>
+        </div>
+        <div v-show="isOpen" class="flex flex-col items-start" id="menu-content" />
+    </nav>
     </div>
 </template>
 <script>
