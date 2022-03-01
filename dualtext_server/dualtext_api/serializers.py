@@ -124,11 +124,13 @@ class AnnotationSerializer(serializers.ModelSerializer):
             'task',
             'action',
             'copied_from',
-            'annotation_group'
+            'annotation_group',
+            'annotation_meta'
         ] + DEFAULT_FIELDS
         extra_kwargs = {
             'labels': {'required': False},
             'documents': {'required': False},
+            'annotation_meta': {'required': False}
         }
         read_only_fields = ['action', 'copied_from']
 

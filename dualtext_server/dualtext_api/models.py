@@ -106,6 +106,7 @@ class Annotation(AbstractBase):
     documents = models.ManyToManyField(Document, blank=True)
     labels = models.ManyToManyField(Label, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    annotation_meta = models.JSONField(blank=True, default=dict)
     is_finished = models.BooleanField(blank=True, default=False)
     copied_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     action = models.CharField(max_length=10, choices=ACTION_CHOICES, blank=True, default=ANNOTATE)
