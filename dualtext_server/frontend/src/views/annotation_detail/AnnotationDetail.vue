@@ -131,7 +131,7 @@ export default {
         const shareableLink = ref('')
         const clipboardMessage = ref('')
         const setShareableLink = () => {
-            shareableLink.value = `${window.location.protocol}//${window.location.host}/share/project/${projectId.value}/task/${taskId.value}/annotation/`
+            shareableLink.value = `${window.location.protocol}//${window.location.host}/share/project/${projectId.value}/task/${taskId.value}/annotation/${annotationId.value}`
             navigator.clipboard.writeText(shareableLink.value).then(() => {
                 clipboardMessage.value = 'link copied!'
                 setTimeout(() => {
