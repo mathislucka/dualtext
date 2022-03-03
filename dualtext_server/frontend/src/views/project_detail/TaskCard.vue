@@ -11,23 +11,27 @@
         </template>
         <template v-slot:content>
             <div class="w-full">
+                <div class="w-full flex">
+                    <button
+                        class="p-2 border-b border-grey-300 rounded-t-md"
+                        :class="openTabClass"
+                        @click="setActiveTab('open')"
+                        aria-label="Show open tasks.">
+                        Open
+                    </button>
+                    <button
+                        class="p-2 border-b border-grey-300 hover:border-blue-600  rounded-t-md"
+                        :class="doneTabClass"
+                        @click="setActiveTab('done')"
+                        aria-label="Show closed tasks.">
+                        Done
+                    </button>
+                    <div class="border-b border-grey-300 w-full"></div>
+                </div>
                 <table class="w-full">
-                    <thead>
-                        <tr>
-                            <th class="text-left text-grey-500 py-2">
-                                name
-                            </th>
-                            <th class="text-left text-grey-500 py-2">
-                                done
-                            </th>
-                            <th class="text-left text-grey-500 py-2">
-                                unclaim
-                            </th>
-                        </tr>
-                    </thead>
                     <tbody>
-                        <template v-for="task in tasks" :key="task.id + 'open'">
-                            <tr class="border-b border-grey-300">
+                        <template v-for="task in activeTasks" :key="task.id + 'open'">
+                            <tr class="border-b border-grey-100">
                                 <td class="py-2">
                                     <router-link
                                         class="link mr-4"
@@ -36,15 +40,19 @@
                                     </router-link>
                                 </td>
                                 <td class="py-2">
-                                    <input type="checkbox" class="mr-2" :checked="task.is_finished" @input="toggleTaskStatus(task)"/>
+                                    <label class="align-middle">
+                                        <input type="checkbox" class="mr-2 align-middle" :checked="task.is_finished" @input="toggleTaskStatus(task)"/>
+                                        <span class="align-middle">done</span>
+                                    </label>
                                 </td>
                                 <td class="py-2">
                                     <button
                                         type="button"
-                                        class="flex text-xs text-blue-500 hover:text-blue-700"
-                                        title="unclaim"
+                                        class="flex text-sm text-blue-500 hover:text-blue-700 hover:bg-grey-100 rounded-md p-2"
+                                        title="unclaim task"
                                         @click="unclaimTask(task.id)">
-                                        <icon :icon="'user-x'" :height="16" :width="16" class="mt-1" />
+                                        <icon :icon="'user-x'" :height="16" :width="16" class="mt-1 mr-2" />
+                                        unclaim
                                     </button>
                                 </td>
                             </tr>
@@ -133,15 +141,38 @@ export default {
         }
 
         const tasks = computed(() => openTasks.value.concat(closedTasks.value))
+
+        const activeTab = ref('open')
+
+        const setActiveTab = (value) => {
+            activeTab.value = value
+        }
+
+        const activeTasks = computed(() => {
+            return activeTab.value == 'open' ? openTasks.value : closedTasks.value
+        })
+
+        const openTabClass = computed(() => {
+            return activeTab.value == 'open' ? 'border-blue-600 text-blue-600 font-semibold' : 'hover:bg-grey-100'
+        })
+        const doneTabClass = computed(() => {
+            return activeTab.value == 'done' ? 'border-blue-600 text-blue-600 font-semibold' : 'hover:bg-grey-100'
+        })
+
         return {
             claimable,
             claimTask,
             heading,
             toggleTaskStatus,
-            tasks,
+            openTasks,
+            closedTasks,
             projectId,
             routeName,
-            unclaimTask
+            unclaimTask,
+            openTabClass,
+            doneTabClass,
+            activeTasks,
+            setActiveTab
         }
     }
 }
