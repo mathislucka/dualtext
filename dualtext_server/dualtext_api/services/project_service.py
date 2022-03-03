@@ -1,6 +1,7 @@
 from django.db.models import Q
 from operator import itemgetter
 from dualtext_api.models import Project, Annotation, Label, Task, Run, Lap
+from collections import defaultdict
 from .run_service import RunService
 import math
 import datetime
@@ -182,20 +183,9 @@ class ProjectService():
         }
 
     def get_label_statistics(self):
-        labels = self.project.label_set.all()
-        label_counts = {}
-        review_annotations = self.get_total_annotations().filter(action=Annotation.REVIEW).prefetch_related('labels')
-        annotation_annotations = self.get_total_annotations().filter(Q(action=Annotation.ANNOTATE) & ~Q(annotation__in=review_annotations)).prefetch_related('labels')
-        label_counts = {}
+        annotation_annotations = self.get_total_annotations().filter(Q(action=Annotation.ANNOTATE)).prefetch_related('labels')
+        label_counts = defaultdict(int)
 
-        for label in labels:
-            label_counts[label.name] = 0
-        
-        for annotation in review_annotations:
-            annotation_labels = annotation.labels.all()
-            for label in annotation_labels:
-                label_counts[label.name] += 1
-        
         for annotation in annotation_annotations:
             annotation_labels = annotation.labels.all()
             for label in annotation_labels:

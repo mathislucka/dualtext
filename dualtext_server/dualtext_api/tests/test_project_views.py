@@ -269,9 +269,9 @@ class TestProjectStatisticsView(APITestCase):
         self.assertEqual(response.data['labels']['relative']['bar'], 0.6)
         self.assertEqual(response.data['labels']['total'], 100)
 
-    def test_reviewer_labels_override_annotator(self):
+    def test_reviewer_labels_do_not_override_annotator(self):
         """
-        Ensure that reviewer labels are counted if there is a review task.
+        Ensure that reviewer labels are not counted if there is a review task.
         """
         su = UserFactory(is_superuser=True)
         project = ProjectFactory()
@@ -288,8 +288,8 @@ class TestProjectStatisticsView(APITestCase):
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.data['labels']['absolute']['foobar'], 1)
-        self.assertEqual(response.data['labels']['relative']['foo'], 0)
-        self.assertEqual(response.data['labels']['total'], 2)
+        self.assertEqual(response.data['labels']['relative']['foo'], 0.33)
+        self.assertEqual(response.data['labels']['total'], 3)
 
     def test_task_counts(self):
         """
