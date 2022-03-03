@@ -62,7 +62,6 @@ export default {
                 : Annotation.items.value[groupAnnotationIds.value[annotationIdx]]
             const max_documents = project.value.max_documents || 0
             if (annotation && annotation.documents) {
-                console.log(`max docs is ${max_documents} and docs is ${annotation.documents.length}`)
                 const documents = annotation.documents.length === max_documents
                     ? [ ...annotation.documents.slice(0, max_documents - 1), docId ]
                     : [ ...annotation.documents, docId ]

@@ -37,20 +37,16 @@ export default {
     if (projectId) {
         const { project } = useSingleProject(projectId)
         currentProject = project
-        console.log(project)
     }
 
     onMounted(Search.actions.fetchSearchMethods)
 
     watch(currentProject, () => {
-        console.log('currentproj', currentProject.value)
-        console.log(currentProject.value.corpora)
         currentFilters.value = { corpus: currentProject.value.corpora }
     })
 
     watch(Search.availableMethods, () => {
         if (currentFilters.value.method && currentFilters.value.method.length === 0) {
-            console.log('called search watcher', currentFilters.value)
             currentFilters.value = { method: [Search.availableMethods.value[0]] }
         }
     })
@@ -58,7 +54,6 @@ export default {
     const currentFilters = computed({
         get: () => Search.selectedFilters.value,
         set: (val) => {
-            console.log('val is', val)
             Search.actions.setSelectedFilters({ ...Search.selectedFilters.value, ...val })
         }
     })
@@ -70,7 +65,6 @@ export default {
                 ...projectId ? { corpus: currentProject.value.corpora } : {},
                 ...projectId ? { project: projectId.value } : {},
             }
-            console.log('mounted', currentFilters.value)
         }
     })
 
@@ -93,12 +87,11 @@ export default {
                 return acc
             }, {})
         } else {
-            console.log(transformedMethods.value)
             transformed = [ Object.values(transformedMethods.value)[0] ]
         }
         return transformed
     })
-    console.log(currentFilters.value)
+
     return {
         currentFilters,
         methods: transformedMethods,

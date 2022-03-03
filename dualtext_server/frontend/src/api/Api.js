@@ -24,7 +24,7 @@ const ApiBuilder = class {
                 headers: this.headers,
                 ...payload ? { body: JSON.stringify(payload) } : {}
             })
-            console.log(response)
+
             if (!response.ok) {
                 returnVal = { error: await response.json(), response: null }
             } else {

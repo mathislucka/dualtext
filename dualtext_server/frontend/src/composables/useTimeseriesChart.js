@@ -73,7 +73,7 @@ function createTimeseriesChart (data) {
         .attr("d", d => {
             const proj = d.filter(v => v.projected)
             const last = d[d.length - (proj.length + 1)]
-            console.log(last)
+
             return lines([last, ...proj])
         })
         .attr("fill", "none")
@@ -104,8 +104,6 @@ function createTimeseriesChart (data) {
         .attr("stroke-width", 2)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
-    console.log(remaining)
-    console.log(x)
 
     svg.append("g")
         .call(xAxis)

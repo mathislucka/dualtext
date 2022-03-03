@@ -53,11 +53,9 @@ function useDocuments (annotation, currentAnnotationIdx, taskId) {
 
     return {
         currentDocuments: computed(() => {
-            const documents = []
+            let documents = []
             if(annotation.value.documents) {
-                annotation.value.documents.forEach(docId => {
-                    documents.push(Document.items.value[docId] || {})
-                })
+                documents = annotation.value.documents.map(docId => Document.items.value[docId] || {})
             }
             return documents
         }),
@@ -77,13 +75,13 @@ function fetchCurrentAndNextGroupDocuments (groupId, nextGroupId) {
     const currentAnnotations = getGroupAnnotations(groupId)
     const nextAnnotations = nextGroupId !== -1 ? getGroupAnnotations(nextGroupId) : []
     const allAnnotations = [ ...currentAnnotations, ...nextAnnotations ]
-    console.log('allannos', allAnnotations)
+
     allAnnotations.forEach(anno => getDocumentsForAnnotation(anno))
 }
 
 function getGroupAnnotations (groupId) {
     return Object.values(Annotation.items.value)
-        .filter(anno => console.log(anno.annotation_group) || anno.annotation_group === groupId)
+        .filter(anno => anno.annotation_group === groupId)
 }
 
 function fetchGroupedDocuments (groupId, annotations, taskId) {
@@ -96,15 +94,12 @@ function fetchGroupedDocuments (groupId, annotations, taskId) {
     })
 
     onMounted(() => {
-        console.log('called docs')
         fetchCurrentAndNextGroupDocuments(groupId.value, nextGroupId.value)
     })
     watch(groupId, () => {
-        console.log('called docs id')
         fetchCurrentAndNextGroupDocuments(groupId.value, nextGroupId.value)
     })
     watch(annotations, () => {
-        console.log('called docs anno')
         fetchCurrentAndNextGroupDocuments(groupId.value, nextGroupId.value)
     })
 }

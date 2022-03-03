@@ -53,8 +53,6 @@ const useAnnotationGroups = (taskId, annotationGroupId) => {
 
     watch(annotationGroupId, () => {
         if (annotationGroupId.value && annotationGroupId.value > 1 && !AnnotationGroup.items.value[annotationGroupId.value]) {
-            console.log(annotationGroups)
-            console.log('called fetch')
             fetchAnnotationGroup()
         }
     })
@@ -90,7 +88,7 @@ function navigateToNextGroup (projectId, router, taskId, routeName) {
         }
         i++
     }
-    console.log(nextGroupId)
+
     router.push({ name: routeName, params: { projectId: projectId, taskId: taskId, annotationGroupId: nextGroupId }})
 }
 
