@@ -7,6 +7,25 @@ function fetchAnnotations (taskId) {
     })
 }
 
+const useSingleAnnotation = (annotationId) => {
+    const annotation = computed(() => Annotation.items.value[annotationId.value] || {})
+
+    onMounted(() => {
+        if (annotationId.value && annotationId.value !== -1) {
+            Annotation.actions.fetchAnnotation(`/annotation/${annotationId.value}`)
+        }
+    })
+
+    watch(annotationId, () => {
+        if (annotationId.value && annotationId.value !== -1) {
+            Annotation.actions.fetchAnnotation(`/annotation/${annotationId.value}`)
+        }
+    })
+
+    return {
+        annotation
+    }
+}
 const useAnnotations = (taskId, annotationId) => {
     const annotations = computed(() => Object.values(Annotation.items.value).filter(anno => anno.task === taskId.value))
     const annotation = computed(() => Annotation.items.value[annotationId.value] || {})
@@ -79,4 +98,4 @@ function useAnnotationDecider (projectId, taskId, router, isReview) {
 }
 
 
-export { useAnnotations, useAnnotationDecider, fetchAnnotations }
+export { useAnnotations, useAnnotationDecider, fetchAnnotations, useSingleAnnotation }

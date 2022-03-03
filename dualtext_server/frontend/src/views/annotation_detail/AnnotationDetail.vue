@@ -7,6 +7,9 @@
                         <div class="grow">
                             <window-settings
                                 v-if="!showSearch"
+                                @share-link="setShareableLink"
+                                :clipboard-message="clipboardMessage"
+                                :shareable-link="shareableLink"
                                 @change-orientation="setOrientation"
                                 @change-screen-size="setScreenSize"/>
                             <desired-label v-if="!isReview && showSearch" :annotation="annotation" />
@@ -38,7 +41,7 @@
 </template>
 
 <script>
-import { toRefs, provide, computed, ref } from 'vue'
+import { provide, computed, ref, watch } from 'vue'
 import { useAnnotations } from './../../composables/useAnnotations.js'
 import { useSingleProject } from './../../composables/useProjects.js'
 import { useTask } from './../../composables/useTask.js'
@@ -123,7 +126,25 @@ export default {
         const pageChangeParams = { projectId: projectId.value, taskId: taskId.value }
         const handlePageChange = preparePageChangeHandler(router, route.name, pageChangeParams)
         const handlePageDown = () => handlePageChange({ annotationId: previousAnnotationId.value })
-        const handlePageUp = () => handlePageChange({ annotationId: nextAnnotationId.value }) 
+        const handlePageUp = () => handlePageChange({ annotationId: nextAnnotationId.value })
+
+        const shareableLink = ref('')
+        const clipboardMessage = ref('')
+        const setShareableLink = () => {
+            shareableLink.value = `${window.location.protocol}//${window.location.host}/share/project/${projectId.value}/task/${taskId.value}/annotation/`
+            navigator.clipboard.writeText(shareableLink.value).then(() => {
+                clipboardMessage.value = 'link copied!'
+                setTimeout(() => {
+                    clipboardMessage.value = ''
+                }, 2500)
+            })
+        }
+
+        watch(annotationId, () => {
+            shareableLink.value = ''
+        })
+
+
 
         return {
             annotation,
@@ -140,7 +161,10 @@ export default {
             currentOrientation,
             setOrientation,
             setScreenSize,
-            isFullScreen
+            isFullScreen,
+            setShareableLink,
+            shareableLink,
+            clipboardMessage
         }
     }
 }

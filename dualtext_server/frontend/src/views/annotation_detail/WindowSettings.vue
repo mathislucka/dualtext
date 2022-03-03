@@ -1,5 +1,24 @@
 <template>
     <div class="text-right">
+        <transition>
+            <div
+                v-if="clipboardMessage !== ''"
+                class="ml-auto mr-2 text-blue-500 text-sm align-middle p-1 mb-2 inline-block">
+                    {{ clipboardMessage }}
+            </div>
+        </transition>
+        <div
+            v-if="shareableLink !== ''"
+            class="ml-auto mr-2 text-blue-500 text-sm align-middle p-1 mb-2 inline-block">
+            {{ shareableLink }}
+        </div>
+        <button
+            v-if="showShare"
+            @click="shareLink"
+            title="get shareable link"
+            class="btn-icon ml-auto mr-2 p-1">
+            <icon icon="share" :height="16" :width="16" />
+        </button>
         <button
             @click="setOrientation('horizontal')"
             class="ml-auto mr-2 p-1 btn-icon"
@@ -21,16 +40,34 @@
 </template>
 
 <script>
-import {computed, ref} from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import Icon from '../../components/shared/Icon.vue'
 
 export default {
     name: 'WindowSettings',
-    emits: [ 'change-orientation', 'change-screen-size' ],
+    emits: [ 'change-orientation', 'change-screen-size', 'share-link' ],
     components: {
         Icon
     },
-    setup (_, { emit }) {
+    props: {
+        showShare: {
+            type: Boolean,
+            required: false,
+            default: () => true
+        },
+        shareableLink: {
+            type: String,
+            required: false,
+            default: () => ''
+        },
+        clipboardMessage: {
+            type: String,
+            required: false,
+            default: () => ''
+        }
+    },
+    setup (props, { emit }) {
+        const { showShare, clipboardMessage, shareableLink } = toRefs(props)
         const defaultOrientation = 'horizontal'
         const defaultScreenSize = 'normal'
         const getOrientation = () => {
@@ -64,12 +101,20 @@ export default {
             return currentScreenSize.value === 'normal' ? 'maximize' : 'minimize'
         })
 
+        const shareLink = () => {
+            emit('share-link')
+        }
+
         return {
             currentOrientation,
             setOrientation,
             currentScreenSize,
             toggleScreenSize,
-            iconType
+            iconType,
+            showShare,
+            clipboardMessage,
+            shareableLink,
+            shareLink
         }
     }
 }

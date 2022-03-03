@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from dualtext_api.models import Annotation, Run, Lap
-from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory, AnnotationGroupFactory
+from .factories import AnnotationFactory, DocumentFactory, TaskFactory, UserFactory, LabelFactory, AnnotationGroupFactory, GroupFactory
 from .factories import ProjectFactory
 from django.utils import timezone
 import time
@@ -177,8 +177,10 @@ class TestAnnotationDetailView(APITestCase):
         """
         Ensure that annotators of a task can view an annotation.
         """
-        user = UserFactory()
-        task = TaskFactory(annotator=user)
+        group = GroupFactory()
+        user = UserFactory(groups=[group])
+        project = ProjectFactory(allowed_groups=[group])
+        task = TaskFactory(annotator=user, project=project)
         anno = AnnotationFactory(task=task)
         url = reverse('annotation_detail', args=[anno.id])
 
@@ -233,17 +235,22 @@ class TestAnnotationDetailView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Annotation.objects.get(id=response.data['id']).labels.all()[0], label)
 
-    def test_deny_non_annotator_view(self):
+    def test_non_annotator_view(self):
         """
-        Ensure that users who are neither annotator nor a superuser can't see an annotation.
+        Ensure that users who are neither annotator nor a superuser can see an annotation if they are project members.
         """
-        user = UserFactory()
-        anno = AnnotationFactory()
+        group = GroupFactory()
+        user = UserFactory(groups=[group])
+        project = ProjectFactory(allowed_groups=[group])
+        task = TaskFactory(project=project)
+        anno = AnnotationFactory(task=task)
         url = reverse('annotation_detail', args=[anno.id])
 
         self.client.force_authenticate(user=user)
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], anno.id)
 
     def test_deny_non_annotator_edit(self):
         """

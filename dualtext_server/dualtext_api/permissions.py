@@ -29,7 +29,7 @@ class MembersEdit(BasePermission):
 
 class MembersReadAdminEdit(BasePermission):
     def has_permission(self, request, view):
-        # allow reads for users in the allowed_groups of a project and for superusers
+        # allow reads for users in the allowed_groups of a project or corpus and for superusers
         if request.method in SAFE_METHODS:
             if 'corpus_id' in view.kwargs:
                 entity = Corpus.objects.get(id=view.kwargs['corpus_id'])
@@ -73,9 +73,12 @@ class AnnotationPermission(BasePermission):
         # allow access to all annotations for admins
         if request.user and request.user.is_superuser == True:
             return True
+        # allow read access to all annotations for project members
+        elif request.method in SAFE_METHODS:
+            print(obj.task.project)
+            return bool(check_member_status(obj.task.project, request.user))
         # allow access to assigned annotators
         else:
-            print(obj.task.annotator)
             return bool(request.user == obj.task.annotator)
 
 class DocumentPermission(BasePermission):

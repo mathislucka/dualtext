@@ -9,6 +9,7 @@ import ExploreCorpora from './../views/explore_corpora/ExploreCorpora.vue'
 import Search from '../store/Search.js'
 import CorpusDetail from './../views/corpus_detail/CorpusDetail.vue'
 import GroupDetail from './../views/group_detail/GroupDetail.vue'
+import SharingDetail from './../views/sharing_detail/SharingDetail.vue'
 
 const routes = [
     {
@@ -114,6 +115,11 @@ const routes = [
             taskId: parseInt(route.params.taskId),
             annotationGroupId: parseInt(route.params.annotationGroupId)
         })
+    },
+        {
+        path: '/share/project/:projectId/task/:taskId/annotation/:annotationId',
+        name: 'sharing_detail',
+        component: SharingDetail,
     },
     {
         path: '/login',
