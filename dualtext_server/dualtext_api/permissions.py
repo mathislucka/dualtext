@@ -75,7 +75,6 @@ class AnnotationPermission(BasePermission):
             return True
         # allow read access to all annotations for project members
         elif request.method in SAFE_METHODS:
-            print(obj.task.project)
             return bool(check_member_status(obj.task.project, request.user))
         # allow access to assigned annotators
         else:
