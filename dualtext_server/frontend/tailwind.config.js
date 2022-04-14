@@ -68,7 +68,11 @@ module.exports = {
         },
         white: {
             'DEFAULT': '#ffffff'
-        }
+        },
+		yellow: {
+			'100': '#fef9c3',
+			'200': '#fef08a'
+		}
     }
   },
   variants: {
