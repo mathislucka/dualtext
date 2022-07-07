@@ -15,13 +15,31 @@ class Annotation(ApiBase):
         for anno in annotations:
             payload = {}
             anno_labels = anno.get('labels', None)
+            anno_meta = anno.get('annotation_meta', {})
 
             if anno_labels:
                 label_ids = [labels[label_name] for label_name in anno_labels]
                 payload['labels'] = label_ids
 
-            if doc_anno_lookup and doc_anno_lookup.get(anno['identifier'], None):
-                payload['documents'] = doc_anno_lookup[anno['identifier']]
+            payload['annotation_meta'] = anno_meta
+
+            if doc_anno_lookup:
+                meta_key = anno['identifier']['document_meta_key']
+                anno_id = anno['identifier']['unique_id']
+                documents = doc_anno_lookup
+                annotation_documents = []
+                for document in documents:
+                    if anno_id in document['document_meta'][meta_key]:
+                        annotation_documents.append(document)
+
+                payload['documents'] = [None, None]
+
+                for document in annotation_documents:
+                    if document['document_meta']['doc_id'] == anno_id[:36]:
+                        payload['documents'][0] = document['id']
+                    else:
+                        payload['documents'][1] = document['id']
+
 
             if group_annotation_lookup and group_annotation_lookup.get(anno['identifier'], None):
                 payload['annotation_group'] = group_annotation_lookup[anno['identifier']]

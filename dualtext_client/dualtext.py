@@ -5,6 +5,7 @@ from session import Session
 from settings import API_URL
 from cli_project import project
 from cli_corpus import corpus
+from cli_label import label
 from settings import API_URL, set_config, get_config
 
 @click.group()
@@ -31,4 +32,4 @@ def get_dualtext_config():
 
 cli.add_command(project)
 cli.add_command(corpus)
-
+cli.add_command(label)

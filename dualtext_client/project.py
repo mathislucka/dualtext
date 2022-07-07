@@ -7,6 +7,7 @@ from task import Task
 from search import Search
 from annotation_group import AnnotationGroup
 import math
+from collections import defaultdict
 
 class Project(ApiBase):
     """
@@ -19,7 +20,7 @@ class Project(ApiBase):
         self.schema = 'project.schema.json'
 
     def create_from_scratch(self, data, task_size):
-        self.validate_data(data, 'project_from_scratch.schema.json')
+        # self.validate_data(data, 'project_from_scratch.schema.json')
         corpus = Corpus(self.session)
         created_corpus = corpus.create(data['corpus'])
 
@@ -55,20 +56,11 @@ class Project(ApiBase):
     def create_documents(self, documents, corpus_id):
         document_instance = Document(self.session, corpus_id)
         document_chunks = self.split_list(documents, 200)
-        created_documents = {}
+        created_documents = []
         for chunk in document_chunks:
-            documents_to_create = []
-            identifiers = []
-            for doc in chunk:
-                identifiers.append(doc.get('annotation_identifier', None))
-                documents_to_create.append({'content': doc['content'], 'document_meta': doc.get('document_meta', {})})
-            docs = document_instance.batch_create(documents_to_create)
-            for idx, doc in enumerate(docs):
-                _id = identifiers[idx]
-                if _id is not None:
-                    related_documents = created_documents.get(_id, [])
-                    related_documents.append(doc['id'])
-                    created_documents[_id] = related_documents
+            docs = document_instance.batch_create(chunk)
+            created_documents.extend(docs)
+
         return created_documents
 
     def split_list(self, lst, chunk_size):

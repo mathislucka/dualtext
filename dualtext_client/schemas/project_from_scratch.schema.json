@@ -31,7 +31,11 @@
                 "properties": {
                     "identifier": {
                         "description": "A unique identifier used for assigning documents to this annotation.",
-                        "type": "integer"
+                        "type": "object",
+                        "properties": {
+                            "unique_id": ["string", "integer"],
+                            "document_meta_key": "string"
+                        }
                     },
                     "labels": {
                         "description": "A list of label names that should be assigned to this annotation.",
@@ -39,6 +43,10 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "annotation_meta": {
+                        "description": "Metadata for an annotation.",
+                        "type": ["array", "object" ,"string"]
                     }
                 }
             }
@@ -47,21 +55,9 @@
             "description": "A list of documents that should be created",
             "type": "array",
             "items": {
+                "description": "A document that should be created.",
                 "type": "object",
-                "properties": {
-                    "content": {
-                        "description": "The content of a document.",
-                        "type": "string"
-                    },
-                    "document_meta": {
-                        "description": "Meta data that should be added for the document.",
-                        "type": ["array", "object", "string"]
-                    },
-                    "annotation_identifier": {
-                        "description": "The annotation that this document should be assigned to.",
-                        "type": "integer"
-                    }
-                }
+                "$ref": "document.schema.json"
             }
         },
         "annotation_groups": {
