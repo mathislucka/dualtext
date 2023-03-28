@@ -35,7 +35,6 @@ class Annotation(ApiBase):
                 payload['documents'] = [None, None]
 
                 for document in annotation_documents:
-                    # if document['document_meta']['doc_id'] == anno_id[:31]:
                     if anno_id.startswith(document['document_meta']['doc_id']):
                         payload['documents'][0] = document['id']
                     else:
